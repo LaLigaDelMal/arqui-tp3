@@ -2,7 +2,7 @@
 
 // Para usar una memoria de 32bits y 8 lugares entonces se utilizara RAM #(32, 8) my_ram (...)
 
-module tp3_memory #(parameter DATA_BUS=32, LENGTH=8) (
+module Memory #(parameter DATA_BUS=32, LENGTH=8) (
     input wire clk,
     input wire rst,
     input wire [$clog2(LENGTH)-1:0] i_addr,
