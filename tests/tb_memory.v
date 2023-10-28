@@ -6,20 +6,18 @@ module tb_memory;
   reg rst;
   reg [4:0] address;
   reg write_enable;
-  reg read_enable;
   reg [31:0] data_in;
 
   wire [31:0] data_out;
 
   // Instantiate the RAM module
-  Memory #(32, 5) my_ram (
+  Memory #() my_ram (
     .clk(clk),
     .rst(rst),
-    .address(address),
-    .write_enable(write_enable),
-    .read_enable(read_enable),
-    .data_in(data_in),
-    .data_out(data_out)
+    .i_addr(address),
+    .i_wr_en(write_enable),
+    .i_data(data_in),
+    .o_data(data_out)
   );
 
   // Clock generation
@@ -32,7 +30,6 @@ module tb_memory;
     clk = 0;
     rst = 1;
     write_enable = 0;
-    read_enable = 0;
     data_in = 32'h00000000;
     address = 5'b00000;
 
@@ -41,27 +38,20 @@ module tb_memory;
     #10 rst = 1;
     #10 rst = 0;
     // Write data to address 1
-    address = 5'b00001;
+    address = 1;
     write_enable = 1;
     data_in = 32'h12345678;
     #10 write_enable = 0;
-
     // Read data from address 1
-    read_enable = 1;
-    #10 read_enable = 0;
-
-    // Write data to address 2
-    address = 5'b00010;
-    write_enable = 1;
-    data_in = 32'hABCDEF01;
-    #10 write_enable = 0;
-
-    // Read data from address 2
-    read_enable = 1;
-    #10 read_enable = 0;
-
+    #10
     $display("Data read from address 1: %h", data_out);
-
+    // Write data to address 2
+    address = 2;
+    write_enable = 1;
+    data_in = 32'h87654321;
+    #10 write_enable = 0;
+    // Read data from address 2
+    #10
     $display("Data read from address 2: %h", data_out);
 
     // Finish the simulation
