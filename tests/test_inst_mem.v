@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module tb_memory;
+module Instruction_Mem_tb;
 
   reg clk;
   reg rst;
