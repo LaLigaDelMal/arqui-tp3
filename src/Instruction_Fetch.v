@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module InstructionFetch (
+module Instruction_Fetch (
     input wire clk,
     input wire rst,
     input wire i_en,             // Instruction memory read enable
@@ -11,6 +11,7 @@ module InstructionFetch (
     
     //Memory
     input wire [31:0] i_mem_data,
+    input wire i_mem_data_valid,
     output wire [31:0] o_mem_addr,
     output wire o_mem_wr, //wr en
     
@@ -19,27 +20,38 @@ module InstructionFetch (
 );
 
 reg mem_wr_en;
-reg addr_mem;
-reg instr;
-reg post_pc;
+reg [31:0] addr_mem;
+reg [31:0] instr;
+reg [31:0] post_pc;
 
 always @(posedge clk) begin
     if (rst) begin
-        mem_wr_en = 0;
-        addr_mem = 0;
+        mem_wr_en = 1'bZ;
+        addr_mem = 32'bZ;
+        instr = 32'bZ;
+        post_pc = 32'bZ;
     end
 end
 
-always @(*) begin //Combinacional, con señales involucradas en lista de sensibilidad y con = en funcionamiento
+always @(*) begin //Combinational, with signals involved in sensitivity list and with = in operation
     if (i_en) begin
         mem_wr_en = 0;
-        addr_mem = {i_pc[31:2], 1'b00};     //Use bits 31-2 of PC as memory address
+        addr_mem = {i_pc[31:2], 2'b00};
+    end else begin
+        mem_wr_en = 1'bZ;
+        addr_mem = 32'bZ;
+        instr = 32'bZ;
+        post_pc = 32'bZ;
     end
 end
 
-always @(i_mem_data) begin
-    instr = i_mem_data;
-    post_pc = {i_pc[31:2]+1'b100};
+
+always @(posedge clk) begin
+    if (i_en && i_mem_data_valid) begin
+        // Solo sumara PC+4 cuando i_mem_data_valid flag sea alto
+        instr = i_mem_data;
+        post_pc = {i_pc[31:2], 2'b00} + 4; // increment the address by 4 (assuming i_pc is byte-addressable)
+    end
 end
 
 assign o_mem_wr     = mem_wr_en; 

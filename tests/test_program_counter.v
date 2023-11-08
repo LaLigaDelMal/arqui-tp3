@@ -38,7 +38,7 @@ module program_counter_tb;
         #10;
         if (pc_out == 32'h00000000) $display("Test 1 succeded"); else $error("Test 1 failed");
 
-        // Test 2: PC in should be 
+        // Test 2: PC incremental
         enable = 1;
         for (integer i = 2; i < 12; i = i + 1) begin
             #10; //20 para (posedge clk) y 10 para (clk) en Program_Counter.v

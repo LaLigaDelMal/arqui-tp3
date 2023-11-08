@@ -11,7 +11,7 @@ module Instruction_Mem_tb;
   wire [31:0] data_out;
 
   // Instantiate the RAM module
-  Memory #() my_ram (
+  Instruction_Memory #() my_ram (
     .clk(clk),
     .rst(rst),
     .i_addr(address),
