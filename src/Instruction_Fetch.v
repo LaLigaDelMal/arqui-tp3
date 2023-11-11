@@ -26,29 +26,24 @@ reg [31:0] post_pc;
 
 always @(posedge clk) begin
     if (rst) begin
-        mem_wr_en = 1'bZ;
-        addr_mem = 32'bZ;
-        instr = 32'bZ;
-        post_pc = 32'bZ;
+        mem_wr_en   = 0;
+        addr_mem    = 0;
+        instr       = 0;
+        post_pc     = 0;
+    end
+    if(!i_en) begin
+        mem_wr_en   = 1'bZ;
+        addr_mem    = 32'bZ;
+        instr       = 32'bZ;
+        post_pc     = 32'bZ;
     end
 end
 
 always @(*) begin //Combinational, with signals involved in sensitivity list and with = in operation
     if (i_en) begin
-        mem_wr_en = 0;
-        addr_mem = {i_pc[31:2], 2'b00};
-    end else begin
-        mem_wr_en = 1'bZ;
-        addr_mem = 32'bZ;
-        instr = 32'bZ;
-        post_pc = 32'bZ;
-    end
-end
-
-
-always @(posedge clk) begin
-    if (i_en && i_mem_data_valid) begin
         // Solo sumara PC+4 cuando i_mem_data_valid flag sea alto
+        mem_wr_en   = 0;
+        addr_mem = i_pc;
         instr = i_mem_data;
         post_pc = {i_pc[31:2], 2'b00} + 4; // increment the address by 4 (assuming i_pc is byte-addressable)
     end

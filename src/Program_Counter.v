@@ -12,12 +12,16 @@ module Program_Counter (
 
 reg [31:0] current_pc;
 
-always @(clk) begin   // ATENCION: POSEDGE
+initial begin
+    current_pc = 32'h00000;  // Initialize PC to 0
+end
+
+always @(posedge clk) begin   // ATENCION: POSEDGE
     if (rst || !i_en) begin
-        current_pc <= 32'h00000000;  // Reset PC to 0
+        current_pc <= 32'b00000;  // Reset PC to 0
     end else begin
         if (i_en) begin
-            if (i_jump_trgt) 
+            if (i_jump_en) 
                 current_pc <= i_jump_trgt;
             else 
                 current_pc <= i_pc; 

@@ -3,12 +3,13 @@
 module IF_top_tb;
     // Declaración de señales
     reg clk, rst;
+    reg rst_ram;
     wire [31:0] mem_addr;
     wire mem_wr_en;
     wire [31:0] mem_data_in;
     wire mem_data_valid;
     wire [31:0] mem_data_out;
-    reg [31:0] pc;
+    wire [31:0] pc;
     wire [31:0] next_pc;
     wire [31:0] inst_out;
     
@@ -18,9 +19,9 @@ module IF_top_tb;
     reg [31:0] writer_addr;
     reg [31:0] writer_data;
     
-    MemoryWriter #(32,32) UUT_MemoryWriter(
+    MemoryWriter UUT_MemoryWriter(
         .clk(clk),
-        .rst(rst),
+        .rst(rst_ram),
         .i_en(writer_en),
         .i_wr_en(writer_wr_en),
         .i_addr(writer_addr),
@@ -32,7 +33,7 @@ module IF_top_tb;
 
     Instruction_Memory #(32,32) UUT_Memory(
         .clk(clk),
-        .rst(rst),
+        .rst(rst_ram),
         .i_addr(mem_addr),
         .i_wr_en(mem_wr_en),
         .i_data(mem_data_in),
@@ -54,13 +55,14 @@ module IF_top_tb;
         .o_instr(inst_out)
     );
 
-    /*Program_Counter UUT_PC(
+    Program_Counter UUT_PC(
         .clk(clk),
         .rst(rst),
         .i_en(IF_en),
         .i_pc(next_pc),
+        .i_jump_en(0),
         .o_pc(pc)
-    );*/
+    );
 
     // Clock generator
     always begin
@@ -70,7 +72,7 @@ module IF_top_tb;
     // Inicialización de las señales de entrada
     initial begin
         clk = 0;
-        rst = 1;
+        rst_ram = 1;
         IF_en = 0;
 
         //RAM WRITING
@@ -79,9 +81,9 @@ module IF_top_tb;
         writer_addr = 5'b00000;
 
         // Reset the RAM
-        rst = 0;
-        #10 rst = 1;
-        #10 rst = 0;
+        rst_ram = 0;
+        #10 rst_ram = 1;
+        #10 rst_ram = 0;
 
         writer_en = 1;
         // Write data to address 0
@@ -100,10 +102,12 @@ module IF_top_tb;
         // END RAM WRITING
         
         // INSTRUCTION FETCH PART
-        #20 IF_en = 1;
-        pc=0;
+        #20
+        rst = 1;
+        #10 rst = 0;
+        IF_en = 1;
         #40
-        pc=4;
+        IF_en = 1;
 
         // END INSTRUCTION FETCH PART
         $finish;
