@@ -1,22 +1,22 @@
 module Instruction_Decode (
-    input [31:0] instruction,
-    output reg [5:0] opcode,
-    output reg [5:0] funct,
-    output reg [4:0] rs,
-    output reg [4:0] rt,
-    output reg [4:0] rd,
-    output reg [15:0] immediate,
-    output reg [25:0] address
+    input [31:0] i_instr,
+    output reg [5:0] o_opcode,
+    output reg [5:0] o_funct,
+    output reg [4:0] o_rs,
+    output reg [4:0] o_rt,
+    output reg [4:0] o_rd,
+    output reg [15:0] o_immediate,
+    output reg [25:0] o_addr
 );
 
 always @(instruction) begin
-    opcode = instruction[31:26];
-    rs = instruction[25:21];
-    rt = instruction[20:16];
-    rd = instruction[15:11];
-    funct = instruction[5:0];
-    immediate = instruction[15:0];
-    address = instruction[25:0];
+    o_opcode    = i_instr[31:26];
+    o_rs        = i_instr[25:21];
+    o_rt        = i_instr[20:16];
+    o_rd        = i_instr[15:11];
+    o_funct     = i_instr[5:0];
+    o_immediate = i_instr[15:0];
+    o_addr      = i_instr[25:0];
 end
 
 endmodule
