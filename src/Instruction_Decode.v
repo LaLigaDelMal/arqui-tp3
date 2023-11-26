@@ -12,17 +12,17 @@ module Instruction_Decode (
 
 always @(instruction) begin
     o_opcode    = i_instr[31:26];
-    if(o_opcode == 6'b000000) begin                                         // Can be R or J type -> Check funct
+    if(o_opcode == 6'b000000) begin                                         // Can be R type or R with Jump -> Check funct
 
         o_funct = i_instr[5:0];
-        if(o_function == 6'b001000 || o_function == 6'b001001) begin        // Is J type ( JR or JALR )
+        if(o_function == 6'b001000 || o_function == 6'b001001) begin        // Is R type but with Jump ( JR or JALR )
             o_rs        = i_instr[25:21];
             o_rt        = 5'b0;
             o_rd        = 5'b0;
             o_shamt     = 5'b0;
             o_imm       = 16'b0;
             o_addr      = 26'b0;
-        end else begin // Is R
+        end else begin                                                      // Is R type
             o_rs        = i_instr[25:21];
             o_rt        = i_instr[20:16];
             o_rd        = i_instr[15:11];
