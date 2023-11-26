@@ -1,0 +1,51 @@
+------------R-----------
+
+|Opcode	           |Name	                        |Action	    |Opcode bitfields
+-----------------------------------------------------------------------------------
+SLL rd,rt,sa	    Shift Left Logical	            rd=rt<<sa 	000000	rs	rt	rd	sa	    000000
+SRL rd,rt,sa	    Shift Right Logical	            rd=rt>>sa 	000000	rs	rt	rd	sa	    000010
+SRA rd,rt,sa	    Shift Right Arithmetic	        rd=rt>>sa 	000000	00000	rt	rd	sa	000011
+SLLV rd,rt,rs	    Shift Left Logical Variable	    rd=rt<<rs 	000000	rs	rt	rd	00000	000100
+SRLV rd,rt,rs	    Shift Right Logical Variable	rd=rt>>rs 	000000	rs	rt	rd	00000	000110
+SRAV rd,rt,rs	    Shift Right Arithmetic Variable	rd=rt>>rs 	000000	rs	rt	rd	00000	000111
+ADDU rd,rs,rt	    Add Unsigned	                rd=rs+rt 	000000	rs	rt	rd	00000	100001
+SUBU rd,rs,rt	    Subtract Unsigned	            rd=rs-rt 	000000	rs	rt	rd	00000	100011
+ADD rd,rs,rt	    Add	                            rd=rs+rt 	000000	rs	rt	rd	00000	100000
+OR rd,rs,rt	        Or	                            rd=rs|rt 	000000	rs	rt	rd	00000	100101
+XOR rd,rs,rt	    Exclusive Or	                rd=rs^rt 	000000	rs	rt	rd	00000	100110
+NOR rd,rs,rt	    Nor	                            rd=~(rs|rt) 000000	rs	rt	rd	00000	100111
+SLT rd,rs,rt	    Set On Less Than	            rd=rs<rt 	000000	rs	rt	rd	00000	101010
+
+
+------------I-----------
+
+|Opcode	           |Name	                    |Action	                            |Opcode bitfields
+------------------------------------------------------------------------------------------------------
+LB rt,offset(rs)	Load Byte	                rt=*(char*)(offset+rs) 	            100000	rs	rt	offset #https://opencores.org/projects/plasma/opcodes
+LH rt,offset(rs)	Load Halfword	            rt=*(short*)(offset+rs) 	        100001	rs	rt	offset
+LW rt,offset(rs)	Load Word	                rt=*(int*)(offset+rs) 	            100011	rs	rt	offset
+LWU
+lhu 	100101	o $t, i ($s)	$t = ZE (MEM [$s + i]:2)                            100101 #http://alumni.cs.ucr.edu/~vladimir/cs161/mips.html
+LBU rt,offset(rs)	Load Halfword Unsigned	    rt=*(Ushort*)(offset+rs) 	        100101	rs	rt	offset
+SB rt,offset(rs)	Store Byte	                *(char*)(offset+rs)=rt 	            101000	rs	rt	offset
+SH rt,offset(rs)	Store Halfword	            *(short*)(offset+rs)=rt 	        101001	rs	rt	offset
+SW rt,offset(rs)	Store Word	                *(int*)(offset+rs)=rt 	            101011	rs	rt	offset
+ADDI rt,rs,imm	    Add Immediate	            rt=rs+imm 	                        001000	rs	rt	imm
+ANDI rt,rs,imm	    And Immediate	            rt=rs&imm 	                        001100	rs	rt	imm
+ORI rt,rs,imm	    Or Immediate	            rt=rs|imm 	                        001101	rs	rt	imm
+XORI rt,rs,imm	    Exclusive Or Immediate	    rt=rs^imm 	                        001110	rs	rt	imm
+LUI rt,imm	        Load Upper Immediate	    rt=imm<<16 	                        001111	rs	rt	imm
+SLTI rt,rs,imm	    Set On Less Than Immediate	rt=rs<imm 	                        001010	rs	rt	imm
+BEQ rs,rt,offset	Branch On Equal	            if(rs==rt) pc+=offset*4 	        000100	rs	rt	offset
+BNE rs,rt,offset	Branch On Not Equal	        if(rs!=rt) pc+=offset*4             000101	rs	rt	offset
+
+J target	        Jump	                    pc=pc_upper|(target<<2) 	        000010	target
+JAL target	        Jump And Link	            r31=pc; pc=target<<2 	            000011	target
+
+
+-------------J----------
+
+|Opcode	    |Name	                    |Action         |Opcode bitfields
+-------------------------------------------------------------------------
+JR rs	    Jump    Register	        pc=rs 	        000000	rs	000000000000000	    001000
+JALR rs	    Jump    And Link Register	rd=pc; pc=rs 	000000	rs	00000	rd	00000	001001
