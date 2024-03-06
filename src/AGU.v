@@ -34,3 +34,27 @@ module AGU(
     assign o_addr_exception = exception;
 
 endmodule
+
+
+`timescale 1ns / 1ps
+
+module Sumador_PC_Jump
+    #(
+        parameter NBITS     =  32,
+        parameter NBITSJUMP =  26
+    )
+    (
+        input   wire    [25:0]     i_IJump         ,
+        input   wire    [31:0]     i_PC4           ,
+        output  wire    [31:0]     o_IJump                 
+    );
+    
+    reg [31:0]   IJump_reg   ;    
+    assign  o_IJump   = IJump_reg   ;
+    
+    always @(*)
+    begin
+        IJump_reg   <=  {i_PC4[31:27], (i_IJump<<2)}  ;
+    end   
+    
+endmodule

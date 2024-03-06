@@ -10,12 +10,12 @@ module Instruction_Decode (
     output reg [25:0] o_addr
 );
 
-always @(instruction) begin
+always @(instruction) begin //TODO
     o_opcode    = i_instr[31:26];
     if(o_opcode == 6'b000000) begin                                         // Can be R type or R with Jump -> Check funct
 
         o_funct = i_instr[5:0];
-        if(o_function == 6'b001000 || o_function == 6'b001001) begin        // Is R type but with Jump ( JR or JALR )
+        if(o_function == 6'b001000 || o_function == 6'b001001) begin        // Is R/J type but with Jump ( JR or JALR )
             o_rs        = i_instr[25:21];
             o_rt        = 5'b0;
             o_rd        = 5'b0;
@@ -44,7 +44,7 @@ always @(instruction) begin
         o_rt        = i_instr[20:16];
         o_rd        = 5'b0;
         o_shamt     = 5'b0;
-        o_immediate = i_instr[15:0];
+        o_immediate = i_instr[15:0];                                        // Also used for branch offset
         o_addr      = 26'b0;
     end
 end

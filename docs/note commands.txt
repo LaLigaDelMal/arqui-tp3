@@ -2,26 +2,26 @@
 
 |Opcode	           |Name	                        |Action	    |Opcode bitfields
 -----------------------------------------------------------------------------------
-SLL rd,rt,sa	    Shift Left Logical	            rd=rt<<sa 	000000	rs	rt	rd	sa	    000000
-SRL rd,rt,sa	    Shift Right Logical	            rd=rt>>sa 	000000	rs	rt	rd	sa	    000010
-SRA rd,rt,sa	    Shift Right Arithmetic	        rd=rt>>sa 	000000	00000	rt	rd	sa	000011
-SLLV rd,rt,rs	    Shift Left Logical Variable	    rd=rt<<rs 	000000	rs	rt	rd	00000	000100
-SRLV rd,rt,rs	    Shift Right Logical Variable	rd=rt>>rs 	000000	rs	rt	rd	00000	000110
-SRAV rd,rt,rs	    Shift Right Arithmetic Variable	rd=rt>>rs 	000000	rs	rt	rd	00000	000111
-ADDU rd,rs,rt	    Add Unsigned	                rd=rs+rt 	000000	rs	rt	rd	00000	100001
-SUBU rd,rs,rt	    Subtract Unsigned	            rd=rs-rt 	000000	rs	rt	rd	00000	100011
-ADD rd,rs,rt	    Add	                            rd=rs+rt 	000000	rs	rt	rd	00000	100000
-OR rd,rs,rt	        Or	                            rd=rs|rt 	000000	rs	rt	rd	00000	100101
-XOR rd,rs,rt	    Exclusive Or	                rd=rs^rt 	000000	rs	rt	rd	00000	100110
-NOR rd,rs,rt	    Nor	                            rd=~(rs|rt) 000000	rs	rt	rd	00000	100111
-SLT rd,rs,rt	    Set On Less Than	            rd=rs<rt 	000000	rs	rt	rd	00000	101010
+SLL rd,rt,sa	    Shift Left Logical	            rd=rt<<sa 	000000	rs	    rt	    rd	sa	    000000
+SRL rd,rt,sa	    Shift Right Logical	            rd=rt>>sa 	000000	rs	    rt	    rd	sa	    000010
+SRA rd,rt,sa	    Shift Right Arithmetic	        rd=rt>>sa 	000000	00000	rt	    rd	sa	    000011
+SLLV rd,rt,rs	    Shift Left Logical Variable	    rd=rt<<rs 	000000	rs	    rt	    rd	00000	000100
+SRLV rd,rt,rs	    Shift Right Logical Variable	rd=rt>>rs 	000000	rs	    rt	    rd	00000	000110
+SRAV rd,rt,rs	    Shift Right Arithmetic Variable	rd=rt>>rs 	000000	rs	    rt	    rd	00000	000111
+ADDU rd,rs,rt	    Add Unsigned	                rd=rs+rt 	000000	rs	    rt	    rd	00000	100001
+SUBU rd,rs,rt	    Subtract Unsigned	            rd=rs-rt 	000000	rs	    rt	    rd	00000	100011
+ADD rd,rs,rt	    Add	                            rd=rs+rt 	000000	rs	    rt	    rd	00000	100000
+OR rd,rs,rt	        Or	                            rd=rs|rt 	000000	rs	    rt	    rd	00000	100101
+XOR rd,rs,rt	    Exclusive Or	                rd=rs^rt 	000000	rs	    rt	    rd	00000	100110
+NOR rd,rs,rt	    Nor	                            rd=~(rs|rt) 000000	rs	    rt	    rd	00000	100111
+SLT rd,rs,rt	    Set On Less Than	            rd=rs<rt 	000000	rs	    rt	    rd	00000	101010
 
 
 ------------I-----------
 
 |Opcode	           |Name	                    |Action	                            |Opcode bitfields
 ------------------------------------------------------------------------------------------------------
-LB rt,offset(rs)	Load Byte	                rt=*(char*)(offset+rs) 	            100000	rs	rt	offset #https://opencores.org/projects/plasma/opcodes
+LB rt,offset(rs)	Load Byte	                rt=*(char*)(offset+rs) 	            100000	rs	rt	offset #    
 LH rt,offset(rs)	Load Halfword	            rt=*(short*)(offset+rs) 	        100001	rs	rt	offset
 LW rt,offset(rs)	Load Word	                rt=*(int*)(offset+rs) 	            100011	rs	rt	offset
 LWU

@@ -1,0 +1,219 @@
+TP de digital: Explicacion, Diagrama de Bloques, Esquemático de la sintesis, Ejemplos de las pruebas de la simulación. Cargar el codigo en git y pasar el link del repositorio. El informe se envía por email.
+
+Un registro se trabaja siempre sobre el mismo always.
+Al resetear un registro se debe colocar la cantidad de ceros en la asignacion.
+Los parámetros siempre en mayúsculas.
+Las entradas y las salidas comienzan con i_ y o_ respectivamente.
+Las salidas siempre se asignan al ultimo (las sentencias assign).
+Se puede utilizar (leer) un registro en otro always pero no asignarlo, solo se debe asignar un registro en un solo bloque always.
+El bloque initial no es sintetizable por lo que solo se utiliza en testbenchs, este bloque se utiliza para inicializar variables y puertos ya que solo se ejecuta una vez al comenzar la simulación (comienza en el tiempo 0).
+Si hay multiples bloques initial, se inician cada una en simultaneo (es decir, cada uno en un hilo).
+
+# Practico Arquitectura
+- En UART cuando no se transmite nada (idle state) la linea se mantiene en alto para indicar que está funcionando.
+- El bit de start es una transicion de alto a bajo, seguido por el byte a transmitir, y el bit de stop es una transicion al estado de alto o bajo a alto.
+- Los ocho bits de informacion de la trama se envian comenzando por el bit menos significativo.
+
+# Procesador
+
+* Registros
+	- r0 : aka $zero | Always zero
+	- r1 : aka $at   | Reserved for assembler
+	- r2 : aka $v0   | Stores results
+	- r3 : aka $v1   | Stores results
+	- r4 : aka $a0   | Stores arguments
+	- r5 : aka $a1   | Stores arguments
+	- r6 : aka $a2   | Stores arguments
+	- r7 : aka $a3   | Stores arguments
+	- r8 : aka $t0   | Temporaries, not saved between calls
+	- r9 : aka $t1   | Temporaries, not saved between calls
+	- r10 : aka $t2  | Temporaries, not saved between calls
+	- r11 : aka $t3  | Temporaries, not saved between calls
+	- r12 : aka $t4  | Temporaries, not saved between calls
+	- r13 : aka $t5  | Temporaries, not saved between calls
+	- r14 : aka $t6  | Temporaries, not saved between calls
+	- r15 : aka $t7  | Temporaries, not saved between calls
+	- r16 : aka $s0  | Contents saved
+	- r17 : aka $s1  | Contents saved
+	- r18 : aka $s2  | Contents saved
+	- r19 : aka $s3  | Contents saved
+	- r20 : aka $s4  | Contents saved
+	- r21 : aka $s5  | Contents saved
+	- r22 : aka $s6  | Contents saved
+	- r23 : aka $s7  | Contents saved
+	- r24 : aka $t8  | More temporaries, not saved
+	- r25 : aka $t9  | More temporaries, not saved
+	- r26 : aka $k0  | Reserved for OS
+	- r27 : aka $k1  | Reserved for OS
+	- r28 : aka $gp  | Global pointer
+	- r29 : aka $sp  | Stack pointer
+	- r30 : aka $fp  | Frame pointer
+	- r31 : aka $ra  | Return address
+
+	rs aka Source, First source: bits 25-21 from the instruction
+	rt aka Target, Second source: bits 20-16 from the instruction
+	rd aka Destination: bits 15-11 from the instruction
+
+	* MIPS es bi-endian, se elige utilizar little-endian ya que es la manera más intuitiva. Las direcciones de memoria más altas corresponden a los bytes más significativos.
+
+
+* Instrucciones
+
+	R-Type   [31:0] [31:26|25:21|20:16|15:11|10:6|5:0] [OPCODE|rs|rt|rd|sa|function]  // OPCODE is always 0
+
+	- SLL:	The contents of the low-order 32-bit word of GPR rt are shifted left, inserting zeroes into the emptied bits; the word result is placed in GPR rd.
+		   FUNCTION: 000000
+		   FUNCTION: 000000
+		   OPTIONS:	Defines the number of places to shift in the "sa" part of the instruction (bits 6:10), for a maximum of 32 shifts.
+
+	- SRL:	The contents of the low-order 32-bit word of GPR rt are shifted right, inserting zeros into the emptied bits; the word result is placed in GPR rd.
+			FUNCTION: 000010
+			OPTIONS: Defines the number of places to shift in the "sa" part of the instruction (bits 6:10), for a maximum of 32 shifts.
+
+	- SRA:	The contents of the low-order 32-bit word of GPR rt are shifted right, duplicating the sign-bit (bit 31) in the emptied bits; the word result is placed in GPR rd.
+			FUNCTION: 000011
+			OPTIONS: Defines the number of places to shift in the "sa" part of the instruction (bits 6:10), for a maximum of 32 shifts.
+
+	- SLLV:	The contents of the low-order 32-bit word of GPR rt are shifted left, inserting zeros into the emptied bits; the result word is placed in GPR rd. The bit shift count is specified by the low-order five bits of GPR rs.
+			FUNCTION: 000100
+			OPTIONS: None
+
+	- SRLV:	The contents of the low-order 32-bit word of GPR rt are shifted right, inserting zeros into the emptied bits; the word result is placed in GPR rd.The bit shift count is specified by the low-order five bits of GPR rs.
+			FUNCTION: 000110
+			OPTIONS: None
+
+	- SRAV: The contents of the low-order 32-bit word of GPR rt are shifted right, duplicating the sign-bit (bit 31) in the emptied bits; the word result is placed in GPR rd. The bit shift count is specified by the low-order five bits of GPR rs.
+			FUNCTION: 000111
+			OPTIONS: None
+
+	- ADDU:	The 32-bit word value in GPR rt is added to the 32-bit value in GPR rs and the 32-bit arithmetic (unsigned) result is placed into GPR rd. No Integer Overflow exception occurs under any circumstances.
+			FUNCTION: 100001
+			OPTIONS: None
+
+	- SUBU: The 32-bit word value in GPR rt is subtracted from the 32-bit value in GPR rs and the 32-bit arithmetic (unsigned) result is placed into GPR rd. No integer overflow exception occurs under any circumstances.
+			FUNCTION: 100011
+			OPTIONS: None
+
+	- AND: The contents of GPR rs are combined with the contents of GPR rt in a bitwise logical AND operation. The result is placed into GPR rd.
+			FUNCTION: 100100
+			OPTIONS: None
+
+	- OR:	The contents of GPR rs are combined with the contents of GPR rt in a bitwise logical OR operation. The result is placed into GPR rd.
+			FUNCTION: 100101
+			OPTIONS: None
+
+	- XOR:	Combine the contents of GPR rs and GPR rt in a bitwise logical exclusive OR operation and place the result into GPR rd.
+			FUNCTION: 100110
+			OPTIONS: None
+
+	- NOR:	The contents of GPR rs are combined with the contents of GPR rt in a bitwise logical NOR operation. The result is placed into GPR rd.
+			FUNCTION: 100111
+			OPTIONS: None
+
+	- SLT:	Compare the contents of GPR rs and GPR rt as signed integers and record the Boolean result of the comparison in GPR rd. If GPR rs is less than GPR rt the result is 1 (true), otherwise 0 (false).
+			FUNCTION: 101010
+			OPTIONS: None
+
+
+
+	I-Type   [31:0] [31:26|25:21|20:16|15:0] [OPCODE|base|rt|offset]
+
+	- LB:	The contents of the 8-bit byte at the memory location specified by the effective address are fetched, sign-extended, and placed in GPR rt. The 16-bit signed offset is added to the contents of GPR base to form the effective address.
+			OPCODE: 100000
+			OPTIONS: "base" refers to the GPR indicated by the bits 21:25 from the instruction, and "offset" refers to bits 0:15 from the instruction.
+
+	- LH:	The contents of the 16-bit halfword at the memory location specified by the aligned effective address are fetched, sign-extended, and placed in GPR rt. The 16-bit signed offset is added to the contents of GPR base to form the effective address. The effective address must be naturally aligned. If the least-significant bit of the address is non-zero, an Address Error exception occurs.
+			OPCODE: 100001
+			OPTIONS: "base" refers to the GPR indicated by the bits 21:25 from the instruction, and "offset" refers to bits 0:15 from the instruction.
+			EXCEPTIONS: Address Error
+
+	- LW:	The contents of the 32-bit word at the memory location specified by the aligned effective address are fetched, sign-extended to the GPR register length if necessary, and placed in GPR rt. The 16-bit signed offset is added to the contents of GPR base to form the effective address. The effective address must be naturally aligned. If either of the two least-significant bits of the address are non-zero, an Address Error exception occurs.
+			OPCODE: 100011
+			OPTIONS: "base" refers to the GPR indicated by the bits 21:25 from the instruction, and "offset" refers to bits 0:15 from the instruction.
+			EXCEPTIONS: Address Error
+
+	- LWU:	The contents of the 32-bit word at the memory location specified by the aligned effective address are fetched, zero-extended, and placed in GPR rt. The 16-bit signed offset is added to the contents of GPR base to form the effective address. The effective address must be naturally aligned. If either of the two least-significant bits of the address are non-zero, an Address Error exception occurs.
+			OPCODE: 100111
+			OPTIONS: "base" refers to the GPR indicated by the bits 21:25 from the instruction, and "offset" refers to bits 0:15 from the instruction.
+			EXCEPTIONS: Address Error
+
+	- LBU:	The contents of the 8-bit byte at the memory location specified by the effective address are fetched, zero-extended, and placed in GPR rt. The 16-bit signed offset is added to the contents of GPR base to form the effective address. It doesn't have any restriction.
+			OPCODE: 100100
+			OPTIONS: "base" refers to the GPR indicated by the bits 21:25 from the instruction, and "offset" refers to bits 0:15 from the instruction.
+
+	- LHU:	The contents of the 16-bit halfword at the memory location specified by the aligned effective address are fetched, zero-extended, and placed in GPR rt. The 16-bit signed offset is added to the contents of GPR base to form the effective address. The effective address must be naturally aligned. If the least-significant bit of the address is non-zero, an Address Error exception occurs.
+			OPCODE: 100101
+			OPTIONS: "base" refers to the GPR indicated by the bits 21:25 from the instruction, and "offset" refers to bits 0:15 from the instruction.
+			EXCEPTIONS: Address Error
+
+	- SB:	The least-significant 8-bit byte of GPR rt is stored in memory at the location specified by the effective address. The 16-bit signed offset is added to the contents of GPR base to form the effective address.
+			OPCODE: 101000
+			OPTIONS: "base" refers to the GPR indicated by the bits 21:25 from the instruction, and "offset" refers to bits 0:15 from the instruction.
+
+	- SH:	The least-significant 16-bit halfword of register rt is stored in memory at the location specified by the aligned effective address. The 16-bit signed offset is added to the contents of GPR base to form the effective address. The effective address must be naturally aligned. If the least-significant bit of the address is non-zero, an Address Error exception occurs.
+			OPCODE: 101001
+			OPTIONS: "base" refers to the GPR indicated by the bits 21:25 from the instruction, and "offset" refers to bits 0:15 from the instruction.
+			EXCEPTIONS: Address Error
+
+	- SW: The least-significant 32-bit word of register rt is stored in memory at the location specified by the aligned effective address. The 16-bit signed offset is added to the contents of GPR base to form the effective address. The effective address must be naturally aligned. If either of the two least-significant bits of the address are non-zero, an Address Error exception occurs.
+			OPCODE: 101011
+			OPTIONS: "base" refers to the GPR indicated by the bits 21:25 from the instruction, and "offset" refers to bits 0:15 from the instruction.
+			EXCEPTIONS: Address Error
+
+	- ADDI: The 16-bit signed immediate is added to the 32-bit value in GPR rs to produce a 32-bit result. If the addition results in 32-bit 2’s complement arithmetic overflow then the destination register is not modified and an Integer Overflow exception occurs. If it does not overflow, the 32-bit result is placed into GPR rt.
+			OPCODE: 001000
+			OPTIONS: "immediate" is stores in bits 0:15 from instruction.
+			EXCEPTIONS: Integer Overflow
+
+	- ANDI: The 16-bit immediate is zero-extended to the left and combined with the contents of GPR rs in a bitwise logical AND operation. The result is placed into GPR rt.
+			OPCODE: 001100
+			OPTIONS: "immediate" is stores in bits 0:15 from instruction.
+
+	- ORI: The 16-bit immediate is zero-extended to the left and combined with the contents of GPR rs in a bitwise logical OR operation. The result is placed into GPR rt.
+			OPCODE: 001101
+			OPTIONS: "immediate" is stores in bits 0:15 from instruction.
+
+	- XORI: Combine the contents of GPR rs and the 16-bit zero-extended immediate in a bitwise logical exclusive OR operation and place the result into GPR rt.
+			OPCODE: 001110
+			OPTIONS: "immediate" is stores in bits 0:15 from instruction.
+
+	- LUI: The 16-bit immediate is shifted left 16 bits and concatenated with 16 bits of low-order zeros. The 32-bit result is sign-extended and placed into GPR rt.
+			OPCODE: 001111
+			OPTIONS: "immediate" is stores in bits 0:15 from instruction.
+
+	- SLTI: Compare the contents of GPR rs and the 16-bit signed immediate as signed integers and record the Boolean result of the comparison in GPR rt. If GPR rs is less than immediate the result is 1 (true), otherwise 0 (false).
+			OPCODE: 001010
+			OPTIONS: "immediate" is stores in bits 0:15 from instruction.
+
+	- BEQ: An 18-bit signed offset (the 16-bit offset field shifted left 2 bits) is added to the address of the instruction following the branch (not the branch itself), in the branch delay slot, to form a PC-relative effective target address. If the contents of GPR rs and GPR rt are equal, branch to the effective target address after the instruction in the delay slot is executed.
+			OPCODE: 000100
+			OPTIONS: "offset" is stores in bits 0:15 from instruction.
+
+	- BNE: An 18-bit signed offset (the 16-bit offset field shifted left 2 bits) is added to the address of the instruction following the branch (not the branch itself), in the branch delay slot, to form a PC-relative effective target address. If the contents of GPR rs and GPR rt are not equal, branch to the effective target address after the instruction in the delay slot is executed.
+			OPCODE: 000101
+			OPTIONS: "offset" is stores in bits 0:15 from instruction.
+
+
+
+	J-Type   [31:0] [31:26|25:0] [OPCODE|instr_index]
+
+	- J: This is a PC-region branch (not PC-relative); the effective target address is in the “current” 256 MB aligned region. The low 28 bits of the target address is the instr_index field shifted left 2 bits. The remaining upper bits are the corresponding bits of the address of the instruction in the delay slot (not the branch itself). Jump to the effective target address. Execute the instruction following the jump, in the branch delay slot, before jumping.
+			OPCODE: 000010
+			OPTIONS: "instr_index" is stores in bits 0:25 from instruction.
+
+	- JAL: Place the return address link in GPR 31. The return link is the address of the second instruction following the branch, where execution would continue after a procedure call. This is a PC-region branch (not PC-relative); the effective target address is in the “current” 256 MB aligned region. The low 28 bits of the target address is the instr_index field shifted left 2 bits. The remaining upper bits are the corresponding bits of the address of the instruction in the delay slot (not the branch itself). Jump to the effective target address. Execute the instruction following the jump, in the branch delay slot, before jumping.
+			OPCODE: 000011
+			OPTIONS: "instr_index" is stores in bits 0:25 from instruction.
+
+	- JR: Jump to the effective target address in GPR rs. Execute the instruction following the jump, in the branch delay slot, before jumping. The effective target address in GPR rs must be naturally aligned. If either of the two least-significant bits are not zero, then an Address Error exception occurs, not for the jump instruction, but when the branch target is subsequently fetched as an instruction.
+			OPCODE: 001000
+
+	- JALR: Place the return address link in GPR rd. The return link is the address of the second instruction following the branch, where execution would continue after a procedure call. Jump to the effective target address in GPR rs. Execute the instruction following the jump, in the branch delay slot, before jumping. The effective target address in GPR rs must be naturally aligned. If either of the two least-significant bits are not -zero, then an Address Error exception occurs, not for the jump instruction, but when the branch target is subsequently fetched as an instruction.
+			OPCODE: 001001
+
+
+* Observaciones:
+
+	- Delayed Loads: The MIPS I architecture defines delayed loads; an instruction scheduling restriction requires that an instruction immediately following a load into register Rn cannot use Rn as a source register. The time between the load instruction and the time the data is available is the “load delay slot”. If no useful instruction can be put into the load delay slot, then a null operation (assembler mnemonic NOP) must be inserted. In MIPS II, this instruction scheduling restriction is removed. Programs will execute correctly when the loaded data is used by the instruction following the load, but this may require extra real cycles. Most processors cannot actually load data quickly enough for immediate use and the processor will be forced to wait until the data is available. Scheduling load delay slots is desirable for performance reasons even when it is not necessary for correctness.
+
+	- All branches have an architectural delay of one instruction. When a branch is taken, the instruction immediately following the branch instruction, in the branch delay slot, is executed before the branch to the target instruction takes place. Conditional branches come in two versions that treat the instruction in the delay slot differently when the branch is not taken and execution falls through. The “branch” instructions execute the instruction in the delay slot, but the “branch likely” instructions do not (they are said to nullify it). By convention, if an exception or interrupt prevents the completion of an instruction occupying a branch delay slot, the instruction stream is continued by re-executing the branch instruction. To permit this, branches must be restartable; procedure calls may not use the register in which the return link is stored (usually register 31) to determine the branch target address.
