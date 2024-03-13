@@ -1,26 +1,26 @@
 `timescale 1ns / 1ps
 
 module Program_Counter #(
-    parameter   NBIT = 32
+    parameter   NBITS = 32
 )(
     input wire              i_clk,
     input wire              i_rst,
     input wire              i_wr_en,              // PC Write enable
     input wire              i_jump_en,
-    input wire  [NBIT-1:0]  i_jump_addr,          // Target address for jump
-    input wire  [NBIT-1:0]  i_pc,                 // Input program counter (for exceptions, etc.)
-    output wire [NBIT-1:0]  o_pc
-    output wire [NBIT-1:0]  o_pc_4
-    output wire [NBIT-1:0]  o_pc_8
+    input wire  [NBITS-1:0]  i_jump_addr,          // Target address for jump
+    input wire  [NBITS-1:0]  i_pc,                 // Input program counter (for exceptions, etc.)
+    output wire [NBITS-1:0]  o_pc,
+    output wire [NBITS-1:0]  o_pc_4,
+    output wire [NBITS-1:0]  o_pc_8
 );
 
-reg [NBIT-1:0] current_pc;
+reg [NBITS-1:0] current_pc;
 
 //initial begin
 //    current_pc = {NBITS{1'b0}};                 // Initialize PC to 0
 //end
 
-always @(negedge clk) begin                 // ATENCION: POSEDGE
+always @(negedge i_clk) begin                 // ATENCION: POSEDGE
     if ( i_rst ) begin
         current_pc <= {NBITS{1'b0}};            // Reset PC to 0
     end 
