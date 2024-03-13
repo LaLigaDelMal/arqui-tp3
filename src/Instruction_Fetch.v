@@ -1,13 +1,12 @@
 `timescale 1ns / 1ps
 
 module Instruction_Fetch (
-    input wire clk,
-    input wire rst,
-    input wire i_en,             // Instruction memory read enable
+    input   wire i_clk,
+    input   wire i_rst,
     
     //PC
-    input wire [31:0] i_pc,             // Program Counter
-    output wire [31:0] o_pc,
+    input   wire [31:0] i_pc,             // Program Counter
+    output  wire [31:0] o_pc,
     
     //Memory
     input wire [31:0] i_mem_data,
@@ -39,7 +38,7 @@ always @(posedge clk) begin
     end
 end
 
-always @(*) begin //Combinational, with signals involved in sensitivity list and with = in operation
+always @(  ) begin //Combinational, with signals involved in sensitivity list and with = in operation
     if (i_en) begin
         // Solo sumara PC+4 cuando i_mem_data_valid flag sea alto
         mem_wr_en   = 0;
