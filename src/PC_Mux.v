@@ -8,7 +8,7 @@ module PC_Mux #(
     input wire               i_sel_jump,
     input wire  [NBITS-1:0]  i_next_pc,
     input wire  [NBITS-1:0]  i_jump_pc,
-    output reg  [NBITS-1:0]  o_pc,
+    output reg  [NBITS-1:0]  o_pc
 );
 
 always @(*) begin

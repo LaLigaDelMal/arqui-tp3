@@ -1,141 +1,60 @@
 `timescale 1ns / 1ps
 
-module IF_top_tb;
-    // Declaración de señales
-    reg clk, rst;
-    reg rst_ram;
-    wire [31:0] mem_addr;
-    wire mem_wr_en;
-    wire [31:0] mem_data_in;
-    wire mem_data_valid;
-    wire [31:0] mem_data_out;
-    wire [31:0] pc;
-    wire [31:0] next_pc;
-    wire [31:0] inst_out;
-    
-    // Throaway module for testbench
-    reg writer_en;
-    reg writer_wr_en;
-    reg [31:0] writer_addr;
-    reg [31:0] writer_data;
-    
-    MemoryWriter UUT_MemoryWriter(
-        .clk(clk),
-        .rst(rst_ram),
-        .i_en(writer_en),
-        .i_wr_en(writer_wr_en),
-        .i_addr(writer_addr),
-        .i_data(writer_data),
-        .o_addr(mem_addr),
-        .o_en(mem_wr_en),
-        .o_data(mem_data_in)
+module IF_top;
+    reg i_clk;
+    reg i_rst;
+    reg i_sel_jump;
+    reg [31:0] i_jump_pc;
+    reg i_inst_mem_wr_en;
+    reg [31:0] i_inst_mem_data;
+    wire [31:0] o_pc;
+    wire [32:0] o_instr;
+
+    // Instantiate the Unit Under Test (UUT)
+    Instruction_Fetch uut (
+        .i_clk(i_clk), 
+        .i_rst(i_rst), 
+        .i_sel_jump(i_sel_jump), 
+        .i_jump_pc(i_jump_pc), 
+        .o_pc(o_pc), 
+        .o_instr(o_instr), 
+        .i_inst_mem_wr_en(i_inst_mem_wr_en), 
+        .i_inst_mem_data(i_inst_mem_data)
     );
 
-    Instruction_Memory #(32,32) UUT_Memory(
-        .clk(clk),
-        .rst(rst_ram),
-        .i_addr(mem_addr),
-        .i_wr_en(mem_wr_en),
-        .i_data(mem_data_in),
-        .o_data(mem_data_out),
-        .o_mem_data_valid(mem_data_valid)
-    );
-
-    reg IF_en;
-    Instruction_Fetch UUT_Fetch(
-        .clk(clk),
-        .rst(rst),
-        .i_en(IF_en),
-        .i_pc(pc),
-        .i_mem_data(mem_data_out),
-        .i_mem_data_valid(mem_data_valid),
-        .o_pc(next_pc),
-        .o_mem_addr(mem_addr),
-        .o_mem_wr(mem_wr_en),
-        .o_instr(inst_out)
-    );
-
-    Program_Counter UUT_PC(
-        .clk(clk),
-        .rst(rst),
-        .i_en(IF_en),
-        .i_pc(next_pc),
-        .i_jump_en(0),
-        .o_pc(pc)
-    );
-
-    // Clock generator
-    always begin
-        #10 clk = ~clk;
-    end
-
-    // Inicialización de las señales de entrada
     initial begin
-        clk = 0;
-        rst_ram = 1;
-        IF_en = 0;
+        // Initialize Inputs
+        i_clk = 0;
+        i_rst = 0;
+        i_sel_jump = 0;
+        i_jump_pc = 0;
+        i_inst_mem_wr_en = 0;
+        i_inst_mem_data = 0;
 
-        //RAM WRITING
-        writer_en = 0;
-        writer_data = 32'h00000000;
-        writer_addr = 5'b00000;
-
-        // Reset the RAM
-        rst_ram = 0;
-        #10 rst_ram = 1;
-        #10 rst_ram = 0;
-
-        writer_en = 1;
-        // Write data to address 0
-        #20 writer_wr_en = 1; writer_addr = 0; writer_data = 32'h11111111;
-        #10 writer_wr_en = 0;
-
-        #20 writer_wr_en = 1; writer_addr = 4; writer_data = 32'h87654321;
-        #10 writer_wr_en = 0;
-
-        #20 writer_wr_en = 1; writer_addr = 8; writer_data = 32'h10101010;
-        #10 writer_wr_en = 0;
-
-        #20 writer_wr_en = 1; writer_addr = 12; writer_data = 32'h11111111;
-        #10 writer_wr_en = 0;
-        #10 writer_en = 0;
-        // END RAM WRITING
+        // Wait 100 ns for global reset to finish
+        #100;
         
-        // INSTRUCTION FETCH PART
-        #20
-        rst = 1;
-        #10 rst = 0;
-        IF_en = 1;
-        #40
-        IF_en = 1;
+        // Deassert reset
+        i_rst = 1;
+        #100;
+        
+        // Assert reset
+        i_rst = 0;
+        #100;
+        
+        // Deassert reset
+        i_rst = 1;
+        #100;
+        
+        // Stimulate the inputs
+        // Add your test sequences here
 
-        // END INSTRUCTION FETCH PART
+        // Finish the simulation
         $finish;
     end
-
-endmodule
-
-module MemoryWriter(
-    input wire clk,
-    input wire rst,
-    input wire i_en,
-    input wire i_wr_en,
-    input wire [31:0] i_addr,
-    input wire [31:0] i_data,
-    output reg [31:0] o_data,
-    output reg [31:0] o_addr,
-    output reg o_en
-);
-    always @(*) begin
-        // Put on the output the input
-        if (i_en) begin
-            o_data = i_data;
-            o_addr = i_addr;
-            o_en = i_wr_en;
-        end else begin
-            o_data = 32'bZ; // High impedance
-            o_addr = 32'bZ;
-            o_en = 1'bZ;
-        end
+      
+    // Clock generator
+    always begin
+        #10 i_clk = ~i_clk;
     end
 endmodule

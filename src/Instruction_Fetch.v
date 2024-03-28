@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
-module Instruction_Fetch (
-    parameter NBITS = 32,
+module Instruction_Fetch #(
+    parameter NBITS = 32
 )(
     input   wire i_clk,
     input   wire i_rst,
@@ -15,7 +15,7 @@ module Instruction_Fetch (
     
     // Instruction Memory
     input   wire i_inst_mem_wr_en,
-    input   wire [NBITS-1:0] i_inst_mem_data,
+    input   wire [NBITS-1:0] i_inst_mem_data
 );
 
 wire [NBITS-1:0] next_pc;

@@ -8,7 +8,7 @@ module Instruction_Memory #(
     input   wire    i_wr_en,
     input   wire    [NBITS-1:0] i_addr,
     input   wire    [NBITS-1:0] i_data,
-    output  wire     [NBITS-1:0] o_data,
+    output  wire     [NBITS-1:0] o_data
 );
 
 reg [NBITS-1:0] memory[CELLS-1:0];
