@@ -1,56 +1,58 @@
 `timescale 1ns / 1ps
 
 module Instruction_Fetch (
+    parameter NBITS = 32,
+)(
     input   wire i_clk,
     input   wire i_rst,
+
+    // PC Mux input
+    input   wire i_sel_jump,                   // Select signal for PC Mux
+    input   wire [NBITS-1:0] i_jump_pc,        // Jump PC
     
-    //PC
-    input   wire [31:0] i_pc,             // Program Counter
-    output  wire [31:0] o_pc,
+    output  wire [NBITS-1:0] o_pc,    
+    output  wire [NBITS:0] o_instr,           // Fetched instruction
     
-    //Memory
-    input wire [31:0] i_mem_data,
-    input wire i_mem_data_valid,
-    output wire [31:0] o_mem_addr,
-    output wire o_mem_wr, //wr en
-    
-    //IF output    
-    output wire [31:0] o_instr           // Fetched instruction
+    // Instruction Memory
+    input   wire i_inst_mem_wr_en,
+    input   wire [NBITS-1:0] i_inst_mem_data,
 );
 
-reg mem_wr_en;
-reg [31:0] addr_mem;
-reg [31:0] instr;
-reg [31:0] post_pc;
+wire [NBITS-1:0] next_pc;
+wire [NBITS-1:0] mux_2_pc;
 
-always @(posedge clk) begin
-    if (rst) begin
-        mem_wr_en   = 0;
-        addr_mem    = 0;
-        instr       = 0;
-        post_pc     = 0;
-    end
-    if(!i_en) begin
-        mem_wr_en   = 1'bZ;
-        addr_mem    = 32'bZ;
-        instr       = 32'bZ;
-        post_pc     = 32'bZ;
-    end
-end
+pc_mux PC_MUX (
+    .i_clk(i_clk),                      // Clock signal
+    .i_rst(i_rst),                      // Reset signal
+    .i_sel_jump(i_sel_jump),            // Select signal for PC Mux
+    .i_next_pc(next_pc),                // PC input 
+    .o_pc(mux_2_pc)                     // Mux output
+);
 
-always @(  ) begin //Combinational, with signals involved in sensitivity list and with = in operation
-    if (i_en) begin
-        // Solo sumara PC+4 cuando i_mem_data_valid flag sea alto
-        mem_wr_en   = 0;
-        addr_mem = i_pc;
-        instr = i_mem_data;
-        post_pc = {i_pc[31:2], 2'b00} + 4; // increment the address by 4 (assuming i_pc is byte-addressable)
-    end
-end
+wire [NBITS-1:0] pc;
+program_counter PC (
+    .i_clk(i_clk),                      // Clock signal
+    .i_rst(i_rst),                      // Reset signal
+    .i_next_pc(mux_2_pc),               // Next PC
+    .o_pc(o_pc)                         // PC output
+);
 
-assign o_mem_wr     = mem_wr_en; 
-assign o_mem_addr   = addr_mem;
-assign o_instr      = instr;
-assign o_pc         = post_pc;
+// Instantiate adder module
+adder Adder_4 (
+    .i_operand_1(4'd0),               // Input A
+    .i_operand_2(o_pc),               // Input B
+    .o_result(next_pc)              // Output sum
+);
+
+// Instantiate Instruction Memory module
+Instruction_memory IM (
+    .i_clk(i_clk),                      // Clock signal
+    .i_rst(i_rst),                      // Reset signal
+    .i_wr_en(i_inst_mem_wr_en),
+    .i_addr(o_pc),                   
+    .i_data(i_inst_mem_data),                   
+    .o_data(o_instr)
+);
+
 
 endmodule
