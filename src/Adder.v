@@ -8,6 +8,6 @@ module Adder #(
     output wire [NBITS-1:0] o_result
 );
 
-  assign o_result = i_operand_1 + i_operand_2;
+assign o_result = i_operand_1 + i_operand_2;
 
 endmodule

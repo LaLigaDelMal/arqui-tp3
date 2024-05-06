@@ -8,7 +8,7 @@ module IF_top;
     reg i_inst_mem_wr_en;
     reg [31:0] i_inst_mem_data;
     wire [31:0] o_pc;
-    wire [32:0] o_instr;
+    wire [31:0] o_instr;
 
     // Instantiate the Unit Under Test (UUT)
     Instruction_Fetch uut (
@@ -24,15 +24,12 @@ module IF_top;
 
     initial begin
         // Initialize Inputs
-        i_clk = 0;
-        i_rst = 0;
-        i_sel_jump = 0;
-        i_jump_pc = 0;
-        i_inst_mem_wr_en = 0;
-        i_inst_mem_data = 0;
-
-        // Wait 100 ns for global reset to finish
-        #100;
+        i_clk               = 0;
+        i_rst               = 0;
+        i_sel_jump          = 0;
+        i_jump_pc           = 0;
+        i_inst_mem_wr_en    = 0;
+        i_inst_mem_data     = 0;
         
         // Deassert reset
         i_rst = 1;
@@ -42,13 +39,10 @@ module IF_top;
         i_rst = 0;
         #100;
         
-        // Deassert reset
-        i_rst = 1;
-        #100;
         
         // Stimulate the inputs
         // Add your test sequences here
-
+        
         // Finish the simulation
         $finish;
     end

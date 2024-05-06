@@ -11,7 +11,7 @@ module Instruction_Fetch #(
     input   wire [NBITS-1:0] i_jump_pc,        // Jump PC
     
     output  wire [NBITS-1:0] o_pc,    
-    output  wire [NBITS:0] o_instr,           // Fetched instruction
+    output  wire [NBITS-1:0] o_instr,           // Fetched instruction
     
     // Instruction Memory
     input   wire i_inst_mem_wr_en,
@@ -21,7 +21,7 @@ module Instruction_Fetch #(
 wire [NBITS-1:0] next_pc;
 wire [NBITS-1:0] mux_2_pc;
 
-pc_mux PC_MUX (
+PC_Mux PC_MUX (
     .i_clk(i_clk),                      // Clock signal
     .i_rst(i_rst),                      // Reset signal
     .i_sel_jump(i_sel_jump),            // Select signal for PC Mux
@@ -30,7 +30,7 @@ pc_mux PC_MUX (
 );
 
 wire [NBITS-1:0] pc;
-program_counter PC (
+Program_Counter PC (
     .i_clk(i_clk),                      // Clock signal
     .i_rst(i_rst),                      // Reset signal
     .i_next_pc(mux_2_pc),               // Next PC
@@ -38,16 +38,15 @@ program_counter PC (
 );
 
 // Instantiate adder module
-adder Adder_4 (
-    .i_operand_1(4'd0),               // Input A
+Adder Adder_4 (
+    .i_operand_1(32'd4),               // Input A
     .i_operand_2(o_pc),               // Input B
-    .o_result(next_pc)              // Output sum
+    .o_result(next_pc)                // Output sum
 );
 
 // Instantiate Instruction Memory module
-Instruction_memory IM (
+Instruction_Memory IM (
     .i_clk(i_clk),                      // Clock signal
-    .i_rst(i_rst),                      // Reset signal
     .i_wr_en(i_inst_mem_wr_en),
     .i_addr(o_pc),                   
     .i_data(i_inst_mem_data),                   
