@@ -1,6 +1,6 @@
 module Instruction_Decode (
     input [31:0] i_instr,
-    output reg [5:0] o_funct,
+    output reg [5:0] o_funct,         // Function code for R type instructions or in the case of aritmetic operations with inmediate values (I type instructions) the lower 3 bits represent the lower 3 bits of the opcode
     output reg [4:0] o_rs,
     output reg [4:0] o_rt,
     output reg [4:0] o_rd,
@@ -13,7 +13,12 @@ module Instruction_Decode (
     output reg [4:0] o_link_reg,      // Link register for JAL and JALR
     output reg [4:0] o_addr_reg,      // Address register for JR and JALR
     output reg o_flg_cmp,             // 1 if compare, 0 if not
-    output reg o_flg_equal            // 1 if the compare checks if it's equal, 0 if not
+    output reg o_flg_equal,           // 1 if the compare checks if it's equal, 0 if not
+    output reg o_flg_inmediate,       // 1 if the instruction is an I type instruction, 0 if not
+    output reg o_flg_mem_op,          // 1 if the instruction is a memory operation, 0 if not
+    output reg o_flg_mem_type,        // 0 if load, 1 if store
+    output reg [1:0] o_flg_mem_size,  // 00 if byte, 01 if halfword, 11 if word
+    output reg o_flg_unsign,          // 1 if the operation is unsigned, 0 if not
 );
 
 reg [5:0] opcode;
@@ -40,6 +45,11 @@ always @(instruction) begin
                     o_addr_reg = i_instr[25:21];
                     o_flg_cmp = 1'b0;
                     o_flg_equal = 1'b0;
+                    o_flg_inmediate = 1'b0;
+                    o_flg_mem_op = 1'b0;
+                    o_flg_mem_type = 1'b0;
+                    o_flg_mem_size = 2'b00;
+                    o_flg_unsign = 1'b0;
                 end
                 6'b001001: begin            // JALR
                     o_funct = 6'b0;
@@ -56,8 +66,13 @@ always @(instruction) begin
                     o_addr_reg = i_instr[25:21];
                     o_flg_cmp = 1'b0;
                     o_flg_equal = 1'b0;
+                    o_flg_inmediate = 1'b0;
+                    o_flg_mem_op = 1'b0;
+                    o_flg_mem_type = 1'b0;
+                    o_flg_mem_size = 2'b00;
+                    o_flg_unsign = 1'b0;
                 end
-                default: begin
+                default: begin                      // Rest of R type instructions
                     o_funct = i_instr[5:0];
                     o_rs = i_instr[25:21];
                     o_rt = i_instr[20:16];
@@ -72,6 +87,11 @@ always @(instruction) begin
                     o_addr_reg = 5'b0;
                     o_flg_cmp = 1'b0;
                     o_flg_equal = 1'b0;
+                    o_flg_inmediate = 1'b0;
+                    o_flg_mem_op = 1'b0;
+                    o_flg_mem_type = 1'b0;
+                    o_flg_mem_size = 2'b00;
+                    o_flg_unsign = 1'b0;
                 end
             endcase
         6'b000010: begin                            // J
@@ -89,6 +109,11 @@ always @(instruction) begin
             o_addr_reg = 5'b0;
             o_flg_cmp = 1'b0;
             o_flg_equal = 1'b0;
+            o_flg_inmediate = 1'b0;
+            o_flg_mem_op = 1'b0;
+            o_flg_mem_type = 1'b0;
+            o_flg_mem_size = 2'b00;
+            o_flg_unsign = 1'b0;
         end
         6'b000011: begin                            // JAL
             o_funct = 6'b0;
@@ -105,9 +130,14 @@ always @(instruction) begin
             o_addr_reg = 5'b0;
             o_flg_cmp = 1'b0;
             o_flg_equal = 1'b0;
+            o_flg_inmediate = 1'b0;
+            o_flg_mem_op = 1'b0;
+            o_flg_mem_type = 1'b0;
+            o_flg_mem_size = 2'b00;
+            o_flg_unsign = 1'b0;
         end
 
-        default: begin
+        default: begin                              // I type instructions
             case (opcode[5:3])
                 3'b000: begin
                     if (opcode[0] == 1'b0) begin    // BEQ
@@ -125,6 +155,11 @@ always @(instruction) begin
                         o_addr_reg = 5'b0;
                         o_flg_cmp = 1'b1;
                         o_flg_equal = 1'b1;
+                        o_flg_inmediate = 1'b1;
+                        o_flg_mem_op = 1'b0;
+                        o_flg_mem_type = 1'b0;
+                        o_flg_mem_size = 2'b00;
+                        o_flg_unsign = 1'b0;
                     end else begin                  // BNE
                         o_funct = 6'b0;
                         o_rs = i_instr[25:21];
@@ -140,11 +175,14 @@ always @(instruction) begin
                         o_addr_reg = 5'b0;
                         o_flg_cmp = 1'b1;
                         o_flg_equal = 1'b0;
+                        o_flg_inmediate = 1'b1;
+                        o_flg_mem_op = 1'b0;
+                        o_flg_mem_type = 1'b0;
+                        o_flg_mem_size = 2'b00;
+                        o_flg_unsign = 1'b0;
                     end
-        // Chequear todas las flags y metodos de direccionamiento
-        // Below TBC
-                end
-                3'b010: begin
+                3'b001: begin               // Arithmetic instructions (I type)
+                    o_funct = {3'b0, opcode[2:0]};
                     o_rs = i_instr[25:21];
                     o_rt = i_instr[20:16];
                     o_rd = 5'b0;
@@ -153,11 +191,19 @@ always @(instruction) begin
                     o_addr_offset = 26'b0;
                     o_flg_pc_modify = 1'b0;
                     o_flg_link_ret = 1'b0;
-                    o_flg_addr_type = 1'b0;
+                    o_flg_addr_type = 2'b00;
                     o_link_reg = 5'b0;
                     o_addr_reg = 5'b0;
+                    o_flg_cmp = 1'b0;
+                    o_flg_equal = 1'b0;
+                    o_flg_inmediate = 1'b1;
+                    o_flg_mem_op = 1'b0;
+                    o_flg_mem_type = 1'b0;
+                    o_flg_mem_size = 2'b00;
+                    o_flg_unsign = 1'b0;
                 end
-                3'b011: begin
+                3'b100: begin               // Load instructions
+                    o_funct = {3'b0, opcode[2:0]};
                     o_rs = i_instr[25:21];
                     o_rt = i_instr[20:16];
                     o_rd = 5'b0;
@@ -166,11 +212,19 @@ always @(instruction) begin
                     o_addr_offset = 26'b0;
                     o_flg_pc_modify = 1'b0;
                     o_flg_link_ret = 1'b0;
-                    o_flg_addr_type = 1'b0;
+                    o_flg_addr_type = 2'b00;
                     o_link_reg = 5'b0;
                     o_addr_reg = 5'b0;
+                    o_flg_cmp = 1'b0;
+                    o_flg_equal = 1'b0;
+                    o_flg_inmediate = 1'b1;
+                    o_flg_mem_op = 1'b1;
+                    o_flg_mem_type = 1'b0;
+                    o_flg_mem_size = opcode[1:0];
+                    o_flg_unsign = opcode[2];
                 end
-                default: begin
+                3'b101: begin               // Store instructions
+                    o_funct = {3'b0, opcode[2:0]};
                     o_rs = i_instr[25:21];
                     o_rt = i_instr[20:16];
                     o_rd = 5'b0;
@@ -179,9 +233,16 @@ always @(instruction) begin
                     o_addr_offset = 26'b0;
                     o_flg_pc_modify = 1'b0;
                     o_flg_link_ret = 1'b0;
-                    o_flg_addr_type = 1'b0;
+                    o_flg_addr_type = 2'b00;
                     o_link_reg = 5'b0;
                     o_addr_reg = 5'b0;
+                    o_flg_cmp = 1'b0;
+                    o_flg_equal = 1'b0;
+                    o_flg_inmediate = 1'b1;
+                    o_flg_mem_op = 1'b1;
+                    o_flg_mem_type = 1'b1;
+                    o_flg_mem_size = opcode[1:0];
+                    o_flg_unsign = 1'b0;
                 end
             end
         end
