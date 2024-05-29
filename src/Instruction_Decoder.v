@@ -1,4 +1,6 @@
-module Instruction_Decode (
+`timescale 1ns / 1ps
+
+module Instruction_Decoder (
     input [31:0] i_instr,
     output reg [5:0] o_funct,         // Function code for R type instructions or in the case of aritmetic operations with inmediate values (I type instructions) the lower 3 bits represent the lower 3 bits of the opcode
     output reg [4:0] o_rs,
