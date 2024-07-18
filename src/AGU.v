@@ -15,10 +15,14 @@ module AGU(
 
     always @ (i_op_code, i_addr, i_offset) begin
         case (i_op_code)
+            4'b000: begin                                                         // Effective address from RS
+                effective_address = i_addr                                        // This is supposed to be the value of the register RS (not considering any other address inputs)
+                exception = {effective_address[1], effective_address[0]};
+            end
             4'b001: begin                                                         // Effective address given base and a 16-bit signed offset
                 sign_ext_offset = {{16{ i_offset[15]}}, i_offset[15:0]};
                 effective_address = i_addr + $signed(sign_ext_offset);
-                exception = {effective_address[1], effective_address[0]};
+                exception = {effective_address[1], effective_address[0]};         // TODO: Check if flag is reset after changing inputs
             end
             4'b010: begin                                                         // 16 bits signed offset shifted 2 bits is added to the address
                 sign_ext_offset = {{14{ i_offset[15]}}, i_offset[15:0], 2'b0};
