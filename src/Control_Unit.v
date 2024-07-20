@@ -12,6 +12,7 @@
 `define OP_NOR 4'b1001
 `define OP_SLT 4'b1010
 `define OP_SIGNED_ADD 4'b1100
+`define OP_PASS 4'b0011
 
 // R type functions
 `define FUNC_SLL 6'b000000
@@ -38,6 +39,10 @@
 `define FUNC_LUI  6'b000111
 `define FUNC_SLTI 6'b000010
 
+// Modes of sign extension
+`define MODE_SIGN_EXT 2'b00
+`define MODE_ZERO_EXT_UPPER 2'b01
+`define MODE_ZERO_EXT_LOWER 2'b10
 
 module Control_Unit(
     input reg [5:0] i_funct,         // Function code for R type instructions or in the case of aritmetic operations with inmediate values (I type instructions) the lower 3 bits represent the lower 3 bits of the opcode
@@ -52,7 +57,6 @@ module Control_Unit(
     input reg [1:0] i_flg_addr_type,    // 00 if address comes from register, 01 if the address is obtained by replacing the low 28 bits of the PC with the 26-bit offset, 10 if the address is obtained by adding the 16-bit offset to the base address shifted 2 bits
     input reg [4:0] i_link_reg,         // Link register for JAL and JALR
     input reg [4:0] i_addr_reg,         // Address register for JR and JALR
-    input reg i_flg_cmp,                // 1 if compare, 0 if not
     input reg i_flg_equal,              // 1 if the compare checks if it's equal, 0 if not
     input reg i_flg_inmediate,          // 1 if the instruction is an I type instruction, 0 if not
     input reg i_flg_mem_op,             // 1 if the instruction is a memory operation, 0 if not
@@ -60,16 +64,18 @@ module Control_Unit(
     input reg [1:0] i_flg_mem_size,     // 00 if byte, 01 if halfword, 11 if word
     input reg i_flg_unsign,             // 1 if the operation is unsigned, 0 if not
     output reg o_flg_ALU_enable,        // 1 if the ALU is enabled, 0 if not
-    output reg [1:0] o_flg_ALU_src_a,   // 01 if the ALU source A is the value of the register RT, 00 if is the PC+4, 11 if the source is the inmediate value
+    output reg [1:0] o_flg_ALU_src_a,   // 01 if the ALU source A is the value of the register RT, 00 if is the PC+4, 11 if the source is the output from the sign extender
     output reg o_flg_ALU_src_b,         // 1 if the ALU source B is the SA value in the instruction, 0 if the soure is the register RS
     output reg o_flg_ALU_dst,           // 1 if the ALU destination is the register RD, 0 if the destination is RT
     output reg [3:0] o_ALU_opcode,
-    output reg o_make_jump,             // 1 if the instruction is a jump, 0 if not (this should change the mux that controls the AGU output to either PC or RD) 
+    output reg o_flg_jump,             // 1 if the instruction is a jump, 0 if not (this should change the mux that controls the AGU output to either PC or RD)
+    output reg o_flg_branch,            // 1 if the the result of the ALU will be used to make a conditional jump, 0 if is not a branch
     output reg o_flg_AGU_enable,        // 1 if the AGU is enabled, 0 if not
     output reg [3:0] o_flg_AGU_opcode
     output reg o_flg_AGU_src_addr,      // 0 if the address is the content of the RS register
     output reg o_flg_AGU_src_off,       ////
-    output reg o_flg_AGU_dst            // 1 if the PC is the destination, 0 if for memory addressing (load and store)  //// Capaz se pueda deducir de la flag "o_make_jump"
+    output reg o_flg_AGU_dst,           // 1 if the PC is the destination, 0 if for memory addressing (load and store)
+    output reg [1:0] o_extend_sign,     // 00 if the inmediate value is sign extended, 01 if the upper part of the word is completed with zeros, 10 if the lower part of the word is completed with zeros
     );
 
     always @ (*) begin
@@ -77,7 +83,6 @@ module Control_Unit(
             i_flg_pc_modify,
             i_flg_link_ret,
             i_flg_addr_type,
-            i_flg_cmp,
             i_flg_equal,
             i_flg_inmediate,
             i_flg_mem_op,
@@ -86,12 +91,11 @@ module Control_Unit(
             i_flg_unsign
         };
         case (flags):
-            12'b0XXXXX0XXXXX: begin
-                // SLL
-                // Indicar a la ALU que tiene como operando A el valor del registro RT y como operando B el valor de SA
-                o_flg_alu_src_a <= 2'b01;
-                o_flg_alu_dst <= 1;
-                o_make_jump <= 0;
+            12'b0XXXX0XXXXX: begin        // R type instructions
+                o_flg_ALU_src_a <= 2'b01;
+                o_flg_ALU_dst <= 1;
+                o_flg_jump <= 0;
+                o_flg_branch <= 0;
                 o_flg_ALU_enable <= 1;
                 o_flg_AGU_enable <= 0;
                 case (i_funct):
@@ -110,44 +114,56 @@ module Control_Unit(
                     `FUNC_SLT: begin o_flg_alu_src_b <= 0; o_ALU_opcode <= `OP_SLT; end
                 endcase  
             end
-            12'b10000000XXXX: begin     // JR
-                o_make_jump <= 1;
-                o_flg_AGU_dst <= 1;         // Puede que se termine deduciendo de la flag o_make_jump
+            12'b1000000XXXX: begin     // JR
+                o_flg_jump <= 1;
+                o_flg_branch <= 0;
+                o_flg_AGU_dst <= 1;
                 o_flg_AGU_opcode <= 3'b000;
                 o_flg_AGU_src_addr <= 0;       /////// Puede que no haga falta
                 o_flg_AGU_dst <= 0;
                 o_flg_ALU_enable <= 0;
                 o_flg_AGU_enable <= 1;
             end
-            12'b11000000XXXX: begin     // JALR
-                o_make_jump <= 1;
+            12'b1100000XXXX: begin     // JALR
+                o_flg_jump <= 1;
+                o_flg_branch <= 0;
                 o_flg_AGU_dst <= 1;
                 o_flg_AGU_opcode <= 3'b000;
                 o_flg_AGU_src_addr <= 0;        /////// Puede que no haga falta
                 o_flg_ALU_enable <= 1;
                 o_flg_AGU_enable <= 1;
-                o_ALU_opcode <= `OP_ADD;  // The ALU will be used to store the return address in the link register (RD)
-                o_flg_alu_src_a <= 2'b00;    // The PC+4
-                o_flg_alu_src_b <= 0;     // Como SA en la instrucción JALR vale 0, se usa el registro $zero (por lo que la suma da el mismo valor de PC+4)
+                o_ALU_opcode <= `OP_PASS;    // The ALU will be used to store the return address in the link register (RD)
+                o_flg_ALU_src_a <= 2'b00;    // The PC+4
             end
-            12'b00000011XXXX: begin     // LOAD & STORE   (Para 32 bits LW y LWU hacen lo mismo)
-                o_make_jump <= 0;
+            12'b0000011XXXX: begin     // LOAD & STORE   (Para 32 bits LW y LWU hacen lo mismo)
+                o_flg_jump <= 0;
+                o_flg_branch <= 0;
                 o_flg_AGU_dst <= 0;
                 o_flg_AGU_opcode <= 3'b001;   // Verificar a la salida de la AGU el bus the excepciones segun sea direccion de byte, half word, o word
                 o_flg_AGU_src_addr <= 0;      /////// Puede que no haga falta
                 o_flg_ALU_enable <= 0;
                 o_flg_AGU_enable <= 1;
             end
-            12'b000000100000: begin     // ARITHMETIC OPERATIONS WITH INMEDIATE VALUES
-                o_make_jump <= 0;
+            12'b00000100000: begin     // ARITHMETIC OPERATIONS WITH INMEDIATE VALUES
+                o_flg_jump <= 0;
+                o_flg_branch <= 0;
                 o_flg_ALU_enable <= 1;
                 o_flg_AGU_enable <= 0;
-                o_flg_alu_dst <= 0;
-                o_flg_alu_src_a <= 2'b11;
-                o_flg_alu_src_b <= 0;
+                o_flg_ALU_dst <= 0;
+                o_flg_ALU_src_a <= 2'b11;
+                o_flg_ALU_src_b <= 0;
                 case (i_funct):
-                    `FUNC_ADDI: begin o_ALU_opcode <= `OP_SIGNED_ADD; end   ////////////////  Agregar extensor de signo y flag que salga hacia esa unidad desde la unidad de control
-
+                    `FUNC_ADDI: begin o_ALU_opcode <= `OP_SIGNED_ADD; o_extend_sign <= `MODE_SIGN_EXT; end
+                    `FUNC_ANDI: begin o_ALU_opcode <= `OP_AND; o_extend_sign <= `MODE_SIGN_EXT; end
+                    `FUNC_ORI: begin o_ALU_opcode <= `OP_OR; o_extend_sign <= `MODE_SIGN_EXT; end
+                    `FUNC_XORI: begin o_ALU_opcode <= `OP_XOR; o_extend_sign <= `MODE_SIGN_EXT; end
+                    `FUNC_LUI: begin o_ALU_opcode <= `OP_PASS; o_extend_sign <= `MODE_ZERO_EXT_LOWER; end
+                    `FUNC_SLTI: begin o_ALU_opcode <= `OP_SLT; o_extend_sign <= `MODE_SIGN_EXT; end
+                endcase
+            end
+            12'b1010X100000: begin      // BRANCH
+                case ():
+                    // TODO: Chequear instrucciones de la ALU y su salida para decidir si se toma o no el branch
                 endcase
             end
         endcase

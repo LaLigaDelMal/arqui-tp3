@@ -25,6 +25,9 @@ module ALU(
                 4'b0010: begin                                                         // ASR
                         result = $signed(i_op_A) >>> i_op_B[4:0];
                 end
+                4'b0011: begin                                                         // Passthrough of source A
+                        result = i_op_A;
+                end
                 4'b0100: begin                                                         // UADD
                         result = i_op_A + i_op_B;
                 end
