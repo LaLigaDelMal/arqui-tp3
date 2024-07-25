@@ -13,6 +13,7 @@
 `define OP_SLT 4'b1010
 `define OP_SIGNED_ADD 4'b1100
 `define OP_PASS 4'b0011
+`define OP_CMP 4'b1011
 
 // R type functions
 `define FUNC_SLL 6'b000000
@@ -66,14 +67,13 @@ module Control_Unit(
     output reg o_flg_ALU_enable,        // 1 if the ALU is enabled, 0 if not
     output reg [1:0] o_flg_ALU_src_a,   // 01 if the ALU source A is the value of the register RT, 00 if is the PC+4, 11 if the source is the output from the sign extender
     output reg o_flg_ALU_src_b,         // 1 if the ALU source B is the SA value in the instruction, 0 if the soure is the register RS
-    output reg o_flg_ALU_dst,           // 1 if the ALU destination is the register RD, 0 if the destination is RT
+    output reg [1:0] o_flg_ALU_dst,     // 01 if the ALU destination is the register RD, 00 if the destination is RT, 11 if the destination is the 31 ($ra)
     output reg [3:0] o_ALU_opcode,
-    output reg o_flg_jump,             // 1 if the instruction is a jump, 0 if not (this should change the mux that controls the AGU output to either PC or RD)
+    output reg o_flg_jump,              // 1 if the instruction is a jump, 0 if not (this should change the mux that controls the AGU output to either PC or RD)
     output reg o_flg_branch,            // 1 if the the result of the ALU will be used to make a conditional jump, 0 if is not a branch
     output reg o_flg_AGU_enable,        // 1 if the AGU is enabled, 0 if not
-    output reg [3:0] o_flg_AGU_opcode
-    output reg o_flg_AGU_src_addr,      // 0 if the address is the content of the RS register
-    output reg o_flg_AGU_src_off,       ////
+    output reg [2:0] o_flg_AGU_opcode
+    output reg o_flg_AGU_src_addr,      // 1 if the PC, 0 if the address is the content of the RS register
     output reg o_flg_AGU_dst,           // 1 if the PC is the destination, 0 if for memory addressing (load and store)
     output reg [1:0] o_extend_sign,     // 00 if the inmediate value is sign extended, 01 if the upper part of the word is completed with zeros, 10 if the lower part of the word is completed with zeros
     );
@@ -93,7 +93,7 @@ module Control_Unit(
         case (flags):
             12'b0XXXX0XXXXX: begin        // R type instructions
                 o_flg_ALU_src_a <= 2'b01;
-                o_flg_ALU_dst <= 1;
+                o_flg_ALU_dst <= 2'b01;
                 o_flg_jump <= 0;
                 o_flg_branch <= 0;
                 o_flg_ALU_enable <= 1;
@@ -120,7 +120,6 @@ module Control_Unit(
                 o_flg_AGU_dst <= 1;
                 o_flg_AGU_opcode <= 3'b000;
                 o_flg_AGU_src_addr <= 0;       /////// Puede que no haga falta
-                o_flg_AGU_dst <= 0;
                 o_flg_ALU_enable <= 0;
                 o_flg_AGU_enable <= 1;
             end
@@ -149,7 +148,7 @@ module Control_Unit(
                 o_flg_branch <= 0;
                 o_flg_ALU_enable <= 1;
                 o_flg_AGU_enable <= 0;
-                o_flg_ALU_dst <= 0;
+                o_flg_ALU_dst <= 2'b00;
                 o_flg_ALU_src_a <= 2'b11;
                 o_flg_ALU_src_b <= 0;
                 case (i_funct):
@@ -162,9 +161,34 @@ module Control_Unit(
                 endcase
             end
             12'b1010X100000: begin      // BRANCH
-                case ():
-                    // TODO: Chequear instrucciones de la ALU y su salida para decidir si se toma o no el branch
-                endcase
+                o_flg_jump <= 0;
+                o_flg_branch <= 1;
+                o_flg_ALU_enable <= 1;
+                o_flg_AGU_enable <= 1;
+                o_flg_AGU_dst <= 1;
+                o_flg_AGU_src_addr <= 1;
+                o_flg_AGU_opcode <= 3'b010;
+                o_flg_ALU_dst <= 2'b00;     // The destination doesn't matter because it will be used to decide if the branch is taken or not (check flag branch)
+                o_flg_ALU_src_a <= 2'b01;
+                o_flg_ALU_src_b <= 0;
+                o_ALU_opcode <= `OP_CMP;
+            end
+            12'b1X010000000: begin      // J and JAL
+                o_flg_jump <= 1;
+                o_flg_branch <= 0;
+                o_flg_AGU_enable <= 1;
+                o_flg_AGU_dst <= 1;
+                o_flg_AGU_src_addr <= 1;
+                o_flg_AGU_opcode <= 3'b011;
+                if (i_flg_link_ret) begin
+                    o_flg_ALU_enable <= 1;
+                    o_ALU_opcode <= `OP_PASS;
+                    o_flg_ALU_src_a <= 2'b00;
+                    o_flg_ALU_dst <= 2'b11;
+                end
+                else begin
+                    o_flg_ALU_enable <= 0;
+                end
             end
         endcase
     end

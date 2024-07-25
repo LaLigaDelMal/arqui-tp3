@@ -49,7 +49,7 @@ module ALU(
                 4'b1010: begin                                                         // GT
                         result = ($signed(i_op_A) > $signed(i_op_B)) ? 1 : 0;
                 end
-                4'b1011: begin                                                         // CMP    // Could be implemented by doing a XOR and then checking if the result is zero
+                4'b1011: begin                                                         // CMP
                         result = (i_op_A == i_op_B) ? 1 : 0;
                 end
                 4'b1100: begin                                                         // ADD
