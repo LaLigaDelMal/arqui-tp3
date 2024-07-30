@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 
-module CPU_Top(
+module Top_CPU(
 
     );
 endmodule
