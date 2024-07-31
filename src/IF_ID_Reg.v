@@ -7,6 +7,7 @@ module IF_ID_Reg #(
     input wire                i_rst,
     input wire   [NBITS-1:0]  i_pc,
     input wire   [NBITS-1:0]  i_instruction,
+    
     output wire  [NBITS-1:0]  o_pc,
     output wire  [NBITS-1:0]  o_instruction
 );

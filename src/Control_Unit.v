@@ -47,12 +47,7 @@
 
 module Control_Unit(
     input reg [5:0]     i_funct,                // Function code for R type instructions or in the case of aritmetic operations with inmediate values (I type instructions) the lower 3 bits represent the lower 3 bits of the opcode
-    input reg [4:0]     i_rs,
-    input reg [4:0]     i_rt,
-    input reg [4:0]     i_rd,
-    input reg [4:0]     i_sa,
-    input reg [15:0]    i_imm,
-    input reg [25:0]    i_addr_offset,
+    input reg [25:0]    i_addr_offset,          // Puede que no haga falta
 
     input reg       i_flg_pc_modify,            // 1 if jump/branch, 0 if not
     input reg       i_flg_link_ret,             // 1 if saves the return address, 0 if not
