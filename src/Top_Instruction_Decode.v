@@ -3,7 +3,6 @@
 module Top_Instruction_Decode #(
     parameter NBITS = 32
 )(
-    input   wire i_clk,
     input   wire i_rst,
 
     // Non buffer inputs (WB signals)
@@ -84,12 +83,6 @@ wire [1:0]  extend_sign;
 
 Control_Unit Ctrl_Unit(
     .i_funct(funct),
-    .i_rs(rs),
-    .i_rt(rt),
-    .i_rd(rd),
-    .i_sa(sa),
-    .i_imm(imm),
-    .i_addr_offset(offset),
 
     .i_flg_pc_modify(flg_pc_modify),
     .i_flg_link_ret(flg_link_ret),

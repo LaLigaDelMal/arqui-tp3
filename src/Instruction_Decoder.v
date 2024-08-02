@@ -7,7 +7,7 @@ module Instruction_Decoder (
     output reg [4:0]    o_rs,
     output reg [4:0]    o_rt,
     output reg [4:0]    o_rd,
-    output reg [4:0]    o_sa,
+    output reg [31:0]   o_sa,
     output reg [15:0]   o_imm,
     output reg [25:0]   o_addr_offset,
 
@@ -39,7 +39,7 @@ module Instruction_Decoder (
                         o_rs            <= i_instr[25:21];
                         o_rt            <= 5'b0;
                         o_rd            <= 5'b0;
-                        o_sa            <= 5'b0;
+                        o_sa            <= 32'b0;
                         o_imm           <= 16'b0;
                         o_addr_offset   <= 26'b0;
 
@@ -60,7 +60,7 @@ module Instruction_Decoder (
                         o_rs            <= i_instr[25:21];
                         o_rt            <= 5'b0;
                         o_rd            <= i_instr[15:11];
-                        o_sa            <= 5'b0;
+                        o_sa            <= 32'b0;
                         o_imm           <= 16'b0;
                         o_addr_offset   <= 26'b0;
 
@@ -81,7 +81,7 @@ module Instruction_Decoder (
                         o_rs            <= i_instr[25:21];
                         o_rt            <= i_instr[20:16];
                         o_rd            <= i_instr[15:11];
-                        o_sa            <= i_instr[10:6];
+                        o_sa            <= {27'b0, i_instr[10:6]};
                         o_imm           <= 16'b0;
                         o_addr_offset   <= 26'b0;
 
@@ -169,7 +169,7 @@ module Instruction_Decoder (
                             o_rs            <= i_instr[25:21];
                             o_rt            <= i_instr[20:16];
                             o_rd            <= 5'b0;
-                            o_sa            <= 5'b0;
+                            o_sa            <= 32'b0;
                             o_imm           <= 16'b0;
                             o_addr_offset   <= {10'b0, i_instr[15:0]};}
                             
@@ -191,7 +191,7 @@ module Instruction_Decoder (
                         o_rs            <= i_instr[25:21];
                         o_rt            <= i_instr[20:16];
                         o_rd            <= 5'b0;
-                        o_sa            <= 5'b0;
+                        o_sa            <= 32'b0;
                         o_imm           <= i_instr[15:0];
                         o_addr_offset   <= 26'b0;
 
@@ -212,7 +212,7 @@ module Instruction_Decoder (
                         o_rs            <= i_instr[25:21];
                         o_rt            <= i_instr[20:16];
                         o_rd            <= 5'b0;
-                        o_sa            <= 5'b0;
+                        o_sa            <= 32'b0;
                         o_imm           <= i_instr[15:0];
                         o_addr_offset   <= 26'b0;
 
@@ -233,7 +233,7 @@ module Instruction_Decoder (
                         o_rs            <= i_instr[25:21];
                         o_rt            <= i_instr[20:16];
                         o_rd            <= 5'b0;
-                        o_sa            <= 5'b0;
+                        o_sa            <= 32'b0;
                         o_imm           <= i_instr[15:0];
                         o_addr_offset   <= 26'b0;
 
