@@ -3,7 +3,7 @@
 module Mux_4 #(
     parameter   NBITS = 32
 )(
-    input wire               i_sel,
+    input wire  [1:0]        i_sel,
     input wire  [NBITS-1:0]  i_a,
     input wire  [NBITS-1:0]  i_b,
     input wire  [NBITS-1:0]  i_c,
