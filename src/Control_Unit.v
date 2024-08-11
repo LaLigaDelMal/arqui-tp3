@@ -72,7 +72,7 @@ module Control_Unit(
     output reg          o_flg_AGU_dst,          // 1 if the PC is the destination, 0 if for memory addressing (load and store)
     output reg [2:0]    o_flg_AGU_opcode
 
-    output reg o_flg_jump,                      // 1 if the instruction is a jump, 0 if not (this should change the mux that controls the AGU output to either PC or RD)
+    output reg o_flg_jump,                      // 1 if the instruction is a jump, 0 if not (this should change the mux that controls the AlU output to either PC or RD)
     output reg o_flg_branch,                    // 1 if the the result of the ALU will be used to make a conditional jump, 0 if is not a branch
     
     output reg [1:0] o_extend_sign,             // 00 if the inmediate value is sign extended, 01 if the upper part of the word is completed with zeros, 10 if the lower part of the word is completed with zeros
@@ -132,6 +132,7 @@ module Control_Unit(
                 o_flg_ALU_enable <= 1;
                 o_flg_ALU_src_a  <= 2'b00;          // The PC+4
                 o_ALU_opcode     <= `OP_PASS;       // The ALU will be used to store the return address in the link register (RD)
+                o_flg_ALU_dst    <= 2'b01;          // The link register (rd)
 
                 o_flg_AGU_enable    <= 1;
                 o_flg_AGU_src_addr  <= 0;
