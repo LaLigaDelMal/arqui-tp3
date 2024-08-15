@@ -90,12 +90,8 @@ Control_Unit Ctrl_Unit(
     .i_flg_addr_type(flg_addr_type),
     .i_link_reg(link_reg),
     .i_addr_reg(addr_reg),
-    .i_flg_equal(flg_equal),
     .i_flg_inmediate(flg_inmediate),
     .i_flg_mem_op(flg_mem_op),
-    .i_flg_mem_type(flg_mem_type),
-    .i_flg_mem_size(flg_mem_size),
-    .i_flg_unsign(flg_unsign)
 
     .o_flg_ALU_enable(o_flg_ALU_enable),
     .o_flg_ALU_src_a(flg_ALU_src_a),

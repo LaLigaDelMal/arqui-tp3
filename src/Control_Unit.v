@@ -53,19 +53,14 @@ module Control_Unit(
     input reg [1:0] i_flg_addr_type,            // 00 if address comes from register, 01 if the address is obtained by replacing the low 28 bits of the PC with the 26-bit offset, 10 if the address is obtained by adding the 16-bit offset to the base address shifted 2 bits
     input reg [4:0] i_link_reg,                 // Link register for JAL and JALR
     input reg [4:0] i_addr_reg,                 // Address register for JR and JALR
-    input reg       i_flg_equal,                // 1 if the compare checks if it's equal, 0 if not
     input reg       i_flg_inmediate,            // 1 if the instruction is an I type instruction, 0 if not
     input reg       i_flg_mem_op,               // 1 if the instruction is a memory operation, 0 if not
-    input reg       i_flg_mem_type,             // 0 if load, 1 if store
-    input reg [1:0] i_flg_mem_size,             // 00 if byte, 01 if halfword, 11 if word
-    input reg       i_flg_unsign,               // 1 if the operation is unsigned, 0 if not
 
     output reg          o_flg_ALU_enable,       // 1 if the ALU is enabled, 0 if not
     output reg [1:0]    o_flg_ALU_src_a,        // 01 if the ALU source A is the value of the register RT, 00 if is the PC+4, 11 if the source is the output from the sign extender
     output reg          o_flg_ALU_src_b,        // 1 if the ALU source B is the SA value in the instruction, 0 if the soure is the register RS
     output reg [1:0]    o_flg_ALU_dst,          // 01 if the ALU destination is the register RD, 00 if the destination is RT, 11 if the destination is the 31 ($ra)
-    output reg [3:0]    o_ALU_opcode,
-
+    output reg [3:0]    o_ALU_opcode,           // Operation code for the ALU
 
     output reg          o_flg_AGU_enable,       // 1 if the AGU is enabled, 0 if not
     output reg          o_flg_AGU_src_addr,     // 1 if the PC, 0 if the address is the content of the RS register
@@ -79,19 +74,15 @@ module Control_Unit(
     );
 
     always @ (*) begin
-        wire [11:0] flags = { // NO TOCAR ORDEN
+        wire [5:0] flags = { // NO TOCAR ORDEN
             i_flg_pc_modify,
             i_flg_link_ret,
             i_flg_addr_type,
-            i_flg_equal,
             i_flg_inmediate,
             i_flg_mem_op,
-            i_flg_mem_type,
-            i_flg_mem_size,
-            i_flg_unsign
         };
         case (flags):
-            12'b0XXXX0XXXXX: begin        // R type instructions
+            12'b0XXX0X: begin        // R type instructions
                 o_flg_ALU_enable <= 1;
                 o_flg_ALU_src_a  <= 2'b01;
                 o_flg_ALU_dst    <= 2'b01;
@@ -117,7 +108,7 @@ module Control_Unit(
                     `FUNC_SLT:  begin o_flg_alu_src_b <= 0; o_ALU_opcode <= `OP_SLT; end
                 endcase  
             end
-            12'b1000000XXXX: begin     // JR
+            12'b100000: begin     // JR
                 o_flg_ALU_enable <= 0;
 
                 o_flg_AGU_enable    <= 1;
@@ -128,7 +119,7 @@ module Control_Unit(
                 o_flg_jump      <= 1;
                 o_flg_branch    <= 0;
             end
-            12'b1100000XXXX: begin     // JALR
+            12'b110000: begin     // JALR
                 o_flg_ALU_enable <= 1;
                 o_flg_ALU_src_a  <= 2'b00;          // The PC+4
                 o_ALU_opcode     <= `OP_PASS;       // The ALU will be used to store the return address in the link register (RD)
@@ -142,7 +133,7 @@ module Control_Unit(
                 o_flg_jump   <= 1;
                 o_flg_branch <= 0;
             end
-            12'b0000011XXXX: begin     // LOAD & STORE   (Para 32 bits LW y LWU hacen lo mismo)
+            12'b000011: begin     // LOAD & STORE   (Para 32 bits LW y LWU hacen lo mismo)
                 o_flg_ALU_enable <= 0;
                 
                 o_flg_AGU_enable    <= 1;
@@ -153,7 +144,7 @@ module Control_Unit(
                 o_flg_jump      <= 0;
                 o_flg_branch    <= 0;
             end
-            12'b00000100000: begin     // ARITHMETIC OPERATIONS WITH INMEDIATE VALUES
+            12'b000010: begin     // ARITHMETIC OPERATIONS WITH INMEDIATE VALUES
                 o_flg_ALU_enable <= 1;
                 o_flg_ALU_src_a  <= 2'b11;
                 o_flg_ALU_src_b  <= 0;
@@ -173,7 +164,7 @@ module Control_Unit(
                     `FUNC_SLTI: begin o_ALU_opcode <= `OP_SLT;          o_extend_sign <= `MODE_SIGN_EXT; end
                 endcase
             end
-            12'b1010X100000: begin      // BRANCH
+            12'b101010: begin      // BRANCH
                 o_flg_ALU_enable    <= 1;
                 o_flg_ALU_src_a     <= 2'b01;
                 o_flg_ALU_src_b     <= 0;
@@ -188,7 +179,7 @@ module Control_Unit(
                 o_flg_jump   <= 0;
                 o_flg_branch <= 1;
             end
-            12'b1X010000000: begin      // J and JAL
+            12'b1X0100: begin      // J and JAL
                 if (i_flg_link_ret) begin
                     o_flg_ALU_enable    <= 1;
                     o_flg_ALU_src_a     <= 2'b00;

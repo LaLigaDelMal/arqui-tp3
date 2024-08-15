@@ -8,10 +8,10 @@ module DataMemory(
     input   wire                i_clk,
     input   wire                i_rst,
     input   wire                i_write_en,
-    input   wire                i_read_en,
+    input   wire [1:0]          i_byte_mask,    // 00: Byte, 01: Half Word, 10: Word
     input   wire [WORD_LEN-1:0] i_addr,
     input   wire [WORD_LEN-1:0] i_data_in,
-    output  wire [WORD_LEN-1:0] o_data_out
+    output  reg  [WORD_LEN-1:0] o_data_out
 );
 
     integer i;
@@ -24,11 +24,18 @@ module DataMemory(
                 memory[i] <= 0;
             end
         end else if (i_write_en) begin
-            {memory[base_address], memory[base_address + 1], memory[base_address + 2], memory[base_address + 3]} <= i_data_in;
+            case (i_byte_mask)
+                2'b00: memory[i_addr] <= i_data_in[7:0];
+                2'b01: {memory[i_addr + 1], memory[i_addr] } <= i_data_in[15:0];
+                2'b10: {memory[i_addr + 3], memory[i_addr + 2], memory[i_addr + 1], memory[i_addr]} <= i_data_in[31:0];
+            endcase
+        end else begin
+            case (i_byte_mask)
+                2'b00: o_data_out <= {24'b0, memory[i_addr]};
+                2'b01: o_data_out <= {16'b0, memory[i_addr + 1], memory[i_addr]};
+                2'b10: o_data_out <= {memory[i_addr + 3], memory[i_addr + 2], memory[i_addr + 1], memory[i_addr]};
+            endcase
         end
     end
-
-    assign base_address = {22'b0, i_addr[9:2], 2'b0}; // To align the address to directions of 4 bytes and below 1024 addresses
-    assign o_data_out = {memory[base_address], memory[base_address + 1], memory[base_address + 2], memory[base_address + 3]};
 
 endmodule
