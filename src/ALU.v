@@ -2,7 +2,7 @@
 
 module ALU(
 
-    input wire [3:0] i_op_code,
+    input wire [3:0] i_opcode,
     input wire [31:0] i_op_A,
     input wire [31:0] i_op_B,
     output wire [31:0] o_rslt,

@@ -2,7 +2,7 @@
 
 module AGU(
 
-        input wire [2:0] i_op_code,
+        input wire [2:0] i_opcode,
         input wire [31:0] i_addr,
         input wire [25:0] i_offset,
         output wire [31:0] o_eff_addr,

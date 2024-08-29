@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module ID_EX_Reg #(
+module Reg_ID_EX #(
     parameter   NBITS = 32
 )(
     input wire                i_clk,
