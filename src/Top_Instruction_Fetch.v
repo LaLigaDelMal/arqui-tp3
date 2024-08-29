@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module Instruction_Fetch #(
+module Top_Instruction_Fetch #(
     parameter NBITS = 32
 )(
     input   wire i_clk,

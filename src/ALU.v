@@ -25,11 +25,14 @@ module ALU(
                 4'b0010: begin                                                         // ASR
                         result = $signed(i_op_A) >>> i_op_B[4:0];
                 end
+                4'b0011: begin                                                         // Passthrough of source A
+                        result = i_op_A;
+                end
                 4'b0100: begin                                                         // UADD
                         result = i_op_A + i_op_B;
                 end
                 4'b0101: begin                                                         // USUB
-                        result = i_op_A - i_op_B;
+                        result = i_op_B - i_op_A;                                      // Subtraction is done in reverse order to avoid using more flags to select the ALU input in the Control unit
                 end
                 4'b0110: begin                                                         // AND
                         result = i_op_A & i_op_B;
@@ -46,7 +49,7 @@ module ALU(
                 4'b1010: begin                                                         // GT
                         result = ($signed(i_op_A) > $signed(i_op_B)) ? 1 : 0;
                 end
-                4'b1011: begin                                                         // CMP    // Could be implemented by doing a XOR and then checking if the result is zero
+                4'b1011: begin                                                         // CMP
                         result = (i_op_A == i_op_B) ? 1 : 0;
                 end
                 4'b1100: begin                                                         // ADD

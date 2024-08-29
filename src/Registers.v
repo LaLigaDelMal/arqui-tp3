@@ -9,6 +9,7 @@ module Registers(
     input wire [4:0] i_rd_sel,
     input wire i_wr_en,
     input wire [31:0] i_wr_data,
+    
     output reg [31:0] o_rs_data,
     output reg [31:0] o_rt_data
     
