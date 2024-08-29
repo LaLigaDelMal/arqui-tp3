@@ -1,7 +1,25 @@
 `timescale 1ns / 1ps
 
+module IF_ID_Reg #(
+    parameter   NBITS = 32
+)(
+    input wire                i_clk,
+    input wire                i_rst,
+    input wire   [NBITS-1:0]  i_pc,
+    input wire   [NBITS-1:0]  i_instruction,
+    
+    output reg  [NBITS-1:0]  o_pc,
+    output reg  [NBITS-1:0]  o_instruction
+);
 
-module IF_ID_Reg(
+always @(posedge i_clk) begin
+    if ( i_rst ) begin
+        {i_pc, i_instruction} <= 0;
+    end
+    else begin
+        o_pc <= i_pc;
+        o_instruction <= i_instruction;
+    end
+end
 
-    );
 endmodule

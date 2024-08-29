@@ -1,19 +1,5 @@
 TP de digital: Explicacion, Diagrama de Bloques, Esquemático de la sintesis, Ejemplos de las pruebas de la simulación. Cargar el codigo en git y pasar el link del repositorio. El informe se envía por email.
 
-Un registro se trabaja siempre sobre el mismo always.
-Al resetear un registro se debe colocar la cantidad de ceros en la asignacion.
-Los parámetros siempre en mayúsculas.
-Las entradas y las salidas comienzan con i_ y o_ respectivamente.
-Las salidas siempre se asignan al ultimo (las sentencias assign).
-Se puede utilizar (leer) un registro en otro always pero no asignarlo, solo se debe asignar un registro en un solo bloque always.
-El bloque initial no es sintetizable por lo que solo se utiliza en testbenchs, este bloque se utiliza para inicializar variables y puertos ya que solo se ejecuta una vez al comenzar la simulación (comienza en el tiempo 0).
-Si hay multiples bloques initial, se inician cada una en simultaneo (es decir, cada uno en un hilo).
-
-# Practico Arquitectura
-- En UART cuando no se transmite nada (idle state) la linea se mantiene en alto para indicar que está funcionando.
-- El bit de start es una transicion de alto a bajo, seguido por el byte a transmitir, y el bit de stop es una transicion al estado de alto o bajo a alto.
-- Los ocho bits de informacion de la trama se envian comenzando por el bit menos significativo.
-
 # Procesador
 
 * Registros
@@ -59,61 +45,82 @@ Si hay multiples bloques initial, se inician cada una en simultaneo (es decir, c
 
 * Instrucciones
 
-	R-Type   [31:0] [31:26|25:21|20:16|15:11|10:6|5:0] [OPCODE|rs|rt|rd|sa|function]  // OPCODE is always 0
+	R-Type   [31:0] [31:26|25:21|20:16|15:11|10:6|5:0] [OPCODE|rs|rt|rd|sa|function]
 
 	- SLL:	The contents of the low-order 32-bit word of GPR rt are shifted left, inserting zeroes into the emptied bits; the word result is placed in GPR rd.
-		   FUNCTION: 000000
+		   OPCODE: 000000
 		   FUNCTION: 000000
 		   OPTIONS:	Defines the number of places to shift in the "sa" part of the instruction (bits 6:10), for a maximum of 32 shifts.
 
 	- SRL:	The contents of the low-order 32-bit word of GPR rt are shifted right, inserting zeros into the emptied bits; the word result is placed in GPR rd.
+			OPCODE: 000000
 			FUNCTION: 000010
 			OPTIONS: Defines the number of places to shift in the "sa" part of the instruction (bits 6:10), for a maximum of 32 shifts.
 
 	- SRA:	The contents of the low-order 32-bit word of GPR rt are shifted right, duplicating the sign-bit (bit 31) in the emptied bits; the word result is placed in GPR rd.
+			OPCODE: 000000
 			FUNCTION: 000011
 			OPTIONS: Defines the number of places to shift in the "sa" part of the instruction (bits 6:10), for a maximum of 32 shifts.
 
 	- SLLV:	The contents of the low-order 32-bit word of GPR rt are shifted left, inserting zeros into the emptied bits; the result word is placed in GPR rd. The bit shift count is specified by the low-order five bits of GPR rs.
+			OPCODE: 000000
 			FUNCTION: 000100
 			OPTIONS: None
 
 	- SRLV:	The contents of the low-order 32-bit word of GPR rt are shifted right, inserting zeros into the emptied bits; the word result is placed in GPR rd.The bit shift count is specified by the low-order five bits of GPR rs.
+			OPCODE: 000000
 			FUNCTION: 000110
 			OPTIONS: None
 
 	- SRAV: The contents of the low-order 32-bit word of GPR rt are shifted right, duplicating the sign-bit (bit 31) in the emptied bits; the word result is placed in GPR rd. The bit shift count is specified by the low-order five bits of GPR rs.
+			OPCODE: 000000
 			FUNCTION: 000111
 			OPTIONS: None
 
 	- ADDU:	The 32-bit word value in GPR rt is added to the 32-bit value in GPR rs and the 32-bit arithmetic (unsigned) result is placed into GPR rd. No Integer Overflow exception occurs under any circumstances.
+			OPCODE: 000000
 			FUNCTION: 100001
 			OPTIONS: None
 
 	- SUBU: The 32-bit word value in GPR rt is subtracted from the 32-bit value in GPR rs and the 32-bit arithmetic (unsigned) result is placed into GPR rd. No integer overflow exception occurs under any circumstances.
+			OPCODE: 000000
 			FUNCTION: 100011
 			OPTIONS: None
 
 	- AND: The contents of GPR rs are combined with the contents of GPR rt in a bitwise logical AND operation. The result is placed into GPR rd.
+			OPCODE: 000000
 			FUNCTION: 100100
 			OPTIONS: None
 
 	- OR:	The contents of GPR rs are combined with the contents of GPR rt in a bitwise logical OR operation. The result is placed into GPR rd.
+			OPCODE: 000000
 			FUNCTION: 100101
 			OPTIONS: None
 
 	- XOR:	Combine the contents of GPR rs and GPR rt in a bitwise logical exclusive OR operation and place the result into GPR rd.
+			OPCODE: 000000
 			FUNCTION: 100110
 			OPTIONS: None
 
 	- NOR:	The contents of GPR rs are combined with the contents of GPR rt in a bitwise logical NOR operation. The result is placed into GPR rd.
+			OPCODE: 000000
 			FUNCTION: 100111
 			OPTIONS: None
 
 	- SLT:	Compare the contents of GPR rs and GPR rt as signed integers and record the Boolean result of the comparison in GPR rd. If GPR rs is less than GPR rt the result is 1 (true), otherwise 0 (false).
+			OPCODE: 000000
 			FUNCTION: 101010
 			OPTIONS: None
 
+	- JR: Jump to the effective target address in GPR rs. Execute the instruction following the jump, in the branch delay slot, before jumping. The effective target address in GPR rs must be naturally aligned. If either of the two least-significant bits are not zero, then an Address Error exception occurs, not for the jump instruction, but when the branch target is subsequently fetched as an instruction.
+			OPCODE: 000000
+			FUNCTION: 001000
+			OPTIONS: None
+
+	- JALR: Place the return address link in GPR rd. The return link is the address of the second instruction following the branch, where execution would continue after a procedure call. Jump to the effective target address in GPR rs. Execute the instruction following the jump, in the branch delay slot, before jumping. The effective target address in GPR rs must be naturally aligned. If either of the two least-significant bits are not -zero, then an Address Error exception occurs, not for the jump instruction, but when the branch target is subsequently fetched as an instruction.
+			OPCODE: 000000
+			FUNCTION: 001001
+			OPTIONS: None
 
 
 	I-Type   [31:0] [31:26|25:21|20:16|15:0] [OPCODE|base|rt|offset]
@@ -205,15 +212,42 @@ Si hay multiples bloques initial, se inician cada una en simultaneo (es decir, c
 			OPCODE: 000011
 			OPTIONS: "instr_index" is stores in bits 0:25 from instruction.
 
-	- JR: Jump to the effective target address in GPR rs. Execute the instruction following the jump, in the branch delay slot, before jumping. The effective target address in GPR rs must be naturally aligned. If either of the two least-significant bits are not zero, then an Address Error exception occurs, not for the jump instruction, but when the branch target is subsequently fetched as an instruction.
-			OPCODE: 001000
-
-	- JALR: Place the return address link in GPR rd. The return link is the address of the second instruction following the branch, where execution would continue after a procedure call. Jump to the effective target address in GPR rs. Execute the instruction following the jump, in the branch delay slot, before jumping. The effective target address in GPR rs must be naturally aligned. If either of the two least-significant bits are not -zero, then an Address Error exception occurs, not for the jump instruction, but when the branch target is subsequently fetched as an instruction.
-			OPCODE: 001001
-
 
 * Observaciones:
 
 	- Delayed Loads: The MIPS I architecture defines delayed loads; an instruction scheduling restriction requires that an instruction immediately following a load into register Rn cannot use Rn as a source register. The time between the load instruction and the time the data is available is the “load delay slot”. If no useful instruction can be put into the load delay slot, then a null operation (assembler mnemonic NOP) must be inserted. In MIPS II, this instruction scheduling restriction is removed. Programs will execute correctly when the loaded data is used by the instruction following the load, but this may require extra real cycles. Most processors cannot actually load data quickly enough for immediate use and the processor will be forced to wait until the data is available. Scheduling load delay slots is desirable for performance reasons even when it is not necessary for correctness.
 
 	- All branches have an architectural delay of one instruction. When a branch is taken, the instruction immediately following the branch instruction, in the branch delay slot, is executed before the branch to the target instruction takes place. Conditional branches come in two versions that treat the instruction in the delay slot differently when the branch is not taken and execution falls through. The “branch” instructions execute the instruction in the delay slot, but the “branch likely” instructions do not (they are said to nullify it). By convention, if an exception or interrupt prevents the completion of an instruction occupying a branch delay slot, the instruction stream is continued by re-executing the branch instruction. To permit this, branches must be restartable; procedure calls may not use the register in which the return link is stored (usually register 31) to determine the branch target address.
+
+
+### Operations to be carried out by the ALU
+- Logical shift left and right (inserting zeros in the emptied bits)
+- Arithmetic shift right (duplicating the sign-bit (bit 31) in the emptied bits)
+- Unsigned Add.
+- Unsigned Sub.
+- AND
+- OR
+- XOR
+- NOR
+- Compare two signed values  (<)
+- Compare if two values are equal
+- Signed Add with Overflow exception
+
+### Operations to be carried out by the AGU
+- Calculate effective address given a base (32 bits) and a signed offset (16 bits)
+- Check memory alignment for all addresses generated generating interrupts for unaligned at 2 and 4 bytes.
+- Given a 16 bit signed offset shift it left 2 bits and add it to the PC.
+- Given a 26 bit signed offset shift it left 2 bits and complete the upper part of the address with the corresponding bits of the address of the instruction in the delay slot.
+
+### Operations to be carried out by the execution unit
+- Sign extend an 8, 16, 32? bits value.
+- Zero extend an 8, 16, 32? bits value.
+
+
+
+	### Dudas:
+	- Operaciones signadas en la ALU ?
+	- Revisar AGU (instruccion J, y extension de signo).
+	- Archivo Sumador_PC_Jump.v linea 19 (Averiguar cuál es el bit que se pierde).
+	- Unidad de control ALU (por qué no usan una sola Unidad de Control)
+	- Por qué el load se hace después del store
