@@ -21,7 +21,7 @@ module Top_Instruction_Fetch #(
 wire [NBITS-1:0] next_pc;
 wire [NBITS-1:0] mux_2_pc;
 
-PC_Mux PC_MUX (
+PC_Mux u_PC_Mux (
     .i_clk(i_clk),                      // Clock signal
     .i_rst(i_rst),                      // Reset signal
     .i_sel_jump(i_sel_jump),            // Select signal for PC Mux
@@ -30,7 +30,7 @@ PC_Mux PC_MUX (
 );
 
 wire [NBITS-1:0] pc;
-Program_Counter PC (
+Program_Counter u_PC (
     .i_clk(i_clk),                      // Clock signal
     .i_rst(i_rst),                      // Reset signal
     .i_next_pc(mux_2_pc),               // Next PC
@@ -38,14 +38,14 @@ Program_Counter PC (
 );
 
 // Instantiate adder module
-Adder Adder_4 (
-    .i_operand_1(32'd4),               // Input A
+Adder u_Adder (
+    .i_operand_1(32'd4),              // Input A
     .i_operand_2(o_pc),               // Input B
     .o_result(next_pc)                // Output sum
 );
 
 // Instantiate Instruction Memory module
-Instruction_Memory IM (
+Instruction_Memory u_Instruction_Memory (
     .i_clk(i_clk),                      // Clock signal
     .i_wr_en(i_inst_mem_wr_en),
     .i_addr(o_pc),                   
