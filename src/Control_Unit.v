@@ -46,15 +46,15 @@
 `define MODE_ZERO_EXT_LOWER 2'b10
 
 module Control_Unit(
-    input reg [5:0]     i_funct,                // Function code for R type instructions or in the case of aritmetic operations with inmediate values (I type instructions) the lower 3 bits represent the lower 3 bits of the opcode
+    input wire [5:0]     i_funct,                // Function code for R type instructions or in the case of aritmetic operations with inmediate values (I type instructions) the lower 3 bits represent the lower 3 bits of the opcode
 
-    input reg       i_flg_pc_modify,            // 1 if jump/branch, 0 if not
-    input reg       i_flg_link_ret,             // 1 if saves the return address, 0 if not
-    input reg [1:0] i_flg_addr_type,            // 00 if address comes from register, 01 if the address is obtained by replacing the low 28 bits of the PC with the 26-bit offset, 10 if the address is obtained by adding the 16-bit offset to the base address shifted 2 bits
-    input reg [4:0] i_link_reg,                 // Link register for JAL and JALR
-    input reg [4:0] i_addr_reg,                 // Address register for JR and JALR
-    input reg       i_flg_inmediate,            // 1 if the instruction is an I type instruction, 0 if not
-    input reg       i_flg_mem_op,               // 1 if the instruction is a memory operation, 0 if not
+    input wire          i_flg_pc_modify,        // 1 if jump/branch, 0 if not
+    input wire          i_flg_link_ret,         // 1 if saves the return address, 0 if not
+    input wire [1:0]    i_flg_addr_type,        // 00 if address comes from register, 01 if the address is obtained by replacing the low 28 bits of the PC with the 26-bit offset, 10 if the address is obtained by adding the 16-bit offset to the base address shifted 2 bits
+    input wire [4:0]    i_link_reg,             // Link register for JAL and JALR
+    input wire [4:0]    i_addr_reg,             // Address register for JR and JALR
+    input wire          i_flg_inmediate,        // 1 if the instruction is an I type instruction, 0 if not
+    input wire          i_flg_mem_op,           // 1 if the instruction is a memory operation, 0 if not
 
     output reg          o_flg_ALU_enable,       // 1 if the ALU is enabled, 0 if not
     output reg [1:0]    o_flg_ALU_src_a,        // 01 if the ALU source A is the value of the register RT, 00 if is the PC+4, 11 if the source is the output from the sign extender

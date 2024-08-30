@@ -1,7 +1,9 @@
 `timescale 1ns / 1ps
 
 
-module Reg_EX_MA(
+module Reg_EX_MA #(
+    parameter   NBITS = 32
+)(
 
     input wire                i_clk,
     input wire                i_rst,

@@ -1,6 +1,6 @@
 `include "defines.v"
 
-module DataMemory(
+module Data_Memory(
     parameter WORD_LEN = 32,
     parameter MEM_CELL_SIZE = 8,
     parameter DATA_MEM_SIZE = 1024
@@ -23,7 +23,7 @@ module DataMemory(
     reg msb, sign;
     wire [2:0] offset; 
 
-    always @ (*) begin
+    always @ (negedge i_clk) begin
         if (i_rst) begin
             for (i = 0; i < DATA_MEM_SIZE; i = i + 1) begin
                 memory[i] <= 0;
