@@ -3,6 +3,7 @@
 module Top_Instruction_Decode #(
     parameter NBITS = 32
 )(
+    input   wire i_clk,
     input   wire i_rst,
 
     // Non buffer inputs (WB signals)
@@ -15,14 +16,10 @@ module Top_Instruction_Decode #(
     input wire  [NBITS-1:0]  i_instruction,
 
     // Outputs
-    
-
     // Control signals
-    output wire        o_flg_ALU_enable;
     output wire        o_flg_ALU_dst;
     output wire [2:0]  o_flg_ALU_opcode;
 
-    output wire        o_flg_AGU_enable;
     output wire        o_flg_AGU_dst;
     output wire [2:0]  o_flg_AGU_opcode;
 
@@ -99,13 +96,11 @@ Control_Unit Ctrl_Unit(
     .i_flg_inmediate(flg_inmediate),
     .i_flg_mem_op(flg_mem_op),
 
-    .o_flg_ALU_enable(o_flg_ALU_enable),
     .o_flg_ALU_src_a(flg_ALU_src_a),
     .o_flg_ALU_src_b(flg_ALU_src_b),
     .o_flg_ALU_dst(o_flg_ALU_dst),
     .o_ALU_opcode(o_flg_ALU_opcode),
 
-    .o_flg_AGU_enable(o_flg_AGU_enable),
     .o_flg_AGU_src_addr(flg_AGU_src_addr),
     .o_flg_AGU_dst(o_flg_AGU_dst),
     .o_flg_AGU_opcode(o_flg_AGU_opcode),
