@@ -3,8 +3,6 @@
 module PC_Mux #(
     parameter   NBITS = 32
 )(
-    input wire               i_clk,
-    input wire               i_rst,
     input wire               i_sel_jump,
     input wire  [NBITS-1:0]  i_next_pc,
     input wire  [NBITS-1:0]  i_jump_pc,

@@ -5,8 +5,6 @@ module Instruction_Memory #(
     parameter INST_BITS = 32,
     parameter CELLS = 256
 )(
-    input   wire    i_clk,
-    input   wire    i_wr_en,
     input   wire    [NBITS-1:0] i_addr,
     input   wire    [NBITS-1:0] i_data,
     output  reg     [INST_BITS-1:0] o_data

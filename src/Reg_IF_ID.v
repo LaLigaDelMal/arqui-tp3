@@ -3,13 +3,13 @@
 module Reg_IF_ID #(
     parameter   NBITS = 32
 )(
-    input wire                i_clk,
-    input wire                i_rst,
-    input wire   [NBITS-1:0]  i_pc,
-    input wire   [NBITS-1:0]  i_instruction,
+    input wire                      i_clk,
+    input wire                      i_rst,
+    input wire      [NBITS-1:0]     i_pc,
+    input wire      [NBITS-1:0]     i_instruction,
     
-    output reg  [NBITS-1:0]  o_pc,
-    output reg  [NBITS-1:0]  o_instruction
+    output reg      [NBITS-1:0]     o_pc,
+    output reg      [NBITS-1:0]     o_instruction
 );
 
 always @(posedge i_clk) begin

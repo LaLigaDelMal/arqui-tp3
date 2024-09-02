@@ -32,6 +32,15 @@ module Top_Instruction_Decode #(
     output wire [31:0]  o_ALU_src_a;
     output wire [31:0]  o_ALU_src_b;
     output wire [31:0]  o_AGU_src_addr;
+        
+    output wire         flg_equal;
+    output wire         flg_mem_op;
+    output wire         flg_mem_type;
+    output wire [1:0]   flg_mem_size;
+    output wire         flg_unsign;
+    output wire [4:0]   o_pc;
+    output wire [4:0]   o_rt;
+    output wire [4:0]   o_rd;
 );
 
 wire [5:0]  funct;
@@ -42,17 +51,13 @@ wire [4:0]  sa;
 wire [15:0] imm;
 wire [25:0] addr_offset;
 
+
 wire        flg_pc_modify;
 wire        flg_link_ret;
 wire [1:0]  flg_addr_type;
 wire [4:0]  link_reg;
 wire [4:0]  addr_reg;
-wire        flg_equal;
 wire        flg_inmediate;
-wire        flg_mem_op;
-wire        flg_mem_type;
-wire [1:0]  flg_mem_size;
-wire        flg_unsign;
 
 Instruction_Decoder Inst_Deco(
     .i_instruction(i_instruction),
@@ -70,8 +75,9 @@ Instruction_Decoder Inst_Deco(
     .o_flg_addr_type(flg_addr_type),
     .o_link_reg(link_reg),
     .o_addr_reg(addr_reg),
-    .o_flg_equal(flg_equal),
     .o_flg_inmediate(flg_inmediate),
+
+    .o_flg_equal(flg_equal),
     .o_flg_mem_op(flg_mem_op),
     .o_flg_mem_type(flg_mem_type),
     .o_flg_mem_size(flg_mem_size),
@@ -156,5 +162,9 @@ Mux_2 AGU_SRC_ADDR(
     .i_b(i_pc),             // (1) PC
     .o_result(o_AGU_src_addr)
 );
+
+assign o_pc = i_pc;
+assign o_rt = rt;
+assign o_rd = rd;
 
 endmodule
