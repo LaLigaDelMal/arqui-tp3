@@ -23,6 +23,8 @@ module Top_Instruction_Decode #(
     output wire        o_flg_AGU_dst;
     output wire [2:0]  o_flg_AGU_opcode;
 
+    output wire [25:0]  o_addr_offset;
+    
     output wire        o_flg_jump;
     output wire        o_flg_branch;
 
@@ -30,11 +32,11 @@ module Top_Instruction_Decode #(
     output wire [31:0]  o_ALU_src_b;
     output wire [31:0]  o_AGU_src_addr;
         
-    output wire         flg_equal;
-    output wire         flg_mem_op;
-    output wire         flg_mem_type;
-    output wire [1:0]   flg_mem_size;
-    output wire         flg_unsign;
+    output wire         o_flg_equal;
+    output wire         o_flg_mem_op;
+    output wire         o_flg_mem_type;
+    output wire [1:0]   o_flg_mem_size;
+    output wire         o_flg_unsign;
     output wire [4:0]   o_pc;
     output wire [4:0]   o_rt;
     output wire [4:0]   o_rd;
@@ -46,7 +48,6 @@ wire [4:0]  rt;
 wire [4:0]  rd;
 wire [4:0]  sa;
 wire [15:0] imm;
-wire [25:0] addr_offset;
 
 
 wire        flg_pc_modify;
@@ -65,7 +66,7 @@ Instruction_Decoder Inst_Deco(
     .o_rd(rd),
     .o_sa(sa),
     .o_imm(imm),
-    .o_addr_offset(addr_offset),
+    .o_addr_offset(o_addr_offset),
     
     .o_flg_pc_modify(flg_pc_modify),
     .o_flg_link_ret(flg_link_ret),
