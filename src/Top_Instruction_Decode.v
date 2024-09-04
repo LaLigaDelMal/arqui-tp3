@@ -17,29 +17,29 @@ module Top_Instruction_Decode #(
 
     // Outputs
     // Control signals
-    output wire        o_flg_ALU_dst;
-    output wire [2:0]  o_flg_ALU_opcode;
+    output wire        o_flg_ALU_dst,
+    output wire [2:0]  o_flg_ALU_opcode,
 
-    output wire        o_flg_AGU_dst;
-    output wire [2:0]  o_flg_AGU_opcode;
+    output wire        o_flg_AGU_dst,
+    output wire [2:0]  o_flg_AGU_opcode,
 
-    output wire [25:0]  o_addr_offset;
+    output wire [25:0]  o_addr_offset,
     
-    output wire        o_flg_jump;
-    output wire        o_flg_branch;
+    output wire        o_flg_jump,
+    output wire        o_flg_branch,
 
-    output wire [31:0]  o_ALU_src_a;
-    output wire [31:0]  o_ALU_src_b;
-    output wire [31:0]  o_AGU_src_addr;
+    output wire [31:0]  o_ALU_src_a,
+    output wire [31:0]  o_ALU_src_b,
+    output wire [31:0]  o_AGU_src_addr,
         
-    output wire         o_flg_equal;
-    output wire         o_flg_mem_op;
-    output wire         o_flg_mem_type;
-    output wire [1:0]   o_flg_mem_size;
-    output wire         o_flg_unsign;
-    output wire [4:0]   o_pc;
-    output wire [4:0]   o_rt;
-    output wire [4:0]   o_rd;
+    output wire         o_flg_equal,
+    output wire         o_flg_mem_op,
+    output wire         o_flg_mem_type,
+    output wire [1:0]   o_flg_mem_size,
+    output wire         o_flg_unsign,
+    output wire [4:0]   o_pc,
+    output wire [4:0]   o_rt,
+    output wire [4:0]   o_rd
 );
 
 wire [5:0]  funct;
@@ -86,6 +86,7 @@ wire [1:0]  extend_sign;
 wire [1:0]  flg_ALU_src_a;
 wire        flg_ALU_src_b;
 wire        flg_AGU_src_addr;
+
 Control_Unit Ctrl_Unit(
     .i_funct(funct),
 
@@ -109,11 +110,11 @@ Control_Unit Ctrl_Unit(
     .o_flg_jump(o_flg_jump),
     .o_flg_branch(o_flg_branch),
 
-    .o_extend_sign(extend_sign),
+    .o_extend_sign(extend_sign)
 );
 
-wire [31:0]  rs_data,
-wire [31:0]  rt_data,
+wire [31:0]  rs_data;
+wire [31:0]  rt_data;
 
 Registers Regs(
     .i_rst(i_rst),

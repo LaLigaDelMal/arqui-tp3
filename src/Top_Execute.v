@@ -17,7 +17,7 @@ module Top_Execute#(
 
     output wire               o_pc_mux_ctrl,
     output wire  [NBITS-1:0]  o_ALU_rslt,
-    output wire  [NBITS-1:0]  o_eff_addr,
+    output wire  [NBITS-1:0]  o_eff_addr
 );
     
     wire o_rslt_lsb = o_ALU_rslt[0];

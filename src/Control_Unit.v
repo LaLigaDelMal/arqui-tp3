@@ -63,23 +63,24 @@ module Control_Unit(
 
     output reg          o_flg_AGU_src_addr,     // 1 if the PC, 0 if the address is the content of the RS register
     output reg          o_flg_AGU_dst,          // 1 if the PC is the destination, 0 if for memory addressing (load and store)
-    output reg [2:0]    o_flg_AGU_opcode
+    output reg [2:0]    o_flg_AGU_opcode,
 
     output reg o_flg_jump,                      // 1 if the instruction is a jump, 0 if not (this should change the mux that controls the AlU output to either PC or RD)
     output reg o_flg_branch,                    // 1 if the the result of the ALU will be used to make a conditional jump, 0 if is not a branch
     
-    output reg [1:0] o_extend_sign,             // 00 if the inmediate value is sign extended, 01 if the upper part of the word is completed with zeros, 10 if the lower part of the word is completed with zeros
+    output reg [1:0] o_extend_sign              // 00 if the inmediate value is sign extended, 01 if the upper part of the word is completed with zeros, 10 if the lower part of the word is completed with zeros
     );
 
+    wire [5:0] flags = { // NO TOCAR ORDEN
+                i_flg_pc_modify,
+                i_flg_link_ret,
+                i_flg_addr_type,
+                i_flg_inmediate,
+                i_flg_mem_op
+            };
+            
     always @ (*) begin
-        wire [5:0] flags = { // NO TOCAR ORDEN
-            i_flg_pc_modify,
-            i_flg_link_ret,
-            i_flg_addr_type,
-            i_flg_inmediate,
-            i_flg_mem_op,
-        };
-        case (flags):
+        case (flags)
             12'b0XXX0X: begin        // R type instructions
                 o_flg_ALU_src_a  <= 2'b01;
                 o_flg_ALU_dst    <= 2'b01;
@@ -87,20 +88,20 @@ module Control_Unit(
                 o_flg_jump      <= 0;
                 o_flg_branch    <= 0;
 
-                case (i_funct):
-                    `FUNC_SLL:  begin o_flg_alu_src_b <= 1; o_ALU_opcode <= `OP_SHIFT_LEFT; end
-                    `FUNC_SRL:  begin o_flg_alu_src_b <= 1; o_ALU_opcode <= `OP_SHIFT_RIGHT; end
-                    `FUNC_SRA:  begin o_flg_alu_src_b <= 1; o_ALU_opcode <= `OP_SHIFT_RIGHT_ARIT; end
-                    `FUNC_SLLV: begin o_flg_alu_src_b <= 0; o_ALU_opcode <= `OP_SHIFT_LEFT; end
-                    `FUNC_SRLV: begin o_flg_alu_src_b <= 0; o_ALU_opcode <= `OP_SHIFT_RIGHT; end
-                    `FUNC_SRAV: begin o_flg_alu_src_b <= 0; o_ALU_opcode <= `OP_SHIFT_RIGHT_ARIT; end
-                    `FUNC_ADDU: begin o_flg_alu_src_b <= 0; o_ALU_opcode <= `OP_ADD; end
-                    `FUNC_SUBU: begin o_flg_alu_src_b <= 0; o_ALU_opcode <= `OP_SUB; end
-                    `FUNC_AND:  begin o_flg_alu_src_b <= 0; o_ALU_opcode <= `OP_AND; end
-                    `FUNC_OR:   begin o_flg_alu_src_b <= 0; o_ALU_opcode <= `OP_OR; end
-                    `FUNC_XOR:  begin o_flg_alu_src_b <= 0; o_ALU_opcode <= `OP_XOR; end
-                    `FUNC_NOR:  begin o_flg_alu_src_b <= 0; o_ALU_opcode <= `OP_NOR; end
-                    `FUNC_SLT:  begin o_flg_alu_src_b <= 0; o_ALU_opcode <= `OP_SLT; end
+                case (i_funct)
+                    `FUNC_SLL:  begin o_flg_ALU_src_b <= 1; o_ALU_opcode <= `OP_SHIFT_LEFT; end
+                    `FUNC_SRL:  begin o_flg_ALU_src_b <= 1; o_ALU_opcode <= `OP_SHIFT_RIGHT; end
+                    `FUNC_SRA:  begin o_flg_ALU_src_b <= 1; o_ALU_opcode <= `OP_SHIFT_RIGHT_ARIT; end
+                    `FUNC_SLLV: begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_SHIFT_LEFT; end
+                    `FUNC_SRLV: begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_SHIFT_RIGHT; end
+                    `FUNC_SRAV: begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_SHIFT_RIGHT_ARIT; end
+                    `FUNC_ADDU: begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_ADD; end
+                    `FUNC_SUBU: begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_SUB; end
+                    `FUNC_AND:  begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_AND; end
+                    `FUNC_OR:   begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_OR; end
+                    `FUNC_XOR:  begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_XOR; end
+                    `FUNC_NOR:  begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_NOR; end
+                    `FUNC_SLT:  begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_SLT; end
                 endcase  
             end
             12'b100000: begin     // JR
@@ -139,7 +140,7 @@ module Control_Unit(
                 o_flg_jump   <= 0;
                 o_flg_branch <= 0;
 
-                case (i_funct):
+                case (i_funct)
                     `FUNC_ADDI: begin o_ALU_opcode <= `OP_SIGNED_ADD;   o_extend_sign <= `MODE_SIGN_EXT; end
                     `FUNC_ANDI: begin o_ALU_opcode <= `OP_AND;          o_extend_sign <= `MODE_SIGN_EXT; end
                     `FUNC_ORI:  begin o_ALU_opcode <= `OP_OR;           o_extend_sign <= `MODE_SIGN_EXT; end

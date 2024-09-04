@@ -16,7 +16,7 @@ module Sign_Extender
     always @ (*)
         begin:
             case(i_mode)
-                2'b00: result <= {{16{i_inmediate[16-1]}}, i_inmediate}; // Extend the sign of the inmediate to a full word
+                2'b00: result <= {16'b{i_inmediate[16-1]}, i_inmediate}; // Extend the sign of the inmediate to a full word
                 2'b01: result <= {{16{1'b0}}, i_inmediate};              // Complete the upper part of the word with zeros
                 2'b10: result <= {i_inmediate,{16{1'b0}}};               // Complete the lower part of the word with zeros
             endcase

@@ -47,32 +47,32 @@ module Reg_ID_EX #(
     output reg                o_flg_jump,
     output reg   [NBITS-1:0]  o_ALU_src_A,
     output reg   [NBITS-1:0]  o_ALU_src_B,
-    output reg   [NBITS-1:0]  o_AGU_src_addr,
+    output reg   [NBITS-1:0]  o_AGU_src_addr
 
 );
 
 always @(posedge i_clk) begin
     if ( i_rst ) begin
-        i_pc <= 0;
-        i_rd <= 0;
-        i_rt <= 0;
-        i_addr_offset <= 0;
-        i_flg_equal <= 0;
-        i_flg_mem_op <= 0;
-        i_flg_mem_type <= 0;
-        i_flg_mem_size <= 0;
-        i_flg_unsign <= 0;
-        i_ALU_enable <= 0;
-        i_ALU_dst <= 0;
-        i_ALU_opcode <= 0;
-        i_AGU_enable <= 0;
-        i_AGU_dst <= 0;
-        i_AGU_opcode <= 0;
-        i_flg_branch <= 0;
-        i_flg_jump <= 0;
-        i_ALU_src_A <= 0;
-        i_ALU_src_B <= 0;
-        i_AGU_src_addr <= 0;
+        o_pc <= 0;
+        o_rd <= 0;
+        o_rt <= 0;
+        o_addr_offset <= 0;
+        o_flg_equal <= 0;
+        o_flg_mem_op <= 0;
+        o_flg_mem_type <= 0;
+        o_flg_mem_size <= 0;
+        o_flg_unsign <= 0;
+        o_ALU_enable <= 0;
+        o_ALU_dst <= 0;
+        o_ALU_opcode <= 0;
+        o_AGU_enable <= 0;
+        o_AGU_dst <= 0;
+        o_AGU_opcode <= 0;
+        o_flg_branch <= 0;
+        o_flg_jump <= 0;
+        o_ALU_src_A <= 0;
+        o_ALU_src_B <= 0;
+        o_AGU_src_addr <= 0;
     end
     else begin
         o_pc <= i_pc;

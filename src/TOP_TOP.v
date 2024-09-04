@@ -1,15 +1,15 @@
 `timescale 1ns / 1ps
 
-module TOP_TOP#(
+module TOP_TOP #(
     parameter   NBITS = 32
 )(
     input wire i_clk,
-    input wire i_rst,
-    
-)
+    input wire i_rst
+);
 
 //wire [31:0] pc_IF_ID;
 //wire [31:0] instr_IF_ID;
+
 Top_Instruction_Fetch IF (
     .i_clk(i_clk),
     .i_rst(i_rst),
@@ -18,7 +18,7 @@ Top_Instruction_Fetch IF (
     .i_inst_mem_wr_en(),                    // Viene de afuera
     .i_inst_mem_data(),                     // Viene de afuera
     .o_pc(),
-    .o_instr(),                             // Fetched instruction
+    .o_instr()                              // Fetched instruction
 );
 
 Reg_IF_ID IF_ID (
@@ -54,7 +54,7 @@ Top_Instruction_Decode ID (
     .o_flg_unsign(),
     .o_pc(),
     .o_rt(),
-    .o_rd(),
+    .o_rd()
 );
 
 Reg_ID_EX ID_EX (

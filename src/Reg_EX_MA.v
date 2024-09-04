@@ -25,7 +25,7 @@ module Reg_EX_MA #(
     output reg  [1:0]        o_flg_mem_size,
     output reg               o_flg_unsign,
     output reg  [4:0]        o_rd, o_rt,
-    output reg               o_flg_ALU_dst,
+    output reg               o_flg_ALU_dst
 
     );
 

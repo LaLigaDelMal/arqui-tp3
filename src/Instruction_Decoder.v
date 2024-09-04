@@ -21,12 +21,12 @@ module Instruction_Decoder (
     output reg          o_flg_mem_op,           // 1 if the instruction is a memory operation, 0 if not
     output reg          o_flg_mem_type,         // 0 if load, 1 if store
     output reg [1:0]    o_flg_mem_size,         // 00 if byte, 01 if halfword, 11 if word
-    output reg          o_flg_unsign,           // 1 if the operation is unsigned, 0 if not
+    output reg          o_flg_unsign            // 1 if the operation is unsigned, 0 if not
     );
 
     reg [5:0] opcode;
 
-    always @(instruction) begin
+    always @(i_instr) begin
         opcode <= i_instr[31:26];
 
         case (opcode)
@@ -171,7 +171,7 @@ module Instruction_Decoder (
                             o_rd            <= 5'b0;
                             o_sa            <= 32'b0;
                             o_imm           <= 16'b0;
-                            o_addr_offset   <= {10'b0, i_instr[15:0]};}
+                            o_addr_offset   <= {10'b0, i_instr[15:0]};
                             
                             o_flg_pc_modify <= 1'b1;
                             o_flg_link_ret  <= 1'b0;

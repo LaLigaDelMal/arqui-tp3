@@ -12,11 +12,11 @@ module Top_Instruction_Fetch #(
     
     // Instruction Memory
     input   wire i_inst_mem_wr_en,
-    input   wire [NBITS-1:0] i_inst_mem_data
+    input   wire [NBITS-1:0] i_inst_mem_data,
 
     // Outputs
     output  wire [NBITS-1:0] o_pc,    
-    output  wire [NBITS-1:0] o_instr,          // Fetched instruction
+    output  wire [NBITS-1:0] o_instr          // Fetched instruction
 );
 
 wire [NBITS-1:0] next_pc;

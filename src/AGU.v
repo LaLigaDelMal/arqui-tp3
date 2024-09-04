@@ -13,10 +13,10 @@ module AGU(
     reg [31:0] sign_ext_offset;
     reg [1:0] exception;
 
-    always @ (i_op_code, i_addr, i_offset) begin
-        case (i_op_code)
+    always @ (i_opcode, i_addr, i_offset) begin
+        case (i_opcode)
             3'b000: begin                                                         // Effective address from RS
-                effective_address = i_addr                                        // This is supposed to be the value of the register RS (not considering any other address inputs)
+                effective_address = i_addr;                                      // This is supposed to be the value of the register RS (not considering any other address inputs)
                 exception = {effective_address[1], effective_address[0]};
             end
             3'b001: begin                                                         // Effective address given base and a 16-bit signed offset

@@ -16,7 +16,7 @@ module Reg_MA_WB #(
     output reg                o_neg_flg_mem_op,
     output reg  [NBITS-1:0]   o_ALU_rslt,
     output reg  [NBITS-1:0]   o_data,
-    output reg  [4:0]         o_rd, i_rt,
+    output reg  [4:0]         o_rd, o_rt
     );
 
     always @(posedge i_clk) begin
