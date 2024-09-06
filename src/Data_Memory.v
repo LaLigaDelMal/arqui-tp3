@@ -38,9 +38,9 @@ module Data_Memory #(
             offset = i_size << 1;
             sign = memory[i_addr + offset][7] & ~i_unsigned; // memory[i_addr + offset][7] -> MSB of the data in memory at the specified data size
             case (i_size)
-                2'b00: data = {24'b{sign}, memory[i_addr]};
-                2'b01: data = {16'b{sign}, memory[i_addr + 1], memory[i_addr]};
-                2'b10: data = {memory[i_addr + 3], memory[i_addr + 2], memory[i_addr + 1], memory[i_addr]};
+                2'b00: data = {{24{sign}}, memory[i_addr]}; // Byte
+                2'b01: data = {{16{sign}}, memory[i_addr + 1], memory[i_addr]}; // Half Word
+                2'b10: data = {memory[i_addr + 3], memory[i_addr + 2], memory[i_addr + 1], memory[i_addr]}; // Word
             endcase
         end
     end

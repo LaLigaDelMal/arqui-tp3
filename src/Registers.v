@@ -3,6 +3,7 @@
 
 module Registers(
 
+    input wire i_clk,
     input wire i_rst,
     input wire [4:0] i_rs_sel,
     input wire [4:0] i_rt_sel,
@@ -19,7 +20,9 @@ module Registers(
     reg [31:0] reg_file [30:0];
     integer i;
 
-    always @(i_rst, i_wr_en) begin
+    
+
+    always @(negedge i_clk) begin
         if (i_rst) begin
             for (i = 0; i < 31; i = i + 1) begin
                 reg_file[i] <= 0;
@@ -31,15 +34,13 @@ module Registers(
         end
     end
 
-    always @(i_rs_sel, i_wr_en) begin
+    always @(*) begin
         if (i_rs_sel == 0) begin
             o_rs_data <= zero_reg;
         end else begin
             o_rs_data <= reg_file[i_rs_sel];
         end
-    end
 
-    always @(i_rt_sel, i_wr_en) begin
         if (i_rt_sel == 0) begin
             o_rt_data <= zero_reg;
         end else begin

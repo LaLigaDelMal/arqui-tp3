@@ -104,7 +104,7 @@ Reg_ID_EX ID_EX (
     .o_AGU_src_addr()
 );
 
-Top_Execution EX (
+Top_Execute EX (
     .i_pc(ID_EX.o_pc),
     .i_addr_offset(ID_EX.o_addr_offset),
     .i_flg_equal(ID_EX.o_flg_equal),
