@@ -14,10 +14,8 @@ module Reg_ID_EX #(
     input wire                i_flg_mem_type,
     input wire   [1:0]        i_flg_mem_size,
     input wire                i_flg_unsign,
-    input wire                i_ALU_enable,
     input wire   [1:0]        i_ALU_dst,
     input wire   [3:0]        i_ALU_opcode,
-    input wire                i_AGU_enable,
     input wire                i_AGU_dst,
     input wire   [2:0]        i_AGU_opcode,
     input wire                i_flg_branch,
@@ -37,10 +35,8 @@ module Reg_ID_EX #(
     output reg                o_flg_mem_type,
     output reg   [1:0]        o_flg_mem_size,
     output reg                o_flg_unsign,
-    output reg                o_ALU_enable,
     output reg   [1:0]        o_ALU_dst,
     output reg   [3:0]        o_ALU_opcode,
-    output reg                o_AGU_enable,
     output reg                o_AGU_dst,
     output reg   [2:0]        o_AGU_opcode,
     output reg                o_flg_branch,
@@ -62,10 +58,8 @@ always @(posedge i_clk) begin
         o_flg_mem_type <= 0;
         o_flg_mem_size <= 0;
         o_flg_unsign <= 0;
-        o_ALU_enable <= 0;
         o_ALU_dst <= 0;
         o_ALU_opcode <= 0;
-        o_AGU_enable <= 0;
         o_AGU_dst <= 0;
         o_AGU_opcode <= 0;
         o_flg_branch <= 0;
@@ -84,10 +78,8 @@ always @(posedge i_clk) begin
         o_flg_mem_type <= i_flg_mem_type;
         o_flg_mem_size <= i_flg_mem_size;
         o_flg_unsign <= i_flg_unsign;
-        o_ALU_enable <= i_ALU_enable;
         o_ALU_dst <= i_ALU_dst;
         o_ALU_opcode <= i_ALU_opcode;
-        o_AGU_enable <= i_AGU_enable;
         o_AGU_dst <= i_AGU_dst;
         o_AGU_opcode <= i_AGU_opcode;
         o_flg_branch <= i_flg_branch;

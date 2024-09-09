@@ -14,7 +14,7 @@ module Reg_IF_ID #(
 
 always @(posedge i_clk) begin
     if ( i_rst ) begin
-        {i_pc, i_instruction} <= 0;
+        {o_pc, o_instruction} <= 0;
     end
     else begin
         o_pc <= i_pc;

@@ -14,8 +14,8 @@ module ALU(
     reg [32:0] result;
     reg overflow;
 
-    always @ (i_op_code, i_op_A, i_op_B) begin
-        case (i_op_code)
+    always @ (i_opcode, i_op_A, i_op_B) begin
+        case (i_opcode)
                 4'b0000: begin                                                         // LSR
                         result = i_op_A >> i_op_B[4:0];
                 end

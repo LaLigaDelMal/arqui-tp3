@@ -27,7 +27,7 @@ Reg_IF_ID IF_ID (
     .i_pc(IF.o_pc),
     .i_instruction(IF.o_instr),
     .o_pc(),    
-    .o_instr()          // Fetched instruction
+    .o_instruction()          // Fetched instruction
 );
 
 Top_Instruction_Decode ID (
@@ -36,7 +36,7 @@ Top_Instruction_Decode ID (
     .i_wr_en(MA_WB.o_neg_flg_mem_op),       //Viene de MA_WB
     .i_wr_data(WB.o_wr_data),               //Viene de WB
     .i_pc(IF_ID.o_pc),
-    .i_instruction(IF_ID.o_instr),
+    .i_instruction(IF_ID.o_instruction),
     .o_flg_ALU_dst(),
     .o_flg_ALU_opcode(),
     .o_flg_AGU_dst(),
@@ -44,8 +44,8 @@ Top_Instruction_Decode ID (
     .o_addr_offset(),
     .o_flg_jump(),
     .o_flg_branch(),
-    .o_ALU_src_a(),
-    .o_ALU_src_b(),
+    .o_ALU_src_A(),
+    .o_ALU_src_B(),
     .o_AGU_src_addr(),
     .o_flg_equal(),
     .o_flg_mem_op(),
@@ -69,12 +69,10 @@ Reg_ID_EX ID_EX (
     .i_flg_mem_type(ID.o_flg_mem_type),
     .i_flg_mem_size(ID.o_flg_mem_size),
     .i_flg_unsign(ID.o_flg_unsign),
-    .i_ALU_enable(ID.o_ALU_enable),
-    .i_ALU_dst(ID.o_ALU_dst),
-    .i_ALU_opcode(ID.o_ALU_opcode),
-    .i_AGU_enable(ID.o_AGU_enable),
-    .i_AGU_dst(ID.o_AGU_dst),
-    .i_AGU_opcode(ID.o_AGU_opcode),
+    .i_ALU_dst(ID.o_flg_ALU_dst),
+    .i_ALU_opcode(ID.o_flg_ALU_opcode),
+    .i_AGU_dst(ID.o_flg_AGU_dst),
+    .i_AGU_opcode(ID.o_flg_AGU_opcode),
     .i_flg_branch(ID.o_flg_branch),
     .i_flg_jump(ID.o_flg_jump),
     .i_ALU_src_A(ID.o_ALU_src_A),
@@ -91,10 +89,8 @@ Reg_ID_EX ID_EX (
     .o_flg_mem_type(),
     .o_flg_mem_size(),
     .o_flg_unsign(),
-    .o_ALU_enable(),
     .o_ALU_dst(),
     .o_ALU_opcode(),
-    .o_AGU_enable(),
     .o_AGU_dst(),
     .o_AGU_opcode(),
     .o_flg_branch(),
@@ -132,7 +128,7 @@ Reg_EX_MA EX_MA (
     .i_flg_unsign(ID_EX.o_flg_unsign),
     .i_rd(ID_EX.o_rd),
     .i_rt(ID_EX.o_rt),
-    .i_flg_ALU_dst(ID_EX.o_flg_ALU_dst),
+    .i_flg_ALU_dst(ID_EX.o_ALU_dst),
     
     .o_pc_mux_ctrl(),
     .o_ALU_rslt(),

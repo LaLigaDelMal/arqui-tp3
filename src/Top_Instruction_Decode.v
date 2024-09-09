@@ -28,8 +28,8 @@ module Top_Instruction_Decode #(
     output wire        o_flg_jump,
     output wire        o_flg_branch,
 
-    output wire [31:0]  o_ALU_src_a,
-    output wire [31:0]  o_ALU_src_b,
+    output wire [31:0]  o_ALU_src_A,
+    output wire [31:0]  o_ALU_src_B,
     output wire [31:0]  o_AGU_src_addr,
         
     output wire         o_flg_equal,
@@ -58,7 +58,7 @@ wire [4:0]  addr_reg;
 wire        flg_inmediate;
 
 Instruction_Decoder Inst_Deco(
-    .i_instruction(i_instruction),
+    .i_instr(i_instruction),
 
     .o_funct(funct),
     .o_rs(rs),
@@ -143,14 +143,14 @@ Mux_4 ALU_SRC_A(
     .i_b(o_rt_data),        // (01) rt data
     .i_c(),                 // (10) NC
     .i_d(imm_ext),          // (11) Sign Extender result
-    .o_result(o_ALU_src_a)
+    .o_result(o_ALU_src_A)
 );
 
 Mux_2 ALU_SRC_B(
     .i_sel(flg_ALU_src_b),
     .i_a(rs_data),          // (0) rs data
     .i_b(sa),               // (1) Sign Extender result
-    .o_result(o_ALU_src_b)
+    .o_result(o_ALU_src_B)
 );
 
 Mux_2 AGU_SRC_ADDR(

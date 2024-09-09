@@ -24,13 +24,13 @@ module Top_Execute#(
 
     ALU u_ALU (
         .i_opcode(i_ALU_opcode),
-        .i_src_A(i_ALU_src_A),
-        .i_src_B(i_ALU_src_B),
+        .i_op_A(i_ALU_src_A),
+        .i_op_B(i_ALU_src_B),
         .o_rslt(o_ALU_rslt)
     );
 
     AGU u_AGU (
-        .i_op_code(i_AGU_opcode),
+        .i_opcode(i_AGU_opcode),
         .i_addr(i_AGU_src_addr),
         .i_offset(i_addr_offset),
         .o_eff_addr(o_eff_addr),

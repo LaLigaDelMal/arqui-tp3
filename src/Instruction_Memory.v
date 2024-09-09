@@ -7,6 +7,7 @@ module Instruction_Memory #(
 )(
     input   wire    [NBITS-1:0] i_addr,
     input   wire    [NBITS-1:0] i_data,
+    input   wire                i_wr_en,
     output  reg     [INST_BITS-1:0] o_data
 );
 
