@@ -15,20 +15,20 @@ TOP_TOP dut(
 
 // Clock generation
 always begin
-    #5 clk = ~clk;
+    #50 clk = ~clk;
 end
 
 // Reset generation
 initial begin
     clk=0;
     reset = 1;
-    #10 reset = 0;
+    #100 reset = 0;
 end
 
 // Test case
 initial begin
     // Wait for a few clock cycles
-    #100;
+    #10000;
 
     // Perform test operations here
     

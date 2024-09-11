@@ -19,38 +19,38 @@ module Top_Instruction_Fetch #(
     output  wire [NBITS-1:0] o_instr          // Fetched instruction
 );
 
-wire [NBITS-1:0] next_pc;
-wire [NBITS-1:0] mux_2_pc;
 
 PC_Mux u_PC_Mux (
     .i_sel_jump(i_pc_mux_ctrl),         // Select signal for PC Mux
-    .i_next_pc(next_pc),                // PC input 
+    .i_next_pc(u_Adder.o_result),                // PC input 
     .i_jump_pc(i_eff_addr),             // Jump PC input
-    .o_pc(mux_2_pc)                     // Mux output
+    .o_pc()                     // Mux output
 );
 
-wire [NBITS-1:0] pc;
 Program_Counter u_PC (
     .i_clk(i_clk),                      // Clock signal
     .i_rst(i_rst),                      // Reset signal
-    .i_next_pc(mux_2_pc),               // Next PC
-    .o_pc(o_pc)                         // PC output
+    .i_next_pc(u_PC_Mux.o_pc),               // Next PC
+    .o_pc()                         // PC output
 );
 
 // Instantiate adder module
 Adder u_Adder (
     .i_operand_1(32'd4),              // Input A
-    .i_operand_2(o_pc),               // Input B
-    .o_result(next_pc)                // Output sum
+    .i_operand_2(u_PC.o_pc),               // Input B
+    .o_result()                // Output sum
 );
 
 // Instantiate Instruction Memory module
 Instruction_Memory u_Instruction_Memory (
+    .i_clk(i_clk),                      // Clock signal
     .i_wr_en(i_inst_mem_wr_en),
-    .i_addr(o_pc),                   
+    .i_addr(u_PC.o_pc),                   
     .i_data(i_inst_mem_data),                   
-    .o_data(o_instr)
+    .o_data()
 );
 
+assign o_pc = u_PC.o_pc;
+assign o_instr = u_Instruction_Memory.o_data;
 
 endmodule

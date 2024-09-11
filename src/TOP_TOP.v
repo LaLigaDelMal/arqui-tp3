@@ -15,8 +15,8 @@ Top_Instruction_Fetch IF (
     .i_rst(i_rst),
     .i_pc_mux_ctrl(EX_MA.o_pc_mux_ctrl),    //Viene de WB
     .i_eff_addr(EX_MA.o_eff_addr),          //Viene de MA
-    .i_inst_mem_wr_en(),                    // Viene de afuera
-    .i_inst_mem_data(),                     // Viene de afuera
+    .i_inst_mem_wr_en(0),                    // Viene de afuera TODO
+    .i_inst_mem_data(0),                     // Viene de afuera TODO
     .o_pc(),
     .o_instr()                              // Fetched instruction
 );
@@ -31,6 +31,7 @@ Reg_IF_ID IF_ID (
 );
 
 Top_Instruction_Decode ID (
+    .i_clk(i_clk),
     .i_rst(i_rst),
     .i_rd_sel(WB.o_reg_sel),                //Viene de WB
     .i_wr_en(MA_WB.o_neg_flg_mem_op),       //Viene de MA_WB
@@ -52,7 +53,6 @@ Top_Instruction_Decode ID (
     .o_flg_mem_type(),
     .o_flg_mem_size(),
     .o_flg_unsign(),
-    .o_pc(),
     .o_rt(),
     .o_rd()
 );
@@ -60,7 +60,7 @@ Top_Instruction_Decode ID (
 Reg_ID_EX ID_EX (
     .i_clk(i_clk),
     .i_rst(i_rst),
-    .i_pc(ID.o_pc),
+    .i_pc(IF_ID.o_pc),
     .i_rt(ID.o_rt),
     .i_rd(ID.o_rd),
     .i_addr_offset(ID.o_addr_offset),

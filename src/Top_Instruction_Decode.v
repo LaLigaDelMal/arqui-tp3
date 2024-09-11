@@ -37,7 +37,6 @@ module Top_Instruction_Decode #(
     output wire         o_flg_mem_type,
     output wire [1:0]   o_flg_mem_size,
     output wire         o_flg_unsign,
-    output wire [4:0]   o_pc,
     output wire [4:0]   o_rt,
     output wire [4:0]   o_rd
 );
@@ -48,14 +47,6 @@ wire [4:0]  rt;
 wire [4:0]  rd;
 wire [4:0]  sa;
 wire [15:0] imm;
-
-
-wire        flg_pc_modify;
-wire        flg_link_ret;
-wire [1:0]  flg_addr_type;
-wire [4:0]  link_reg;
-wire [4:0]  addr_reg;
-wire        flg_inmediate;
 
 Instruction_Decoder Inst_Deco(
     .i_instr(i_instruction),
@@ -68,19 +59,20 @@ Instruction_Decoder Inst_Deco(
     .o_imm(imm),
     .o_addr_offset(o_addr_offset),
     
-    .o_flg_pc_modify(flg_pc_modify),
-    .o_flg_link_ret(flg_link_ret),
-    .o_flg_addr_type(flg_addr_type),
-    .o_link_reg(link_reg),
-    .o_addr_reg(addr_reg),
-    .o_flg_inmediate(flg_inmediate),
+    .o_flg_pc_modify(),
+    .o_flg_link_ret(),
+    .o_flg_addr_type(),
+    .o_link_reg(),
+    .o_addr_reg(),
+    .o_flg_inmediate(),
 
-    .o_flg_equal(flg_equal),
-    .o_flg_mem_op(flg_mem_op),
-    .o_flg_mem_type(flg_mem_type),
-    .o_flg_mem_size(flg_mem_size),
-    .o_flg_unsign(flg_unsign)
+    .o_flg_equal(),
+    .o_flg_mem_op(),
+    .o_flg_mem_type(),
+    .o_flg_mem_size(),
+    .o_flg_unsign()
 );
+
 
 wire [1:0]  extend_sign;
 wire [1:0]  flg_ALU_src_a;
@@ -90,13 +82,13 @@ wire        flg_AGU_src_addr;
 Control_Unit Ctrl_Unit(
     .i_funct(funct),
 
-    .i_flg_pc_modify(flg_pc_modify),
-    .i_flg_link_ret(flg_link_ret),
-    .i_flg_addr_type(flg_addr_type),
-    .i_link_reg(link_reg),
-    .i_addr_reg(addr_reg),
-    .i_flg_inmediate(flg_inmediate),
-    .i_flg_mem_op(flg_mem_op),
+    .i_flg_pc_modify(Inst_Deco.o_flg_pc_modify),
+    .i_flg_link_ret(Inst_Deco.o_flg_link_ret),
+    .i_flg_addr_type(Inst_Deco.o_flg_addr_type),
+    .i_link_reg(Inst_Deco.o_link_reg),
+    .i_addr_reg(Inst_Deco.o_addr_reg),
+    .i_flg_inmediate(Inst_Deco.o_flg_inmediate),
+    .i_flg_mem_op(Inst_Deco.o_flg_mem_op),
 
     .o_flg_ALU_src_a(flg_ALU_src_a),
     .o_flg_ALU_src_b(flg_ALU_src_b),
@@ -117,6 +109,7 @@ wire [31:0]  rs_data;
 wire [31:0]  rt_data;
 
 Registers Regs(
+    .i_clk(i_clk),
     .i_rst(i_rst),
 
     .i_rs_sel(rs),
@@ -160,7 +153,12 @@ Mux_2 AGU_SRC_ADDR(
     .o_result(o_AGU_src_addr)
 );
 
-assign o_pc = i_pc;
+assign o_flg_equal = Inst_Deco.o_flg_equal;
+assign o_flg_mem_op = Inst_Deco.o_flg_mem_op;
+assign o_flg_mem_type = Inst_Deco.o_flg_mem_type;
+assign o_flg_mem_size = Inst_Deco.o_flg_mem_size;
+assign o_flg_unsign = Inst_Deco.o_flg_unsign;
+
 assign o_rt = rt;
 assign o_rd = rd;
 
