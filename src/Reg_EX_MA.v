@@ -15,7 +15,7 @@ module Reg_EX_MA #(
     input wire  [1:0]        i_flg_mem_size,
     input wire               i_flg_unsign,
     input wire  [4:0]        i_rd, i_rt,
-    input wire               i_flg_ALU_dst,
+    input wire  [1:0]        i_flg_ALU_dst,
 
     output reg               o_pc_mux_ctrl,
     output reg  [NBITS-1:0]  o_ALU_rslt,
@@ -25,7 +25,7 @@ module Reg_EX_MA #(
     output reg  [1:0]        o_flg_mem_size,
     output reg               o_flg_unsign,
     output reg  [4:0]        o_rd, o_rt,
-    output reg               o_flg_ALU_dst
+    output reg  [1:0]        o_flg_ALU_dst
 
     );
 

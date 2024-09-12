@@ -11,7 +11,7 @@ module Top_Memory_Access#(
     input wire                i_flg_mem_type,
     input wire   [NBITS-1:0]  i_eff_addr,
 
-    output wire               o_data
+    output wire  [NBITS-1:0]  o_data
 );
 
     Data_Memory u_Data_Memory (

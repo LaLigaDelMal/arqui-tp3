@@ -78,10 +78,11 @@ module Control_Unit(
                 i_flg_inmediate,
                 i_flg_mem_op
             };
-            
+    
+
     always @ (*) begin
-        case (flags)
-            12'b0XXX0X: begin        // R type instructions
+        casez (flags)
+            12'b0???0?: begin        // R type instructions
                 o_flg_ALU_src_a  <= 2'b01;
                 o_flg_ALU_dst    <= 2'b01;
                 
@@ -162,7 +163,7 @@ module Control_Unit(
                 o_flg_jump   <= 0;
                 o_flg_branch <= 1;
             end
-            12'b1X0100: begin      // J and JAL
+            12'b1?0100: begin      // J and JAL
                 o_flg_ALU_src_a     <= 2'b00;
                 o_flg_ALU_dst       <= 2'b11;
                 o_ALU_opcode        <= `OP_PASS;

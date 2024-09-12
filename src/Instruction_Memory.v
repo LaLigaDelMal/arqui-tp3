@@ -6,10 +6,10 @@ module Instruction_Memory #(
     parameter CELLS = 256
 )(
     input   wire    i_clk,
-    input   wire    [NBITS-1:0]     i_addr,
-    input   wire    [NBITS-1:0]     i_data,
-    input   wire                    i_wr_en,
-    output  reg     [INST_BITS-1:0] o_data
+    input   wire    [INST_BITS-1:0]     i_addr, // Preguntar a GASPAR si debe ser de 32 en lugar de 8
+    input   wire    [INST_BITS-1:0]     i_data, // Preguntar a GASPAR si debe ser de 32 en lugar de 8
+    input   wire                        i_wr_en,
+    output  reg     [INST_BITS-1:0]     o_data
 );
 
 reg [NBITS-1:0] memory[CELLS-1:0];
