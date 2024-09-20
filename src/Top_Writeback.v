@@ -26,7 +26,7 @@ module Top_Writeback#(
         .NBITS(5)
     ) u_Mux_4 (
         .i_sel(i_flg_ALU_dst),
-        .i_a(i_rt),     // Preguntar a GASPAR si deberiamos inicializar NBITS=5
+        .i_a(i_rt),
         .i_b(i_rd),
         .i_c(5'b0),
         .i_d(5'd31),

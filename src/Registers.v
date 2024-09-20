@@ -21,7 +21,7 @@ module Registers(
     integer i;
 
     
-
+    // Escritura
     always @(negedge i_clk) begin
         if (i_rst) begin
             for (i = 0; i < 31; i = i + 1) begin
@@ -34,6 +34,7 @@ module Registers(
         end
     end
 
+    // Lectura
     always @(*) begin
         if (i_rs_sel == 0) begin
             o_rs_data <= zero_reg;

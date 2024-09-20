@@ -36,6 +36,7 @@ Program_Counter u_PC (
 
 // Instantiate adder module
 Adder u_Adder (
+    .i_rst(i_rst),                              // Reset signal
     .i_operand_1(32'd4),                        // Input A
     .i_operand_2(u_PC.o_pc),                    // Input B
     .o_result()                                 // Output sum

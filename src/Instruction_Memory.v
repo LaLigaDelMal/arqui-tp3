@@ -6,8 +6,8 @@ module Instruction_Memory #(
     parameter CELLS = 256
 )(
     input   wire    i_clk,
-    input   wire    [INST_BITS-1:0]     i_addr, // Preguntar a GASPAR si debe ser de 32 en lugar de 8
-    input   wire    [INST_BITS-1:0]     i_data, // Preguntar a GASPAR si debe ser de 32 en lugar de 8
+    input   wire    [INST_BITS-1:0]     i_addr,
+    input   wire    [INST_BITS-1:0]     i_data,
     input   wire                        i_wr_en,
     output  reg     [INST_BITS-1:0]     o_data
 );
@@ -22,10 +22,11 @@ initial begin
 
     //Make two loads and an ADD operation between them
     //Load 0x00000001 into R0; lUI $t1, 1
-    {memory[0], memory[1], memory[2], memory[3]} = 32'h012A5821;     //ADDU R11, R10, R11; addu $t3, $t1, $t2
-    //{memory[0], memory[1], memory[2], memory[3]} = 32'h3c090001; //Load 0x00000001 into R0; lUI $t1, 1 
-    //{memory[4], memory[5], memory[6], memory[7]} = 32'h3c0a0002; //Load 0x00000001 into R1; lUI $t2, 2
-    //{memory[8], memory[9], memory[10], memory[11]} = 32'h12A5821;   //ADDU R11, R10, R11; addu $t3, $t1, $t2
+    {memory[0], memory[1], memory[2], memory[3]}     = 32'h3c0a0002; 
+    {memory[4], memory[5], memory[6], memory[7]}     = 32'h3c0a0003; 
+    {memory[8], memory[9], memory[10], memory[11]}   = 32'h3c0a0004;      
+    {memory[12], memory[13], memory[14], memory[15]} = 32'h3c0a0005;   
+    //{memory[12], memory[13], memory[14], memory[15]} = 32'h012A5821;   
 
 end
 

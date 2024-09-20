@@ -26,7 +26,7 @@ module Instruction_Decoder (
 
     reg [5:0] opcode;
 
-    always @(i_instr) begin
+    always @(*) begin
         opcode <= i_instr[31:26];
 
         case (opcode)
@@ -209,6 +209,7 @@ module Instruction_Decoder (
                     end
                     3'b100: begin               // Load instructions
                         o_funct         <= {3'b0, opcode[2:0]};
+                        $display("o_funct: %b", o_funct);
                         o_rs            <= i_instr[25:21];
                         o_rt            <= i_instr[20:16];
                         o_rd            <= 5'b0;

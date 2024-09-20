@@ -13,7 +13,6 @@ always @(*) begin
     if ( i_sel_jump ) begin
         o_pc <= i_jump_pc;
     end
-
     else begin
         o_pc <= i_next_pc;
     end
