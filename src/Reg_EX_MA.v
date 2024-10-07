@@ -29,7 +29,7 @@ module Reg_EX_MA #(
 
     );
 
-    always @(posedge i_clk) begin
+    always @(posedge i_clk, i_rst) begin
     if ( i_rst ) begin
         o_pc_mux_ctrl <= 0;
         o_ALU_rslt <= 0;

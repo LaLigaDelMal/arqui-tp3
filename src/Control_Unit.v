@@ -81,8 +81,10 @@ module Control_Unit(
     
 
     always @ (*) begin
+        $display("flags: %b", flags);
         casez (flags)
             12'b0???0?: begin        // R type instructions
+                $display("R TYPE");
                 o_flg_ALU_src_a  <= 2'b01;
                 o_flg_ALU_dst    <= 2'b01;
                 
@@ -104,8 +106,12 @@ module Control_Unit(
                     `FUNC_NOR:  begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_NOR; end
                     `FUNC_SLT:  begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_SLT; end
                 endcase  
+                //o_flg_AGU_src_addr  <= 0;
+                //o_flg_AGU_dst       <= 0;
+                //o_flg_AGU_opcode    <= 3'b001;
             end
             12'b100000: begin     // JR
+                $display("JR");
                 o_flg_AGU_src_addr  <= 0;
                 o_flg_AGU_dst       <= 1;
                 o_flg_AGU_opcode    <= 3'b000;
@@ -114,6 +120,7 @@ module Control_Unit(
                 o_flg_branch    <= 0;
             end
             12'b110000: begin     // JALR
+                $display("JALR");
                 o_flg_ALU_src_a  <= 2'b00;          // The PC+4
                 o_ALU_opcode     <= `OP_PASS;       // The ALU will be used to store the return address in the link register (RD)
                 o_flg_ALU_dst    <= 2'b01;          // The link register (rd)
@@ -126,6 +133,7 @@ module Control_Unit(
                 o_flg_branch <= 0;
             end
             12'b000011: begin     // LOAD & STORE   (Para 32 bits LW y LWU hacen lo mismo) 
+                $display("LOAD & STORE");
                 o_flg_AGU_src_addr  <= 0;
                 o_flg_AGU_dst       <= 0;
                 o_flg_AGU_opcode    <= 3'b001;   //TODO Verificar a la salida de la AGU el bus the excepciones segun sea direccion de byte, half word, o word
@@ -133,11 +141,18 @@ module Control_Unit(
                 o_flg_jump      <= 0;
                 o_flg_branch    <= 0;
             end
-            12'b000010: begin     // ARITHMETIC OPERATIONS WITH INMEDIATE VALUES
+            12'b000010: begin     // ARITHMETIC and LOADSTORE OPERATIONS WITH INMEDIATE VALUES
+                $display("ARITHMETIC and LOADSTORE OPERATIONS WITH INMEDIATE VALUES");
                 o_flg_ALU_src_a  <= 2'b11;
                 o_flg_ALU_src_b  <= 0;
                 o_flg_ALU_dst    <= 2'b00;
-                
+
+                // WARNING La agu no se usa, son valores patiños
+                o_flg_AGU_dst    <= 2'b00;
+                o_flg_AGU_opcode <= 3'b000;
+                o_flg_AGU_src_addr <= 0;
+
+
                 o_flg_jump   <= 0;
                 o_flg_branch <= 0;
 
@@ -151,6 +166,7 @@ module Control_Unit(
                 endcase
             end
             12'b101010: begin      // BRANCH
+                $display("BRANCH");
                 o_flg_ALU_src_a     <= 2'b01;
                 o_flg_ALU_src_b     <= 0;
                 o_flg_ALU_dst       <= 2'b00;     // The destination doesn't matter because it will be used to decide if the branch is taken or not (check flag branch)
@@ -164,6 +180,7 @@ module Control_Unit(
                 o_flg_branch <= 1;
             end
             12'b1?0100: begin      // J and JAL
+                $display("J and JAL");
                 o_flg_ALU_src_a     <= 2'b00;
                 o_flg_ALU_dst       <= 2'b11;
                 o_ALU_opcode        <= `OP_PASS;

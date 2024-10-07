@@ -6,6 +6,7 @@ module Instruction_Memory #(
     parameter CELLS = 256
 )(
     input   wire    i_clk,
+    input   wire    i_rst,
     input   wire    [INST_BITS-1:0]     i_addr,
     input   wire    [INST_BITS-1:0]     i_data,
     input   wire                        i_wr_en,
@@ -21,18 +22,26 @@ initial begin
     end
 
     //Make two loads and an ADD operation between them
-    //Load 0x00000001 into R0; lUI $t1, 1
     {memory[0], memory[1], memory[2], memory[3]}     = 32'h3c0a0002; 
-    {memory[4], memory[5], memory[6], memory[7]}     = 32'h3c0a0003; 
-    {memory[8], memory[9], memory[10], memory[11]}   = 32'h3c0a0004;      
-    {memory[12], memory[13], memory[14], memory[15]} = 32'h3c0a0005;   
-    //{memory[12], memory[13], memory[14], memory[15]} = 32'h012A5821;   
+    {memory[4], memory[5], memory[6], memory[7]}     = 32'h3c0b0002;
+    {memory[8], memory[9], memory[10], memory[11]}   = 32'h00000000;   
+    {memory[12], memory[13], memory[14], memory[15]}   = 32'h00000000;   
+    {memory[16], memory[17], memory[18], memory[19]}   = 32'h114b0004;
+    {memory[20], memory[21], memory[22], memory[23]}   = 32'h1;
+    {memory[24], memory[25], memory[26], memory[27]}   = 32'h2;
+    {memory[28], memory[29], memory[30], memory[31]}   = 32'h3;
+
+    //{memory[8], memory[9], memory[10], memory[11]}   = 32'h3c0a0004;      
+    //{memory[12], memory[13], memory[14], memory[15]} = 32'h3c0a0005;   
 
 end
 
 //////////////////////////////// SE UTILIZA BIG ENDIAN //////////////////////////////
-always @(posedge i_clk) begin
-    if ( !i_wr_en ) begin
+always @(negedge i_clk or i_rst) begin
+    if (i_rst) begin
+        o_data <= 0;
+    end 
+    else if ( !i_wr_en ) begin
         o_data  <= {memory[i_addr], memory[i_addr + 1], memory[i_addr + 2], memory[i_addr + 3]};  // BIG ENDIAN
         //          0000 0000       0000 0001       0000 0010       0000 0011
     end

@@ -45,6 +45,7 @@ Adder u_Adder (
 // Instantiate Instruction Memory module
 Instruction_Memory u_Instruction_Memory (
     .i_clk(i_clk),                              // Clock signal
+    .i_rst(i_rst),                              // Reset signal
     .i_wr_en(i_inst_mem_wr_en),
     .i_addr(u_PC.o_pc),                   
     .i_data(i_inst_mem_data),                   

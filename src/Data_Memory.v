@@ -23,11 +23,15 @@ module Data_Memory #(
     reg msb, sign;
     reg [2:0] offset; 
 
+    initial begin
+        for (i = 0; i < DATA_MEM_SIZE; i = i + 1) begin
+            memory[i] = 0;
+        end
+    end
+
     always @ (negedge i_clk) begin
         if (i_rst) begin
-            for (i = 0; i < DATA_MEM_SIZE; i = i + 1) begin
-                memory[i] <= 0;
-            end
+            data <= 0;
         end else if (i_write_en) begin
             case (i_size)
                 2'b00: memory[i_addr] <= i_data_in[7:0];
