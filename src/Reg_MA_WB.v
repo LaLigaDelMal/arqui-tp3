@@ -19,7 +19,7 @@ module Reg_MA_WB #(
     output reg  [4:0]         o_rd, o_rt
     );
 
-    always @(posedge i_clk, i_rst) begin
+    always @(posedge i_clk) begin
         if ( i_rst ) begin
             o_flg_ALU_dst <= 0;
             o_neg_flg_mem_op <= 0;

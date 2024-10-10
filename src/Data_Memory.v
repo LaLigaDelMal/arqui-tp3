@@ -29,6 +29,17 @@ module Data_Memory #(
         end
     end
 
+    initial begin
+        // Initialize memory with some values
+        for (i = 0; i < DATA_MEM_SIZE; i = i + 1) begin
+            memory[i] = 0;
+        end
+        memory[0] = 32'h11;
+        memory[1] = 32'h22;
+        memory[2] = 32'h33;
+        memory[3] = 32'h44;
+    end
+
     always @ (negedge i_clk) begin
         if (i_rst) begin
             data <= 0;

@@ -47,7 +47,7 @@ module Reg_ID_EX #(
 
 );
 
-always @(posedge i_clk, i_rst) begin
+always @(posedge i_clk) begin
     if ( i_rst ) begin
         o_pc <= 0;
         o_rd <= 0;

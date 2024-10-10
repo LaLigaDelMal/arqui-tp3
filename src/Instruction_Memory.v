@@ -22,22 +22,19 @@ initial begin
     end
 
     //Make two loads and an ADD operation between them
-    {memory[0], memory[1], memory[2], memory[3]}     = 32'h3c0a0002; 
-    {memory[4], memory[5], memory[6], memory[7]}     = 32'h3c0b0002;
-    {memory[8], memory[9], memory[10], memory[11]}   = 32'h00000000;   
-    {memory[12], memory[13], memory[14], memory[15]}   = 32'h00000000;   
-    {memory[16], memory[17], memory[18], memory[19]}   = 32'h114b0004;
-    {memory[20], memory[21], memory[22], memory[23]}   = 32'h1;
-    {memory[24], memory[25], memory[26], memory[27]}   = 32'h2;
-    {memory[28], memory[29], memory[30], memory[31]}   = 32'h3;
-
-    //{memory[8], memory[9], memory[10], memory[11]}   = 32'h3c0a0004;      
-    //{memory[12], memory[13], memory[14], memory[15]} = 32'h3c0a0005;   
+    {memory[0], memory[1], memory[2], memory[3]}     = 32'h3C080000; // Carga un 0 en T0
+    {memory[4], memory[5], memory[6], memory[7]}     = 32'h81090000; // Carga el valor de la memoria de datos (direccion 0) en T1
+    //{memory[8], memory[9], memory[10], memory[11]}   = 32'h00000000;   
+    //{memory[12], memory[13], memory[14], memory[15]}   = 32'h00000000;   
+    //{memory[16], memory[17], memory[18], memory[19]}   = 32'h114b0004;
+    //{memory[20], memory[21], memory[22], memory[23]}   = 32'h1;
+    //{memory[24], memory[25], memory[26], memory[27]}   = 32'h2;
+    //{memory[28], memory[29], memory[30], memory[31]}   = 32'h3; 
 
 end
 
 //////////////////////////////// SE UTILIZA BIG ENDIAN //////////////////////////////
-always @(negedge i_clk or i_rst) begin
+always @(negedge i_clk) begin
     if (i_rst) begin
         o_data <= 0;
     end 

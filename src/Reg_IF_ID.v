@@ -12,7 +12,7 @@ module Reg_IF_ID #(
     output reg      [NBITS-1:0]     o_instruction
 );
 
-always @(posedge i_clk, i_rst) begin
+always @(posedge i_clk) begin
     if ( i_rst ) begin
         {o_pc, o_instruction} <= 0;
     end
