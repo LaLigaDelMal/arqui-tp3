@@ -55,6 +55,7 @@ module Control_Unit(
     input wire [4:0]    i_addr_reg,             // Address register for JR and JALR
     input wire          i_flg_inmediate,        // 1 if the instruction is an I type instruction, 0 if not
     input wire          i_flg_mem_op,           // 1 if the instruction is a memory operation, 0 if not
+    input wire          i_flg_mem_type,         // 0 if load, 1 if store
 
     output reg [1:0]    o_flg_ALU_src_a,        // 01 if the ALU source A is the value of the register RT, 00 if is the PC+4, 11 if the source is the output from the sign extender
     output reg          o_flg_ALU_src_b,        // 1 if the ALU source B is the SA value in the instruction, 0 if the soure is the register RS
@@ -67,7 +68,11 @@ module Control_Unit(
 
     output reg o_flg_jump,                      // 1 if the instruction is a jump, 0 if not (this should change the mux that controls the AlU output to either PC or RD)
     output reg o_flg_branch,                    // 1 if the the result of the ALU will be used to make a conditional jump, 0 if is not a branch
-    
+
+    output reg o_flg_reg_wr_en,                 // 1 if the instruction writes values to a register, 0 if not
+    output wire o_flg_mem_wr_en,                // 1 if the instruction writes values to a data memory, 0 if not
+    output reg o_flg_wb_src,                    // 1 if the source is the ALU result, 0 if the source is the data memory
+
     output reg [1:0] o_extend_sign              // 00 if the inmediate value is sign extended, 01 if the upper part of the word is completed with zeros, 10 if the lower part of the word is completed with zeros
     );
 
@@ -79,6 +84,7 @@ module Control_Unit(
                 i_flg_mem_op
             };
     
+    assign o_flg_mem_wr_en = i_flg_mem_type;
 
     always @ (*) begin
         $display("flags: %b", flags);
@@ -90,6 +96,9 @@ module Control_Unit(
                 
                 o_flg_jump      <= 0;
                 o_flg_branch    <= 0;
+
+                o_flg_reg_wr_en <= 1;
+                o_flg_wb_src <= 1;
 
                 case (i_funct)
                     `FUNC_SLL:  begin o_flg_ALU_src_b <= 1; o_ALU_opcode <= `OP_SHIFT_LEFT; end
@@ -105,10 +114,7 @@ module Control_Unit(
                     `FUNC_XOR:  begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_XOR; end
                     `FUNC_NOR:  begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_NOR; end
                     `FUNC_SLT:  begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_SLT; end
-                endcase  
-                //o_flg_AGU_src_addr  <= 0;
-                //o_flg_AGU_dst       <= 0;
-                //o_flg_AGU_opcode    <= 3'b001;
+                endcase
             end
             12'b100000: begin     // JR
                 $display("JR");
@@ -118,6 +124,8 @@ module Control_Unit(
 
                 o_flg_jump      <= 1;
                 o_flg_branch    <= 0;
+
+                o_flg_reg_wr_en <= 0;
             end
             12'b110000: begin     // JALR
                 $display("JALR");
@@ -131,18 +139,25 @@ module Control_Unit(
 
                 o_flg_jump   <= 1;
                 o_flg_branch <= 0;
+
+                o_flg_reg_wr_en <= 1;
+                o_flg_wb_src <= 1;
             end
             12'b000011: begin     // LOAD & STORE   (Para 32 bits LW y LWU hacen lo mismo) 
                 $display("LOAD & STORE");
                 o_flg_AGU_src_addr  <= 0;
                 o_flg_AGU_dst       <= 0;
-                o_flg_AGU_opcode    <= 3'b001;   //TODO Verificar a la salida de la AGU el bus the excepciones segun sea direccion de byte, half word, o word
+                o_flg_AGU_opcode    <= 3'b001;   //TODO: Verificar a la salida de la AGU el bus the excepciones segun sea direccion de byte, half word, o word
 
                 o_flg_jump      <= 0;
                 o_flg_branch    <= 0;
+
+                o_flg_reg_wr_en <= ~i_flg_mem_type;    // Write to register only for loads
+                o_flg_wb_src <= i_flg_mem_type;        // Selects the source of the WB as the data memory for loads
+
             end
-            12'b000010: begin     // ARITHMETIC and LOADSTORE OPERATIONS WITH INMEDIATE VALUES
-                $display("ARITHMETIC and LOADSTORE OPERATIONS WITH INMEDIATE VALUES");
+            12'b000010: begin     // ARITHMETIC and LOAD/STORE OPERATIONS WITH INMEDIATE VALUES
+                $display("ARITHMETIC and LOAD/STORE OPERATIONS WITH INMEDIATE VALUES");
                 o_flg_ALU_src_a  <= 2'b11;
                 o_flg_ALU_src_b  <= 0;
                 o_flg_ALU_dst    <= 2'b00;
@@ -152,9 +167,11 @@ module Control_Unit(
                 o_flg_AGU_opcode <= 3'b000;
                 o_flg_AGU_src_addr <= 0;
 
-
                 o_flg_jump   <= 0;
                 o_flg_branch <= 0;
+
+                o_flg_reg_wr_en <= ~i_flg_mem_type;                   // Write to register only for loads
+                o_flg_wb_src <= ~(i_flg_mem_type | i_flg_mem_op);     // Selects the source of the WB as the data memory for loads
 
                 case (i_funct)
                     `FUNC_ADDI: begin o_ALU_opcode <= `OP_SIGNED_ADD;   o_extend_sign <= `MODE_SIGN_EXT; end
@@ -178,6 +195,8 @@ module Control_Unit(
 
                 o_flg_jump   <= 0;
                 o_flg_branch <= 1;
+
+                o_flg_reg_wr_en <= 0;
             end
             12'b1?0100: begin      // J and JAL
                 $display("J and JAL");
@@ -191,6 +210,9 @@ module Control_Unit(
 
                 o_flg_jump      <= 1;
                 o_flg_branch    <= 0;
+
+                o_flg_reg_wr_en <= i_flg_link_ret;
+                o_flg_wb_src <= 1;
             end
         endcase
     end

@@ -10,8 +10,6 @@ module Reg_ID_EX #(
     input wire   [4:0]        i_rt,
     input wire   [25:0]       i_addr_offset,
     input wire                i_flg_equal,
-    input wire                i_flg_mem_op,
-    input wire                i_flg_mem_type,
     input wire   [1:0]        i_flg_mem_size,
     input wire                i_flg_unsign,
     input wire   [1:0]        i_ALU_dst,
@@ -23,6 +21,9 @@ module Reg_ID_EX #(
     input wire   [NBITS-1:0]  i_ALU_src_A,
     input wire   [NBITS-1:0]  i_ALU_src_B,
     input wire   [NBITS-1:0]  i_AGU_src_addr,
+    input wire                i_flg_reg_wr_en,
+    input wire                i_flg_mem_wr_en,
+    input wire                i_flg_wb_src,
 
     output reg                o_clk,
     output reg                o_rst,
@@ -31,8 +32,6 @@ module Reg_ID_EX #(
     output reg   [4:0]        o_rt,
     output reg   [25:0]       o_addr_offset,
     output reg                o_flg_equal,
-    output reg                o_flg_mem_op,
-    output reg                o_flg_mem_type,
     output reg   [1:0]        o_flg_mem_size,
     output reg                o_flg_unsign,
     output reg   [1:0]        o_ALU_dst,
@@ -43,8 +42,10 @@ module Reg_ID_EX #(
     output reg                o_flg_jump,
     output reg   [NBITS-1:0]  o_ALU_src_A,
     output reg   [NBITS-1:0]  o_ALU_src_B,
-    output reg   [NBITS-1:0]  o_AGU_src_addr
-
+    output reg   [NBITS-1:0]  o_AGU_src_addr,
+    output reg                o_flg_reg_wr_en,
+    output reg                o_flg_mem_wr_en,
+    output reg                o_flg_wb_src
 );
 
 always @(posedge i_clk) begin
@@ -54,8 +55,6 @@ always @(posedge i_clk) begin
         o_rt <= 0;
         o_addr_offset <= 0;
         o_flg_equal <= 0;
-        o_flg_mem_op <= 0;
-        o_flg_mem_type <= 0;
         o_flg_mem_size <= 0;
         o_flg_unsign <= 0;
         o_ALU_dst <= 0;
@@ -67,6 +66,9 @@ always @(posedge i_clk) begin
         o_ALU_src_A <= 0;
         o_ALU_src_B <= 0;
         o_AGU_src_addr <= 0;
+        o_flg_reg_wr_en <= 0;
+        o_flg_mem_wr_en <= 0;
+        o_flg_wb_src <= 0;
     end
     else begin
         o_pc <= i_pc;
@@ -74,8 +76,6 @@ always @(posedge i_clk) begin
         o_rt <= i_rt;
         o_addr_offset <= i_addr_offset;
         o_flg_equal <= i_flg_equal;
-        o_flg_mem_op <= i_flg_mem_op;
-        o_flg_mem_type <= i_flg_mem_type;
         o_flg_mem_size <= i_flg_mem_size;
         o_flg_unsign <= i_flg_unsign;
         o_ALU_dst <= i_ALU_dst;
@@ -87,6 +87,9 @@ always @(posedge i_clk) begin
         o_ALU_src_A <= i_ALU_src_A;
         o_ALU_src_B <= i_ALU_src_B;
         o_AGU_src_addr <= i_AGU_src_addr;
+        o_flg_reg_wr_en <= i_flg_reg_wr_en;
+        o_flg_mem_wr_en <= i_flg_mem_wr_en;
+        o_flg_wb_src <= i_flg_wb_src;
     end
 end
 

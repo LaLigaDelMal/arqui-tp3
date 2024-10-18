@@ -33,12 +33,14 @@ module Top_Instruction_Decode #(
     output wire [31:0]  o_AGU_src_addr,
         
     output wire         o_flg_equal,
-    output wire         o_flg_mem_op,
-    output wire         o_flg_mem_type,
     output wire [1:0]   o_flg_mem_size,
     output wire         o_flg_unsign,
     output wire [4:0]   o_rt,
-    output wire [4:0]   o_rd
+    output wire [4:0]   o_rd,
+
+    output wire         o_flg_reg_wr_en,
+    output wire         o_flg_mem_wr_en,
+    output wire         o_flg_wb_src
 );
 
 Instruction_Decoder Inst_Deco(
@@ -77,6 +79,7 @@ Control_Unit Ctrl_Unit(
     .i_addr_reg(Inst_Deco.o_addr_reg),
     .i_flg_inmediate(Inst_Deco.o_flg_inmediate),
     .i_flg_mem_op(Inst_Deco.o_flg_mem_op),
+    .i_flg_mem_type(Inst_Deco.o_flg_mem_type),
 
     .o_flg_ALU_src_a(),
     .o_flg_ALU_src_b(),
@@ -89,6 +92,10 @@ Control_Unit Ctrl_Unit(
 
     .o_flg_jump(),
     .o_flg_branch(),
+
+    .o_flg_reg_wr_en(),
+    .o_flg_mem_wr_en(),
+    .o_flg_wb_src(),
 
     .o_extend_sign()
 );
@@ -151,8 +158,6 @@ assign o_rd = Inst_Deco.o_rd;
 assign o_addr_offset = Inst_Deco.o_addr_offset;
 
 assign o_flg_equal = Inst_Deco.o_flg_equal;
-assign o_flg_mem_op = Inst_Deco.o_flg_mem_op;
-assign o_flg_mem_type = Inst_Deco.o_flg_mem_type;
 assign o_flg_mem_size = Inst_Deco.o_flg_mem_size;
 assign o_flg_unsign = Inst_Deco.o_flg_unsign;
 
@@ -169,5 +174,9 @@ assign o_ALU_src_A = ALU_SRC_A.o_result;
 assign o_ALU_src_B = ALU_SRC_B.o_result;
 
 assign o_AGU_src_addr = AGU_SRC_ADDR.o_result;
+
+assign o_flg_reg_wr_en = Ctrl_Unit.o_flg_reg_wr_en;
+assign o_flg_mem_wr_en = Ctrl_Unit.o_flg_mem_wr_en;
+assign o_flg_wb_src = Ctrl_Unit.o_flg_wb_src;
 
 endmodule

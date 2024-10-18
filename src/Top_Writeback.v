@@ -3,11 +3,12 @@
 module Top_Writeback#(
     parameter   NBITS = 32
 )(
-    input wire                i_neg_flg_mem_op,
     input wire   [NBITS-1:0]  i_ALU_rslt,
     input wire   [NBITS-1:0]  i_data,
     input wire   [1:0]        i_flg_ALU_dst,
     input wire   [4:0]        i_rd, i_rt,
+    input wire                i_flg_reg_wr_en,
+    input wire                i_flg_wb_src,
 
     output wire  [NBITS-1:0]  o_wr_data,
     output wire  [4:0]        o_reg_sel
@@ -16,7 +17,7 @@ module Top_Writeback#(
     Mux_2 #(
         .NBITS(NBITS)
     ) u_Mux_2 (
-        .i_sel(i_neg_flg_mem_op),
+        .i_sel(i_flg_wb_src),
         .i_a(i_data),
         .i_b(i_ALU_rslt),
         .o_result(o_wr_data)
