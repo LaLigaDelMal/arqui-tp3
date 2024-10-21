@@ -40,7 +40,7 @@ module Data_Memory #(
         memory[3] = 32'h44;
     end
 
-    always @ (negedge i_clk) begin
+    always @ (posedge i_clk) begin
         if (i_rst) begin
             data <= 0;
         end else if (i_write_en) begin

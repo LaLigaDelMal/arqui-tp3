@@ -214,8 +214,8 @@ module Instruction_Decoder (
                         o_rt            <= i_instr[20:16];
                         o_rd            <= 5'b0;
                         o_sa            <= 32'b0;
-                        o_imm           <= i_instr[15:0];
-                        o_addr_offset   <= 26'b0;
+                        o_imm           <= 16'b0;
+                        o_addr_offset   <= {10'b0, i_instr[15:0]};
 
                         o_flg_pc_modify <= 1'b0;
                         o_flg_link_ret  <= 1'b0;
@@ -235,8 +235,8 @@ module Instruction_Decoder (
                         o_rt            <= i_instr[20:16];
                         o_rd            <= 5'b0;
                         o_sa            <= 32'b0;
-                        o_imm           <= i_instr[15:0];
-                        o_addr_offset   <= 26'b0;
+                        o_imm           <= 16'b0;
+                        o_addr_offset   <= {10'b0, i_instr[15:0]};
 
                         o_flg_pc_modify <= 1'b0;
                         o_flg_link_ret  <= 1'b0;
