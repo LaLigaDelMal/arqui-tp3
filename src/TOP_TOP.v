@@ -4,7 +4,10 @@ module TOP_TOP #(
     parameter   NBITS = 32
 )(
     input wire i_clk,
-    input wire i_rst
+    input wire i_rst,
+    input wire i_inst_mem_wr_en,
+    input wire [NBITS-1:0] i_inst_mem_addr,
+    input wire [NBITS-1:0] i_inst_mem_data
 );
 
 
@@ -13,8 +16,9 @@ Top_Instruction_Fetch IF (
     .i_rst(i_rst),
     .i_pc_mux_ctrl(EX.o_pc_mux_ctrl),    //Viene de WB
     .i_eff_addr(EX.o_eff_addr),          //Viene de MA
-    .i_inst_mem_wr_en(1'b0),                    // Viene de afuera TODO
-    .i_inst_mem_data(0),                     // Viene de afuera TODO
+    .i_inst_mem_wr_en(i_inst_mem_wr_en),     // Viene de afuera DEBUG
+    .i_inst_mem_addr(i_inst_mem_addr),       // Viene de afuera DEBUG
+    .i_inst_mem_data(i_inst_mem_data),       // Viene de afuera DEBUG
     .o_pc(),
     .o_instr()                              // Fetched instruction
 );

@@ -21,8 +21,8 @@ module Top_Memory_Access#(
         .i_size(i_flg_mem_size),
         .i_unsigned(i_flg_unsign),
         .i_addr(i_eff_addr),
-        .i_data_in(i_ALU_rslt),
-        .o_data_out(o_data)
+        .i_data(i_ALU_rslt),
+        .o_data(o_data)
     );
 
 endmodule

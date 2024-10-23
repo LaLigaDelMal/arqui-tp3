@@ -11,8 +11,8 @@ module Data_Memory #(
     input   wire [1:0]          i_size,    // 00: Byte, 01: Half Word, 10: Word
     input   wire                i_unsigned,
     input   wire [WORD_LEN-1:0] i_addr,
-    input   wire [WORD_LEN-1:0] i_data_in,
-    output  wire [WORD_LEN-1:0] o_data_out
+    input   wire [WORD_LEN-1:0] i_data,
+    output  wire [WORD_LEN-1:0] o_data
 );
 
     integer i;
@@ -45,9 +45,9 @@ module Data_Memory #(
             data <= 0;
         end else if (i_write_en) begin
             case (i_size)
-                2'b00: memory[i_addr] <= i_data_in[7:0];
-                2'b01: {memory[i_addr + 1], memory[i_addr] } <= i_data_in[15:0];
-                2'b10: {memory[i_addr + 3], memory[i_addr + 2], memory[i_addr + 1], memory[i_addr]} <= i_data_in[31:0];
+                2'b00: memory[i_addr] <= i_data[7:0];
+                2'b01: {memory[i_addr + 1], memory[i_addr] } <= i_data[15:0];
+                2'b10: {memory[i_addr + 3], memory[i_addr + 2], memory[i_addr + 1], memory[i_addr]} <= i_data[31:0];
             endcase
         end else begin
             offset = i_size << 1;
@@ -60,6 +60,6 @@ module Data_Memory #(
         end
     end
 
-    assign o_data_out = data;
+    assign o_data = data;
 
 endmodule

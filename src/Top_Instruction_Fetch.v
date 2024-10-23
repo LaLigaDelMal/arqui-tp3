@@ -12,6 +12,7 @@ module Top_Instruction_Fetch #(
     
     // Instruction Memory
     input   wire i_inst_mem_wr_en,
+    input   wire [NBITS-1:0] i_inst_mem_addr,
     input   wire [NBITS-1:0] i_inst_mem_data,
 
     // Outputs
@@ -47,7 +48,8 @@ Instruction_Memory u_Instruction_Memory (
     .i_clk(i_clk),                              // Clock signal
     .i_rst(i_rst),                              // Reset signal
     .i_wr_en(i_inst_mem_wr_en),
-    .i_addr(u_PC.o_pc),                   
+    .i_addr(u_PC.o_pc),
+    .i_addr_wr(i_inst_mem_addr),                   
     .i_data(i_inst_mem_data),                   
     .o_data()
 );
