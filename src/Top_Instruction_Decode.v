@@ -37,10 +37,13 @@ module Top_Instruction_Decode #(
     output wire         o_flg_unsign,
     output wire [4:0]   o_rt,
     output wire [4:0]   o_rd,
+    output wire [4:0]   o_rs,
 
     output wire         o_flg_reg_wr_en,
     output wire         o_flg_mem_wr_en,
-    output wire         o_flg_wb_src
+    output wire         o_flg_wb_src,
+    output wire [1:0]   o_flg_ALU_src_A,
+    output wire         o_flg_ALU_src_B
 );
 
 Instruction_Decoder Inst_Deco(
@@ -154,6 +157,7 @@ Mux_2 AGU_SRC_ADDR(
 
 assign o_rt = Inst_Deco.o_rt;
 assign o_rd = Inst_Deco.o_rd;
+assign o_rs = Inst_Deco.o_rs;
 
 assign o_addr_offset = Inst_Deco.o_addr_offset;
 
@@ -178,5 +182,8 @@ assign o_AGU_src_addr = AGU_SRC_ADDR.o_result;
 assign o_flg_reg_wr_en = Ctrl_Unit.o_flg_reg_wr_en;
 assign o_flg_mem_wr_en = Ctrl_Unit.o_flg_mem_wr_en;
 assign o_flg_wb_src = Ctrl_Unit.o_flg_wb_src;
+
+assign o_flg_ALU_src_A = Ctrl_Unit.o_flg_ALU_src_a;
+assign o_flg_ALU_src_B = Ctrl_Unit.o_flg_ALU_src_b;
 
 endmodule

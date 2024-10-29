@@ -13,7 +13,10 @@ module Top_Execute#(
     input wire   [NBITS-1:0]  i_ALU_src_A,
     input wire   [NBITS-1:0]  i_ALU_src_B,
     input wire   [NBITS-1:0]  i_AGU_src_addr,
-
+    input wire   [NBITS-1:0]  i_ALU_rslt_MEM,
+    input wire   [NBITS-1:0]  i_WB_wr_data,
+    input wire   [1:0]        i_ALU_src_A_ctrl,
+    input wire   [1:0]        i_ALU_src_B_ctrl,
 
     output wire               o_pc_mux_ctrl,
     output wire  [NBITS-1:0]  o_ALU_rslt,
@@ -22,10 +25,28 @@ module Top_Execute#(
     
     wire o_rslt_lsb = o_ALU_rslt[0];
 
+    Mux_4 u_ALU_mux_A (
+        .i_sel(i_ALU_src_A_ctrl),
+        .i_a(i_ALU_src_A),
+        .i_b(i_ALU_rslt_MEM),
+        .i_c(i_WB_wr_data),
+        .i_d(0),
+        .o_result()
+    );
+
+    Mux_4 u_ALU_mux_B (
+        .i_sel(i_ALU_src_B_ctrl),
+        .i_a(i_ALU_src_B),
+        .i_b(i_ALU_rslt_MEM),
+        .i_c(i_WB_wr_data),
+        .i_d(0),
+        .o_result()
+    );
+
     ALU u_ALU (
         .i_opcode(i_ALU_opcode),
-        .i_op_A(i_ALU_src_A),
-        .i_op_B(i_ALU_src_B),
+        .i_op_A(u_ALU_mux_A.o_result),
+        .i_op_B(u_ALU_mux_B.o_result),
         .o_rslt(o_ALU_rslt)
     );
 

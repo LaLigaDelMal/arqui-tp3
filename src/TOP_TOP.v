@@ -55,9 +55,12 @@ Top_Instruction_Decode ID (
     .o_flg_unsign(),
     .o_rt(),
     .o_rd(),
+    .o_rs(),
     .o_flg_reg_wr_en(),
     .o_flg_mem_wr_en(),
-    .o_flg_wb_src()
+    .o_flg_wb_src(),
+    .o_flg_ALU_src_A(),
+    .o_flg_ALU_src_B()
 );
 
 Reg_ID_EX ID_EX (
@@ -66,6 +69,7 @@ Reg_ID_EX ID_EX (
     .i_pc(IF_ID.o_pc),
     .i_rt(ID.o_rt),
     .i_rd(ID.o_rd),
+    .i_rs(ID.o_rs),
     .i_addr_offset(ID.o_addr_offset),
     .i_flg_equal(ID.o_flg_equal),
     .i_flg_mem_size(ID.o_flg_mem_size),
@@ -82,11 +86,14 @@ Reg_ID_EX ID_EX (
     .i_flg_reg_wr_en(ID.o_flg_reg_wr_en),
     .i_flg_mem_wr_en(ID.o_flg_mem_wr_en),
     .i_flg_wb_src(ID.o_flg_wb_src),
+    .i_flg_ALU_src_A(ID.o_flg_ALU_src_A),
+    .i_flg_ALU_src_B(ID.o_flg_ALU_src_B),
     .o_clk(),
     .o_rst(),
     .o_pc(),
     .o_rd(),
     .o_rt(),
+    .o_rs(),
     .o_addr_offset(),
     .o_flg_equal(),
     .o_flg_mem_size(),
@@ -102,7 +109,24 @@ Reg_ID_EX ID_EX (
     .o_AGU_src_addr(),
     .o_flg_reg_wr_en(),
     .o_flg_mem_wr_en(),
-    .o_flg_wb_src()
+    .o_flg_wb_src(),
+    .o_flg_ALU_src_A(),
+    .o_flg_ALU_src_B()
+);
+
+Forwarding_Unit FU (
+    .i_rt_EX(ID_EX.o_rt),
+    .i_rs_EX(ID_EX.o_rs),
+    .i_flg_ALU_src_A(ID_EX.o_flg_ALU_src_A),
+    .i_flg_ALU_src_B(ID_EX.o_flg_ALU_src_B),
+    .i_rt_MEM(EX_MA.o_rt),
+    .i_rd_MEM(EX_MA.o_rd),
+    .i_flg_reg_wr_en_MEM(EX_MA.o_flg_reg_wr_en),
+    .i_flg_reg_wr_en_WB(MA_WB.o_flg_reg_wr_en),
+    .i_reg_sel_WB(WB.o_reg_sel),
+    .i_flg_WB_src(MA_WB.o_flg_wb_src),
+    .o_ALU_src_a_ctrl(),
+    .o_ALU_src_b_ctrl()
 );
 
 Top_Execute EX (
@@ -116,6 +140,10 @@ Top_Execute EX (
     .i_ALU_src_A(ID_EX.o_ALU_src_A),
     .i_ALU_src_B(ID_EX.o_ALU_src_B),
     .i_AGU_src_addr(ID_EX.o_AGU_src_addr),
+    .i_ALU_rslt_MEM(EX_MA.o_ALU_rslt),
+    .i_WB_wr_data(WB.o_wr_data),
+    .i_ALU_src_A_ctrl(FU.o_ALU_src_a_ctrl),
+    .i_ALU_src_B_ctrl(FU.o_ALU_src_b_ctrl),
     .o_pc_mux_ctrl(),
     .o_ALU_rslt(),
     .o_eff_addr()
