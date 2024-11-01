@@ -35,7 +35,7 @@ module Registers(
     end
 
     // Lectura
-    always @(*) begin
+    always @ (*) begin
         if (i_rs_sel == 0) begin
             o_rs_data <= zero_reg;
         end else begin

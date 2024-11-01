@@ -20,7 +20,6 @@ module Top_Instruction_Decode #(
     output wire [1:0]  o_flg_ALU_dst,
     output wire [3:0]  o_flg_ALU_opcode,
 
-    output wire        o_flg_AGU_dst,
     output wire [2:0]  o_flg_AGU_opcode,
 
     output wire [25:0]  o_addr_offset,
@@ -90,7 +89,6 @@ Control_Unit Ctrl_Unit(
     .o_ALU_opcode(),
 
     .o_flg_AGU_src_addr(),
-    .o_flg_AGU_dst(),
     .o_flg_AGU_opcode(),
 
     .o_flg_jump(),
@@ -168,7 +166,6 @@ assign o_flg_unsign = Inst_Deco.o_flg_unsign;
 assign o_flg_ALU_dst    = Ctrl_Unit.o_flg_ALU_dst;
 assign o_flg_ALU_opcode = Ctrl_Unit.o_ALU_opcode;
 
-assign o_flg_AGU_dst    = Ctrl_Unit.o_flg_AGU_dst;
 assign o_flg_AGU_opcode = Ctrl_Unit.o_flg_AGU_opcode;
 
 assign o_flg_jump       = Ctrl_Unit.o_flg_jump;
