@@ -15,6 +15,9 @@ module Top_Instruction_Fetch #(
     input   wire [NBITS-1:0] i_inst_mem_addr,
     input   wire [NBITS-1:0] i_inst_mem_data,
 
+    // From TOP
+    input   wire             i_hazard_detected,
+
     // Outputs
     output  wire [NBITS-1:0] o_pc,    
     output  wire [NBITS-1:0] o_instr            // Fetched instruction
@@ -32,6 +35,7 @@ Program_Counter u_PC (
     .i_clk(i_clk),                              // Clock signal
     .i_rst(i_rst),                              // Reset signal
     .i_next_pc(u_PC_Mux.o_pc),                  // Next PC
+    .i_hazard_detected(i_hazard_detected),      // Hazard detected signal
     .o_pc()                                     // PC output
 );
 

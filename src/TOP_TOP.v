@@ -19,6 +19,7 @@ Top_Instruction_Fetch IF (
     .i_inst_mem_wr_en(i_inst_mem_wr_en),     // Viene de afuera DEBUG
     .i_inst_mem_addr(i_inst_mem_addr),       // Viene de afuera DEBUG
     .i_inst_mem_data(i_inst_mem_data),       // Viene de afuera DEBUG
+    .i_hazard_detected(HU.o_hazard_detected),
     .o_pc(),
     .o_instr()                              // Fetched instruction
 );
@@ -28,6 +29,7 @@ Reg_IF_ID IF_ID (
     .i_rst(i_rst),
     .i_pc(IF.o_pc),
     .i_instruction(IF.o_instr),
+    .i_hazard_detected(HU.o_hazard_detected),
     .o_pc(),    
     .o_instruction()          // Fetched instruction
 );
@@ -125,6 +127,10 @@ Forwarding_Unit FU (
     .i_flg_WB_src(MA_WB.o_flg_wb_src),
     .o_ALU_src_a_ctrl(),
     .o_ALU_src_b_ctrl()
+);
+
+Hazard_Unit HU (
+    .o_hazard_detected()
 );
 
 Top_Execute EX (
