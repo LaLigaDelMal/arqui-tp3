@@ -378,7 +378,7 @@ initial begin
     //TODO Add tests for the following instructions when hazzard detection is implemented (The instruction following the jumnp instruction should be executed and an stall should be inserted in the pipeline)
     //// Tests JR instruction
     //// Tests JALR instruction
-
+    //// Test signed and unsigned loads
 
     //// Tests LUI instruction
     // Load instruction in memory

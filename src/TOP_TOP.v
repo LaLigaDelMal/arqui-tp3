@@ -37,9 +37,10 @@ Reg_IF_ID IF_ID (
 Top_Instruction_Decode ID (
     .i_clk(i_clk),
     .i_rst(i_rst),
-    .i_rd_sel(WB.o_reg_sel),                //Viene de WB
-    .i_wr_en(MA_WB.o_flg_reg_wr_en),        //Viene de MA_WB
-    .i_wr_data(WB.o_wr_data),               //Viene de WB
+    .i_hazard_detected(HU.o_hazard_detected),
+    .i_rd_sel(WB.o_reg_sel),                    //Viene de WB
+    .i_wr_en(MA_WB.o_flg_reg_wr_en),            //Viene de MA_WB
+    .i_wr_data(WB.o_wr_data),                   //Viene de WB
     .i_pc(IF_ID.o_pc),
     .i_instruction(IF_ID.o_instruction),
     .o_flg_ALU_dst(),
@@ -188,7 +189,7 @@ Top_Memory_Access MA (
     .i_flg_unsign(EX_MA.o_flg_unsign),
     .i_flg_mem_size(EX_MA.o_flg_mem_size),
     .i_flg_mem_wr_en(EX_MA.o_flg_mem_wr_en),
-    .i_eff_addr(EX_MA.i_eff_addr),
+    .i_eff_addr(EX_MA.o_eff_addr),
     .o_data()
 );
 

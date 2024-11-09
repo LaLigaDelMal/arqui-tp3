@@ -5,6 +5,7 @@ module Top_Instruction_Decode #(
 )(
     input   wire i_clk,
     input   wire i_rst,
+    input   wire i_hazard_detected,
 
     // Non buffer inputs (WB signals)
     input wire [4:0]    i_rd_sel,
@@ -82,6 +83,7 @@ Control_Unit Ctrl_Unit(
     .i_flg_inmediate(Inst_Deco.o_flg_inmediate),
     .i_flg_mem_op(Inst_Deco.o_flg_mem_op),
     .i_flg_mem_type(Inst_Deco.o_flg_mem_type),
+    .i_hazard_detected(i_hazard_detected),
 
     .o_flg_ALU_src_a(),
     .o_flg_ALU_src_b(),

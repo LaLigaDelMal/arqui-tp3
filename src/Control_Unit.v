@@ -70,7 +70,7 @@ module Control_Unit(
     output reg o_flg_branch,                    // 1 if the the result of the ALU will be used to make a conditional jump, 0 if is not a branch
 
     output reg o_flg_reg_wr_en,                 // 1 if the instruction writes values to a register, 0 if not
-    output wire o_flg_mem_wr_en,                // 1 if the instruction writes values to a data memory, 0 if not
+    output reg o_flg_mem_wr_en,                 // 1 if the instruction writes values to a data memory, 0 if not
     output reg o_flg_wb_src,                    // 1 if the source is the ALU result, 0 if the source is the data memory
 
     output reg [1:0] o_extend_sign              // 00 if the inmediate value is sign extended, 01 if the upper part of the word is completed with zeros, 10 if the lower part of the word is completed with zeros
@@ -83,11 +83,11 @@ module Control_Unit(
                 i_flg_inmediate,
                 i_flg_mem_op
             };
-    
-    assign o_flg_mem_wr_en = i_flg_mem_type;
 
     always @ (*) begin
-        if (~hazard_detected) begin
+        if (~i_hazard_detected) begin
+            o_flg_mem_wr_en <= i_flg_mem_type;
+
             casez (flags)
                 12'b0???0?: begin        // R type instructions
                     o_flg_ALU_src_a  <= 2'b01;
@@ -142,6 +142,9 @@ module Control_Unit(
                     o_flg_AGU_src_addr  <= 0;
                     o_flg_AGU_opcode    <= 3'b001;   //TODO: Verificar a la salida de la AGU el bus the excepciones segun sea direccion de byte, half word, o word
 
+                    o_ALU_opcode <= `OP_PASS;       // For the stores
+                    o_flg_ALU_src_a <= 2'b01;       // For the stores
+
                     o_flg_ALU_dst    <= 2'b00;
 
                     o_flg_jump      <= 0;
@@ -151,7 +154,7 @@ module Control_Unit(
                     o_flg_wb_src <= i_flg_mem_type;        // Selects the source of the WB as the data memory for loads
 
                 end
-                12'b000010: begin     // ARITHMETIC and LOAD/STORE OPERATIONS WITH INMEDIATE VALUES
+                12'b000010: begin     // ARITHMETIC and LOAD OPERATIONS WITH INMEDIATE VALUES
                     o_flg_ALU_src_a  <= 2'b11;
                     o_flg_ALU_src_b  <= 0;
                     o_flg_ALU_dst    <= 2'b00;
