@@ -22,7 +22,7 @@ module Registers(
 
     
     // Escritura
-    always @(negedge i_clk) begin
+    always @(i_clk) begin // Checkear Flanco GASPAR AIUDA
         if (i_rst) begin
             for (i = 0; i < 31; i = i + 1) begin
                 reg_file[i] <= 0;

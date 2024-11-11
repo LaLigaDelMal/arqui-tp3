@@ -34,8 +34,13 @@ always @(negedge i_clk) begin
         o_data <= 0;
     end else if (i_wr_en) begin
         {memory[i_addr_wr], memory[i_addr_wr + 1], memory[i_addr_wr + 2], memory[i_addr_wr + 3]} <= i_data[31:0];
-    end else begin
-        o_data  <= {memory[i_addr], memory[i_addr + 1], memory[i_addr + 2], memory[i_addr + 3]};
+    end
+end
+
+// Lectura
+always @ (*) begin
+    if (i_wr_en == 0) begin
+        o_data <= {memory[i_addr], memory[i_addr + 1], memory[i_addr + 2], memory[i_addr + 3]};
     end
 end
 
