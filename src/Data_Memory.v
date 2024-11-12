@@ -20,7 +20,7 @@ module Data_Memory #(
     wire [WORD_LEN-1:0] base_address;
 
     reg [WORD_LEN-1:0] data;
-    reg msb, sign;
+    reg sign;
 
     initial begin
         for (i = 0; i < DATA_MEM_SIZE; i = i + 1) begin
@@ -28,7 +28,7 @@ module Data_Memory #(
         end
     end
 
-    always @ (posedge i_clk) begin
+    always @ (negedge i_clk) begin
         if (i_rst) begin
             data <= 0;
         end else if (i_write_en) begin
@@ -38,7 +38,7 @@ module Data_Memory #(
                 2'b11: {memory[i_addr], memory[i_addr + 1], memory[i_addr + 2], memory[i_addr + 3]} <= i_data[31:0];
             endcase
         end else begin
-            sign = memory[i_addr + i_size][7] & ~i_unsigned; // memory[i_addr + i_size][7] -> MSB of the data in memory at the specified data size
+            sign = memory[i_addr][7] & ~i_unsigned;
             case (i_size)
                 2'b00: data = {{24{sign}}, memory[i_addr]}; // Byte
                 2'b01: data = {{16{sign}}, memory[i_addr], memory[i_addr + 1]}; // Half Word
@@ -47,6 +47,6 @@ module Data_Memory #(
         end
     end
 
-    assign o_data = data;
+assign o_data = data;
 
 endmodule
