@@ -62,7 +62,8 @@ Top_Instruction_Decode ID (
     .o_flg_mem_wr_en(),
     .o_flg_wb_src(),
     .o_flg_ALU_src_A(),
-    .o_flg_ALU_src_B()
+    .o_flg_ALU_src_B(),
+    .o_flg_mem_op()
 );
 
 Reg_ID_EX ID_EX (
@@ -89,6 +90,7 @@ Reg_ID_EX ID_EX (
     .i_flg_wb_src(ID.o_flg_wb_src),
     .i_flg_ALU_src_A(ID.o_flg_ALU_src_A),
     .i_flg_ALU_src_B(ID.o_flg_ALU_src_B),
+    .i_flg_mem_op(ID.o_flg_mem_op),
     .o_clk(),
     .o_rst(),
     .o_pc(),
@@ -112,7 +114,8 @@ Reg_ID_EX ID_EX (
     .o_flg_mem_wr_en(),
     .o_flg_wb_src(),
     .o_flg_ALU_src_A(),
-    .o_flg_ALU_src_B()
+    .o_flg_ALU_src_B(),
+    .o_flg_mem_op()
 );
 
 Forwarding_Unit FU (
@@ -131,6 +134,11 @@ Forwarding_Unit FU (
 );
 
 Hazard_Unit HU (
+    .i_rt_EX(ID_EX.o_rt),
+    .i_flg_WB_src_EX(ID_EX.o_flg_wb_src),
+    .i_flg_mem_op_EX(ID_EX.o_flg_mem_op),
+    .i_rs_ID(ID.o_rs),
+    .i_rt_ID(ID.o_rt),
     .o_hazard_detected()
 );
 

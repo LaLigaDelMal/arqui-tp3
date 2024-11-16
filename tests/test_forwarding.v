@@ -60,16 +60,16 @@ initial begin
     #100;
 
     // NOP instruction (will be replaced by stall)
-    inst_mem_wr_en = 1;
-    inst_mem_addr = 12;
-    inst_mem_data = 32'h00000000;    // NOP
-    #100;
-    inst_mem_wr_en = 0;
-    #100;
+    //inst_mem_wr_en = 1;
+    //inst_mem_addr = 12;
+    //inst_mem_data = 32'h00000000;    // NOP
+    //#100;
+    //inst_mem_wr_en = 0;
+    //#100;
 
     // ADDI instruction to add 0xC to t1 and store in t2
     inst_mem_wr_en = 1;
-    inst_mem_addr = 16;
+    inst_mem_addr = 12;
     inst_mem_data = 32'h212A000C;    // addi $t2 $t1 0x000c
     #100;
     inst_mem_wr_en = 0;
@@ -77,7 +77,7 @@ initial begin
 
     // ADDU instruction to add t1 and t2 and store in t3
     inst_mem_wr_en = 1;
-    inst_mem_addr = 20;
+    inst_mem_addr = 16;
     inst_mem_data = 32'h01495821;    // addu $t3 $t2 $t1
     #100;
     inst_mem_wr_en = 0;

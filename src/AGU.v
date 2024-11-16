@@ -15,7 +15,7 @@ module AGU(
 
     always @ (i_opcode, i_addr, i_offset) begin
         case (i_opcode)
-            3'b000: begin                                                         // Effective address from RS
+            3'b000: begin                                                        // Effective address from RS
                 effective_address = i_addr;                                      // This is supposed to be the value of the register RS (not considering any other address inputs)
                 exception = {effective_address[1], effective_address[0]};
             end
