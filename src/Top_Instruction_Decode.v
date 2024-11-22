@@ -44,7 +44,9 @@ module Top_Instruction_Decode #(
     output wire         o_flg_wb_src,
     output wire [1:0]   o_flg_ALU_src_A,
     output wire         o_flg_ALU_src_B,
-    output wire         o_flg_mem_op
+    output wire         o_flg_mem_op,
+
+    output wire         o_flg_jmp_trg_reg
 );
 
 Instruction_Decoder Inst_Deco(
@@ -100,6 +102,7 @@ Control_Unit Ctrl_Unit(
     .o_flg_reg_wr_en(),
     .o_flg_mem_wr_en(),
     .o_flg_wb_src(),
+    .o_flg_jmp_trg_reg(),
 
     .o_extend_sign()
 );
@@ -187,5 +190,7 @@ assign o_flg_ALU_src_A = Ctrl_Unit.o_flg_ALU_src_a;
 assign o_flg_ALU_src_B = Ctrl_Unit.o_flg_ALU_src_b;
 
 assign o_flg_mem_op = Inst_Deco.o_flg_mem_op;
+
+assign o_flg_jmp_trg_reg = Ctrl_Unit.o_flg_jmp_trg_reg;
 
 endmodule

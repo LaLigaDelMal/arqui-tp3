@@ -16,12 +16,20 @@ module Hazard_Unit(
     input wire       i_flg_WB_src_EX,
     input wire       i_flg_mem_op_EX,
     input wire [4:0] i_rs_ID, i_rt_ID, 
-    output reg       o_hazard_detected
+    input wire       i_flg_jmp_trg_reg,
+    input wire       i_reg_wr_en_EX,
+    input wire       i_reg_wr_en_MA,
+    input wire       i_reg_wr_en_WB,
+    output reg       o_hazard_detected,
+    output reg       o_stall_EX
 );
 
     initial begin
         o_hazard_detected <= 0;
+        o_stall_EX <= 0;
     end
+
+    // Chequear Concurrencia !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     always @ (*) begin
         if (~i_flg_WB_src_EX & i_flg_mem_op_EX) begin     // Detect LOAD instruction in EX
@@ -29,9 +37,19 @@ module Hazard_Unit(
                 o_hazard_detected <= 1;
             end else begin
                 o_hazard_detected <= 0;
+                o_stall_EX <= 0;
             end
         end else begin
             o_hazard_detected <= 0;
+            o_stall_EX <= 0;
+        end
+
+        if (i_flg_jmp_trg_reg & (i_reg_wr_en_EX | i_reg_wr_en_MA | i_reg_wr_en_WB)) begin    // Detect JR or JALR instruction in ID
+            o_hazard_detected <= 1;
+            o_stall_EX <= 1;
+        end else begin
+            o_hazard_detected <= 0;
+            o_stall_EX <= 0;
         end
     end
 

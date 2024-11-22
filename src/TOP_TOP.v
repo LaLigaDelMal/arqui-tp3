@@ -63,12 +63,14 @@ Top_Instruction_Decode ID (
     .o_flg_wb_src(),
     .o_flg_ALU_src_A(),
     .o_flg_ALU_src_B(),
-    .o_flg_mem_op()
+    .o_flg_mem_op(),
+    .o_flg_jmp_trg_reg()
 );
 
 Reg_ID_EX ID_EX (
     .i_clk(i_clk),
     .i_rst(i_rst),
+    .i_stall(HU.o_stall_EX),
     .i_pc(IF_ID.o_pc),
     .i_rt(ID.o_rt),
     .i_rd(ID.o_rd),
@@ -139,7 +141,12 @@ Hazard_Unit HU (
     .i_flg_mem_op_EX(ID_EX.o_flg_mem_op),
     .i_rs_ID(ID.o_rs),
     .i_rt_ID(ID.o_rt),
-    .o_hazard_detected()
+    .i_flg_jmp_trg_reg(ID.o_flg_jmp_trg_reg),
+    .i_reg_wr_en_EX(ID_EX.o_flg_reg_wr_en),
+    .i_reg_wr_en_MA(EX_MA.o_flg_reg_wr_en),
+    .i_reg_wr_en_WB(MA_WB.o_flg_reg_wr_en),
+    .o_hazard_detected(),
+    .o_stall_EX()
 );
 
 Top_Execute EX (

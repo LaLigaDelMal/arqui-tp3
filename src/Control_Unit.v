@@ -72,6 +72,7 @@ module Control_Unit(
     output reg o_flg_reg_wr_en,                 // 1 if the instruction writes values to a register, 0 if not
     output reg o_flg_mem_wr_en,                 // 1 if the instruction writes values to a data memory, 0 if not
     output reg o_flg_wb_src,                    // 1 if the source is the ALU result, 0 if the source is the data memory
+    output reg o_flg_jmp_trg_reg,               // 1 if the jump is made based on a register value (jump trough register), 0 if not
 
     output reg [1:0] o_extend_sign              // 00 if the inmediate value is sign extended, 01 if the upper part of the word is completed with zeros, 10 if the lower part of the word is completed with zeros
     );
@@ -114,6 +115,8 @@ module Control_Unit(
                         `FUNC_NOR:  begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_NOR; end
                         `FUNC_SLT:  begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_SLT; end
                     endcase
+
+                    o_flg_jmp_trg_reg <= 0;
                 end
                 12'b100000: begin     // JR
                     o_flg_AGU_src_addr  <= 0;
@@ -123,6 +126,8 @@ module Control_Unit(
                     o_flg_branch    <= 0;
 
                     o_flg_reg_wr_en <= 0;
+
+                    o_flg_jmp_trg_reg <= 1;
                 end
                 12'b110000: begin     // JALR
                     o_flg_ALU_src_a  <= 2'b00;          // The PC+4
@@ -137,6 +142,8 @@ module Control_Unit(
 
                     o_flg_reg_wr_en <= 1;
                     o_flg_wb_src <= 1;
+
+                    o_flg_jmp_trg_reg <= 1;
                 end
                 12'b000011: begin     // LOAD & STORE   (Para 32 bits LW y LWU hacen lo mismo)
                     o_flg_AGU_src_addr  <= 0;
@@ -153,6 +160,7 @@ module Control_Unit(
                     o_flg_reg_wr_en <= ~i_flg_mem_type;    // Write to register only for loads
                     o_flg_wb_src <= i_flg_mem_type;        // Selects the source of the WB as the data memory for loads
 
+                    o_flg_jmp_trg_reg <= 0;
                 end
                 12'b000010: begin     // ARITHMETIC and LOAD OPERATIONS WITH INMEDIATE VALUES
                     o_flg_ALU_src_a  <= 2'b11;
@@ -177,6 +185,8 @@ module Control_Unit(
                         `FUNC_LUI:  begin o_ALU_opcode <= `OP_PASS;         o_extend_sign <= `MODE_ZERO_EXT_LOWER; end
                         `FUNC_SLTI: begin o_ALU_opcode <= `OP_SLT;          o_extend_sign <= `MODE_SIGN_EXT; end
                     endcase
+
+                    o_flg_jmp_trg_reg <= 0;
                 end
                 12'b101010: begin      // BRANCH
                     o_flg_ALU_src_a     <= 2'b01;
@@ -191,6 +201,8 @@ module Control_Unit(
                     o_flg_branch <= 1;
 
                     o_flg_reg_wr_en <= 0;
+
+                    o_flg_jmp_trg_reg <= 0;
                 end
                 12'b1?0100: begin      // J and JAL
                     o_flg_ALU_src_a     <= 2'b00;
@@ -205,6 +217,8 @@ module Control_Unit(
 
                     o_flg_reg_wr_en <= i_flg_link_ret;
                     o_flg_wb_src <= 1;
+
+                    o_flg_jmp_trg_reg <= 0;
                 end
             endcase
         end else begin
