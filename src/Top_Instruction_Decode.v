@@ -131,9 +131,17 @@ Sign_Extender Sign_Ext(
 );
 
 
+Adder PC_4(
+    .i_rst(i_rst),
+    .i_operand_1(i_pc),
+    .i_operand_2(32'b1000),
+    .o_result()
+);
+
+
 Mux_4 ALU_SRC_A(
     .i_sel(Ctrl_Unit.o_flg_ALU_src_a),
-    .i_a(i_pc),                     // (00) PC+4 TODO: Verificar si es correcto
+    .i_a(PC_4.o_result),            // (00) PC+4 TODO: Verificar si es correcto
     .i_b(Regs.o_rt_data),           // (01) rt data
     .i_c(),                         // (10) NC
     .i_d(Sign_Ext.o_result),        // (11) Sign Extender result
@@ -143,18 +151,17 @@ Mux_4 ALU_SRC_A(
 
 Mux_2 ALU_SRC_B(
     .i_sel(Ctrl_Unit.o_flg_ALU_src_b),
-    .i_a(Regs.o_rs_data),          // (0) rs data
+    .i_a(Regs.o_rs_data),               // (0) rs data
     .i_b(Inst_Deco.o_sa),               // (1) Sign Extender result
 
     .o_result()
 );
 
 
-
 Mux_2 AGU_SRC_ADDR(
     .i_sel(Ctrl_Unit.o_flg_AGU_src_addr),
-    .i_a(Regs.o_rs_data),          // (0) rs data
-    .i_b(i_pc),             // (1) PC
+    .i_a(Regs.o_rs_data),               // (0) rs data
+    .i_b(PC_4.o_result),                // (1) PC
 
     .o_result()
 );

@@ -165,6 +165,7 @@ module Instruction_Decoder (
                             o_flg_mem_size  <= 2'b00;
                             o_flg_unsign    <= 1'b0;
                         end else begin                  // BNE
+                            $display("BNE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                             o_funct         <= 6'b0;
                             o_rs            <= i_instr[25:21];
                             o_rt            <= i_instr[20:16];

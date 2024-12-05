@@ -32,7 +32,7 @@ module Forwarding_Unit(
     always @ (*) begin
         if (i_flg_reg_wr_en_MEM & (i_rs_EX == i_rt_MEM | i_rs_EX == i_rd_MEM) & i_flg_ALU_src_B == 1'b0) begin
             o_ALU_src_b_ctrl <= 2'b01;
-        end else if (i_flg_WB_src == 1'b0 & i_flg_reg_wr_en_WB & (i_rs_EX == i_reg_sel_WB) & i_flg_ALU_src_B == 1'b0) begin
+        end else if (i_flg_reg_wr_en_WB & (i_rs_EX == i_reg_sel_WB) & i_flg_ALU_src_B == 1'b0) begin
             o_ALU_src_b_ctrl <= 2'b10;
         end else begin
             o_ALU_src_b_ctrl <= 2'b00;

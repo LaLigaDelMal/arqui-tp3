@@ -190,7 +190,7 @@ module Control_Unit(
                 end
                 12'b101010: begin      // BRANCH
                     o_flg_ALU_src_a     <= 2'b01;
-                    o_flg_ALU_src_b     <= 0;
+                    o_flg_ALU_src_b     <= 2'b00;
                     o_flg_ALU_dst       <= 2'b00;     // The destination doesn't matter because it will be used to decide if the branch is taken or not (check flag branch)
                     o_ALU_opcode        <= `OP_CMP;
 
