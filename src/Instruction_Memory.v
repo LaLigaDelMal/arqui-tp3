@@ -29,7 +29,7 @@ initial begin
 end
 
 //////////////////////////////// SE UTILIZA BIG ENDIAN //////////////////////////////
-always @(negedge i_clk) begin
+always @ (negedge i_clk) begin
     if (i_rst) begin
         o_data <= 0;
     end else if (i_wr_en) begin

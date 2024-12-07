@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module test_branch;
+module test_jump;
 
 // Inputs
 reg clk;
@@ -32,9 +32,25 @@ end
 // Test forwarding unit
 initial begin
 
-    // LUI $t0 0xFFFF
+    // NOP
     inst_mem_wr_en = 1;
     inst_mem_addr = 0;
+    inst_mem_data = 32'h00000000;
+    #100;
+    inst_mem_wr_en = 0;
+    #100;
+
+    // J 0x30FFF0F
+    inst_mem_wr_en = 1;
+    inst_mem_addr = 4;
+    inst_mem_data = 32'h0B0FFF0F;
+    #100;
+    inst_mem_wr_en = 0;
+    #100;
+
+    // LUI $t0 0xFFFF
+    inst_mem_wr_en = 1;
+    inst_mem_addr = 8;
     inst_mem_data = 32'h3C08FFFF;
     #100;
     inst_mem_wr_en = 0;
@@ -42,35 +58,11 @@ initial begin
 
     // ADDI $t1 $t1 0x0004
     inst_mem_wr_en = 1;
-    inst_mem_addr = 4;
+    inst_mem_addr = 12;
     inst_mem_data = 32'h21290004;
     #100;
     inst_mem_wr_en = 0;
     #100 reset = 0;
-
-    // BNE $t0 $t1 0x000F    (salta 8 lugares de memoria)
-    inst_mem_wr_en = 1;
-    inst_mem_addr = 8;
-    inst_mem_data = 32'h1509000F;
-    #100;
-    inst_mem_wr_en = 0;
-    #100;
-
-    // NOP
-    inst_mem_wr_en = 1;
-    inst_mem_addr = 12;
-    inst_mem_data = 32'h00000000;
-    #100;
-    inst_mem_wr_en = 0;
-    #100;
-
-    // ADDU instruction to add t1 and t2 and store in t3
-    inst_mem_wr_en = 1;
-    inst_mem_addr = 16;
-    inst_mem_data = 32'h01495821;    // addu $t3 $t2 $t1
-    #100;
-    inst_mem_wr_en = 0;
-    #100;
 
     // Reset generation
     reset = 1;
