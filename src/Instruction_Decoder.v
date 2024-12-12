@@ -35,6 +35,7 @@ module Instruction_Decoder (
 
                 case (o_funct)
                     6'b001000: begin            // JR
+                        $display("JR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                         o_funct         <= 6'b0;
                         o_rs            <= i_instr[25:21];
                         o_rt            <= 5'b0;

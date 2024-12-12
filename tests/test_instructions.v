@@ -1,5 +1,4 @@
 `timescale 1ns / 1ps
-//Test bench top
 
 module test_instructions;
 

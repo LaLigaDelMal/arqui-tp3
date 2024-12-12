@@ -43,7 +43,7 @@ module Hazard_Unit(
             o_hazard_detected <= 0;
             o_stall_EX <= 0;
         end
-
+/*
         if (i_flg_jmp_trg_reg & (i_reg_wr_en_EX | i_reg_wr_en_MA | i_reg_wr_en_WB)) begin    // Detect JR or JALR instruction in ID   (3 stalls for both instructions)
             o_hazard_detected <= 1;
             o_stall_EX <= 1;
@@ -51,8 +51,8 @@ module Hazard_Unit(
             o_hazard_detected <= 0;
             o_stall_EX <= 0;
         end
-
-        //// 1 solo Stall para J y JAL (ver flg_jump y hazard_detected en unidad de control). Los branches tambien están ejecutando 2 delay slots.
+*/
+        //// Deberia haber 1 solo Stall para J y JAL porque actualmente ejecutan 2 delay slots. Los branches tambien están ejecutando 2 delay slots.
     end
 
 endmodule

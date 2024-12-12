@@ -17,17 +17,6 @@ module Instruction_Memory #(
 reg [NBITS-1:0] memory[CELLS-1:0];
 integer i;
 
-initial begin
-    for (i = 0; i < CELLS; i = i + 1) begin
-        memory[i] = 0;
-    end
-
-    //Make two loads and an ADD operation between them
-    {memory[0], memory[1], memory[2], memory[3]}     = 32'h3C080000; // Carga un 0 en T0
-    {memory[4], memory[5], memory[6], memory[7]}     = 32'h81090001; // Carga el valor de la memoria de datos (direccion 0) en T1
-
-end
-
 //////////////////////////////// SE UTILIZA BIG ENDIAN //////////////////////////////
 always @ (negedge i_clk) begin
     if (i_rst) begin
