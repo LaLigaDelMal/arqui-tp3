@@ -28,8 +28,8 @@ module Registers(
                 reg_file[i] <= 0;
             end
         end else begin
-            if (i_wr_en) begin
-                reg_file[i_rd_sel] <= i_wr_data;
+            if (i_wr_en & (i_rd_sel != 0)) begin
+                reg_file[i_rd_sel - 1] <= i_wr_data;
             end
         end
     end
@@ -39,13 +39,13 @@ module Registers(
         if (i_rs_sel == 0) begin
             o_rs_data <= zero_reg;
         end else begin
-            o_rs_data <= reg_file[i_rs_sel];
+            o_rs_data <= reg_file[i_rs_sel - 1];
         end
 
         if (i_rt_sel == 0) begin
             o_rt_data <= zero_reg;
         end else begin
-            o_rt_data <= reg_file[i_rt_sel];
+            o_rt_data <= reg_file[i_rt_sel - 1];
         end
     end
 

@@ -14,8 +14,8 @@ module TOP_TOP #(
 Top_Instruction_Fetch IF (
     .i_clk(i_clk),
     .i_rst(i_rst),
-    .i_pc_mux_ctrl(EX.o_pc_mux_ctrl),    //Viene de WB
-    .i_eff_addr(EX.o_eff_addr),          //Viene de MA
+    .i_pc_mux_ctrl(EX.o_pc_mux_ctrl),    // Viene de WB
+    .i_eff_addr(EX.o_eff_addr),          // Viene de MA
     .i_inst_mem_wr_en(i_inst_mem_wr_en),     // Viene de afuera DEBUG
     .i_inst_mem_addr(i_inst_mem_addr),       // Viene de afuera DEBUG
     .i_inst_mem_data(i_inst_mem_data),       // Viene de afuera DEBUG

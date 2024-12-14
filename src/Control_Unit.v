@@ -119,7 +119,6 @@ module Control_Unit(
                     o_flg_jmp_trg_reg <= 0;
                 end
                 12'b100000: begin     // JR
-                    $display("JR Control!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     o_flg_AGU_src_addr  <= 0;
                     o_flg_AGU_opcode    <= 3'b000;
 

@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 module Instruction_Decoder (
-    input wire [31:0] i_instr,
+    input wire [31:0]   i_instr,
 
     output reg [5:0]    o_funct,         // Function code for R type instructions or in the case of aritmetic operations with inmediate values (I type instructions) the lower 3 bits represent the lower 3 bits of the opcode
     output reg [4:0]    o_rs,
@@ -35,8 +35,7 @@ module Instruction_Decoder (
 
                 case (o_funct)
                     6'b001000: begin            // JR
-                        $display("JR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                        o_funct         <= 6'b0;
+                        o_funct         <= i_instr[5:0];
                         o_rs            <= i_instr[25:21];
                         o_rt            <= 5'b0;
                         o_rd            <= 5'b0;
@@ -57,7 +56,7 @@ module Instruction_Decoder (
                         o_flg_unsign    <= 1'b0;
                     end
                     6'b001001: begin            // JALR
-                        o_funct         <= 6'b0;
+                        o_funct         <= i_instr[5:0];
                         o_rs            <= i_instr[25:21];
                         o_rt            <= 5'b0;
                         o_rd            <= i_instr[15:11];

@@ -47,10 +47,26 @@ initial begin
     //inst_mem_wr_en = 0;
     //#100;
 
-    // JR $t3                     //// Debuguear el JUMPPPPPP en fetch/decode
+    // JR $t3
+    //inst_mem_wr_en = 1;
+    //inst_mem_addr = 4;
+    //inst_mem_data = 32'h01600008;
+    //#100;
+    //inst_mem_wr_en = 0;
+    //#100;
+
+    // JAL 0x30FFF0F
+    //inst_mem_wr_en = 1;
+    //inst_mem_addr = 4;
+    //inst_mem_data = 32'h0x0F0FFF0F;
+    //#100;
+    //inst_mem_wr_en = 0;
+    //#100;
+
+    // JALR $t0 $t3
     inst_mem_wr_en = 1;
     inst_mem_addr = 4;
-    inst_mem_data = 32'h01600008;
+    inst_mem_data = 32'h01604009;
     #100;
     inst_mem_wr_en = 0;
     #100;
