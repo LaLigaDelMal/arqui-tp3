@@ -48,12 +48,12 @@ initial begin
     //#100;
 
     // JR $t3
-    //inst_mem_wr_en = 1;
-    //inst_mem_addr = 4;
-    //inst_mem_data = 32'h01600008;
-    //#100;
-    //inst_mem_wr_en = 0;
-    //#100;
+    inst_mem_wr_en = 1;
+    inst_mem_addr = 4;
+    inst_mem_data = 32'h01600008;
+    #100;
+    inst_mem_wr_en = 0;
+    #100;
 
     // JAL 0x30FFF0F
     //inst_mem_wr_en = 1;
@@ -64,17 +64,25 @@ initial begin
     //#100;
 
     // JALR $t0 $t3
-    inst_mem_wr_en = 1;
-    inst_mem_addr = 4;
-    inst_mem_data = 32'h01604009;
-    #100;
-    inst_mem_wr_en = 0;
-    #100;
+    //inst_mem_wr_en = 1;
+    //inst_mem_addr = 4;
+    //inst_mem_data = 32'h01604009;
+    //#100;
+    //inst_mem_wr_en = 0;
+    //#100;
 
     // LUI $t0 0xFFFF
+    //inst_mem_wr_en = 1;
+    //inst_mem_addr = 8;
+    //inst_mem_data = 32'h3C08FFFF;
+    //#100;
+    //inst_mem_wr_en = 0;
+    //#100;
+
+    // ADDI $t1 $t1 0x0004
     inst_mem_wr_en = 1;
     inst_mem_addr = 8;
-    inst_mem_data = 32'h3C08FFFF;
+    inst_mem_data = 32'h21290004;
     #100;
     inst_mem_wr_en = 0;
     #100;

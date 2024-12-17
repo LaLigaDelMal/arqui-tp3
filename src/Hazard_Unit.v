@@ -29,24 +29,17 @@ module Hazard_Unit(
         o_stall_EX <= 0;
     end
 
-    // Chequear Concurrencia !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    wire load_in_EX = ~i_flg_WB_src_EX & i_flg_mem_op_EX;
+    wire reg_shr_in_EX = (i_rt_EX == i_rs_ID) | (i_rt_EX == i_rt_ID);
 
     always @ (*) begin
-        if (~i_flg_WB_src_EX & i_flg_mem_op_EX) begin     // Detect LOAD instruction in EX
-            if (i_rt_EX == i_rs_ID | i_rt_EX == i_rt_ID) begin
-                o_hazard_detected <= 1;
+        if ((load_in_EX & reg_shr_in_EX) | (i_flg_jmp_trg_reg & i_reg_wr_en_MA)) begin     // Detect LOAD instruction in EX and register sharing in ID   (1 stall)
+            o_hazard_detected <= 1;
+            if (i_flg_jmp_trg_reg & i_reg_wr_en_MA) begin    // Detect JR or JALR instruction in ID   (3 stalls for both instructions)
+                o_stall_EX <= 1;
             end else begin
-                o_hazard_detected <= 0;
                 o_stall_EX <= 0;
             end
-        end else begin
-            o_hazard_detected <= 0;
-            o_stall_EX <= 0;
-        end
-
-        if (i_flg_jmp_trg_reg & (i_reg_wr_en_EX | i_reg_wr_en_MA )) begin    // Detect JR or JALR instruction in ID   (3 stalls for both instructions)
-            o_hazard_detected <= 1;
-            o_stall_EX <= 1;
         end else begin
             o_hazard_detected <= 0;
             o_stall_EX <= 0;
