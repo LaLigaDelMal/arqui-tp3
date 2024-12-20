@@ -19,7 +19,7 @@ TOP_TOP dut(
 );
 
 initial begin
-    clk=0;
+    clk = 0;
 end
 
 
