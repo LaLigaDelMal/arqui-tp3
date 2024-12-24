@@ -2,16 +2,15 @@
 
 module UART_rx
 #(
-    parameter FRAME_SIZE = 8,
+    parameter PAYLOAD_SIZE = 8,
     parameter OVERSAMPLING = 16
-)
-(
+)(
     input wire  i_clk,
     input wire  i_rst,
     input wire  i_rx,
     input wire  i_tick,
     output wire o_ready,
-    output wire [(FRAME_SIZE-1):0] o_data
+    output wire [(PAYLOAD_SIZE-1):0] o_data
 );
 
 
@@ -27,7 +26,7 @@ module UART_rx
     reg[3:0] tick_counter, next_tick_counter;
     reg[3:0] state, next_state;
     reg[(NDATA_COUNTER_BITS-1):0] bits_counter, next_bits_counter;
-    reg[(FRAME_SIZE-1):0] buffer, next_buffer;
+    reg[(PAYLOAD_SIZE-1):0] buffer, next_buffer;
     reg rx_done, next_rx_done;
 
 
@@ -83,8 +82,8 @@ module UART_rx
                 if (i_tick) begin
                     if (tick_counter == MID_SAMPLE) begin     // Probar 15
                         next_tick_counter = 0;
-                        next_buffer = {i_rx, buffer[(FRAME_SIZE-1):1]};
-                        if (bits_counter == (FRAME_SIZE-1)) begin
+                        next_buffer = {i_rx, buffer[(PAYLOAD_SIZE-1):1]};
+                        if (bits_counter == (PAYLOAD_SIZE-1)) begin
                             next_state = STOP;
                         end else begin
                             next_bits_counter = bits_counter + 1;
