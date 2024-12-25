@@ -9,7 +9,7 @@ module PC_Control_Unit (
 );  
     reg should_branch;
 
-    always @(*) begin
+    always @ (*) begin
         should_branch = ((i_flg_equal & i_rslt_lsb) | (~i_flg_equal & ~i_rslt_lsb));
         o_pc_mux_ctrl = (should_branch & i_flg_branch) | i_flg_jump;
     end

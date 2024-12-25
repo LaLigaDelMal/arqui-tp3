@@ -17,6 +17,7 @@ module Top_Instruction_Fetch #(
 
     // From TOP
     input   wire             i_hazard_detected,
+    input   wire             i_enable,
 
     // Outputs
     output  wire [NBITS-1:0] o_pc,    
@@ -36,6 +37,7 @@ Program_Counter u_PC (
     .i_rst(i_rst),                              // Reset signal
     .i_next_pc(u_PC_Mux.o_pc),                  // Next PC
     .i_hazard_detected(i_hazard_detected),      // Hazard detected signal
+    .i_enable(i_enable),                        // Used for the step by step execution
     .o_pc()                                     // PC output
 );
 

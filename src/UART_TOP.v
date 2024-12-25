@@ -3,12 +3,14 @@
 
 module UART
 #(
+    parameter PAYLOAD_SIZE = 8
+)(
     input wire i_clk,
     input wire i_rst,
     input wire i_rx,
-    input wire i_data,
+    input wire [PAYLOAD_SIZE-1:0] i_data,
     input wire i_send_data,
-    output wire o_data,
+    output wire [PAYLOAD_SIZE-1:0] o_data,
     output wire o_tx,
     output wire o_flg_data_recieved,
     output wire o_flg_data_sent
