@@ -6,6 +6,7 @@ module Reg_MA_WB #(
 )(
     input wire                i_clk,
     input wire                i_rst,
+    input wire                i_step,
     input wire  [1:0]         i_flg_ALU_dst,
     input wire  [NBITS-1:0]   i_ALU_rslt,
     input wire  [NBITS-1:0]   i_data,
@@ -31,7 +32,7 @@ module Reg_MA_WB #(
             o_flg_reg_wr_en <= 0;
             o_flg_wb_src <= 0;
         end
-        else begin
+        else if (i_step) begin
             o_flg_ALU_dst <= i_flg_ALU_dst;
             o_ALU_rslt <= i_ALU_rslt;
             o_data <= i_data;

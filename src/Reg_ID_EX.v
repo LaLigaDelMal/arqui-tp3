@@ -5,6 +5,7 @@ module Reg_ID_EX #(
 )(
     input wire                i_clk,
     input wire                i_rst,
+    input wire                i_step,
     input wire                i_stall,
     input wire   [NBITS-1:0]  i_pc,
     input wire   [4:0]        i_rd,
@@ -83,7 +84,7 @@ always @(posedge i_clk) begin
         o_flg_ALU_src_B <= 0;
         o_flg_mem_op <= 0;
     end
-    else begin
+    else if (i_step) begin
         o_pc <= i_pc;
         o_rd <= i_rd;
         o_rt <= i_rt;

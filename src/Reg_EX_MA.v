@@ -5,8 +5,9 @@ module Reg_EX_MA #(
     parameter   NBITS = 32
 )(
 
-    input wire                i_clk,
-    input wire                i_rst,
+    input wire               i_clk,
+    input wire               i_rst,
+    input wire               i_step,
     input wire               i_pc_mux_ctrl,
     input wire  [NBITS-1:0]  i_ALU_rslt,
     input wire  [NBITS-1:0]  i_eff_addr,
@@ -44,7 +45,7 @@ module Reg_EX_MA #(
         o_flg_mem_wr_en <= 0;
         o_flg_wb_src <= 0;
     end
-    else begin
+    else if (i_step) begin
         o_pc_mux_ctrl <= i_pc_mux_ctrl;
         o_ALU_rslt <= i_ALU_rslt;
         o_eff_addr <= i_eff_addr;

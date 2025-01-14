@@ -30,6 +30,7 @@ Reg_IF_ID IF_ID (
     .i_pc(IF.o_pc),
     .i_instruction(IF.o_instr),
     .i_hazard_detected(HU.o_hazard_detected),
+    .i_step( ),                 //TODO: Falta definir
     .o_pc(),    
     .o_instruction()          // Fetched instruction
 );

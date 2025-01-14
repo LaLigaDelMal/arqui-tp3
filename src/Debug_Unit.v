@@ -15,7 +15,7 @@ module Debug_Unit #(
     input  wire                  i_uart_data_received,
     input  wire  [DATA_BITS-1:0] i_uart_data,
     input  wire                  i_uart_data_sent,
-    output wire                  o_uart_rst,
+    output wire                  o_uart_rst,        // Reset signal for the UART Top.
     output wire  [DATA_BITS-1:0] o_uart_data,
     output wire                  o_uart_send_data,
     output wire  [NBITS-1:0]     o_reg_data,        // Data output from the register file.
@@ -61,45 +61,29 @@ module Debug_Unit #(
     localparam INST_COUNT_SIZE = $clog2(INST_MEM_SIZE);
 
 
-    reg                                         mips_clk_ctrl;
+    reg         mips_clk_ctrl;
 
-    reg               [          4    :0]       state, state_next;
+    reg [4:0]   state, state_next;
 
-    reg                                                uart_rx_reset, uart_rx_reset_next;
-    reg               [           NBITS-1    :0]       uart_rx_data_line, uart_rx_data_line_next;
-    reg                                                uart_rx_inst_write, uart_rx_inst_write_next;
-    reg               [ INST_COUNT_SIZE-1    :0]       uart_rx_inst_count, uart_rx_inst_count_next;
-    reg               [                 1    :0]       uart_rx_word_count, uart_rx_word_count_next;
+    reg                         uart_rx_reset, uart_rx_reset_next;
+    reg [NBITS-1:0]             uart_rx_data_line, uart_rx_data_line_next;
+    reg                         uart_rx_inst_write, uart_rx_inst_write_next;
+    reg [INST_COUNT_SIZE-1:0]   uart_rx_inst_count, uart_rx_inst_count_next;
+    reg [1:0]                   uart_rx_word_count, uart_rx_word_count_next;
 
-    reg               [       DATA_BITS-1    :0]       uart_tx_data, uart_tx_data_next;
-    reg                                                uart_tx_ready, uart_tx_ready_next;
-    reg               [           NBITS-1    :0]       uart_tx_data_line, uart_tx_data_line_next;
-    reg               [                 1    :0]       uart_tx_word_count, uart_tx_word_count_next;
-    reg               [                 2    :0]       uart_tx_data_count, uart_tx_data_count_next;
+    reg [DATA_BITS-1:0]         uart_tx_data, uart_tx_data_next;
+    reg                         uart_tx_ready, uart_tx_ready_next;
+    reg [NBITS-1:0]             uart_tx_data_line, uart_tx_data_line_next;
+    reg [1:0]                   uart_tx_word_count, uart_tx_word_count_next;
+    reg [2:0]                   uart_tx_data_count, uart_tx_data_count_next;
 
-    reg               [  REG_COUNT_SIZE-1    :0]       uart_tx_regs_count, uart_tx_regs_count_next;
-    reg               [  MEM_COUNT_SIZE-1    :0]       uart_tx_mem_count, uart_tx_mem_count_next;
+    reg [REG_COUNT_SIZE-1:0]    uart_tx_regs_count, uart_tx_regs_count_next;
+    reg [MEM_COUNT_SIZE-1:0]    uart_tx_mem_count, uart_tx_mem_count_next;
 
-    reg               [                 1    :0]       mips_mode, mips_mode_next;
-    reg                                                mips_step, mips_step_next;
+    reg [1:0]                   mips_mode, mips_mode_next;
+    reg                         mips_step, mips_step_next;
 
-    reg                                                mips_reset_ctrl, mips_reset_ctrl_next;
-
-
-    assign o_uart_send_data = uart_tx_ready;
-    assign o_uart_data  = uart_tx_data;
-
-    assign o_uart_rst = uart_rx_reset;
-
-    assign o_mips_clk_ctrl = mips_clk_ctrl;
-    assign o_mips_reset    = mips_reset_ctrl;
-    assign o_mips_reg      = uart_tx_regs_count;
-    assign o_mips_mem      = uart_tx_mem_count;
-
-    assign o_mips_instr_sel     = uart_rx_inst_count;
-    assign o_mips_instr_dato    = uart_rx_data_line;
-    assign o_mips_instr_write   = uart_rx_inst_write;
-
+    reg                         mips_reset_ctrl, mips_reset_ctrl_next;
 
     always @ (posedge clk)
         begin
@@ -166,9 +150,9 @@ module Debug_Unit #(
         case (state)
             IDLE:
             begin
-                if (~i_uart_data_received) begin// Verifica si hay datos listos desde la UART
+                if (~i_uart_data_received) begin        // Verifica si hay datos listos desde la UART
                     uart_rx_reset_next  <= 0;
-                end else begin // Verifica el char recibido
+                end else begin                          // Verifica el char recibido
                     uart_rx_reset_next  <= 1;
                     case(i_uart_data)
                         8'b01110010:    state_next          <= RUN;
@@ -182,8 +166,8 @@ module Debug_Unit #(
             begin
                 mips_reset_ctrl_next <= 0;
                 mips_mode_next  <= MIPS_RUN;
-                if( i_mips_halt ) begin
-                    mips_reset_ctrl_next <= 1;
+                if( i_mips_halt ) begin // Viene de MIPS, etapa decodificación (opcode 111111)
+                    mips_reset_ctrl_next <= 1; // Resetea el MIPS //TODO Checkear porque reiniciar el MIPS
                     mips_mode_next  <= MIPS_STOP;
                     state_next      <= PREPARE_TX;
                 end
@@ -213,11 +197,11 @@ module Debug_Unit #(
             end
             PREPARE_LOAD:
             begin
-                if (~i_uart_data_received) begin// Verifica si hay datos listos desde la UART
+                if (~i_uart_data_received) begin    // Verifica si hay datos listos desde la UART
                     uart_rx_reset_next  <= 0;
-                end else begin // Verifica el char recibido
+                end else begin                      // Verifica el char recibido
                     uart_rx_reset_next      <= 1;
-                    uart_rx_data_line_next  <= {uart_rx_data_line[23:0], i_uart_data};
+                    uart_rx_data_line_next  <= {uart_rx_data_line[23:0], i_uart_data};  // Concatena el dato recibido con el dato anterior (32 bits) asi no es necesario hacer un shift
                     uart_rx_word_count_next <= uart_rx_word_count + 1;
                     state_next              <= LOAD;
                 end
@@ -225,7 +209,7 @@ module Debug_Unit #(
             LOAD:
             begin
                 if(uart_rx_word_count == 0) begin
-                    uart_rx_inst_write_next <= 1; //Habilita escritura en posedge de la etapa anterior
+                    uart_rx_inst_write_next <= 1;   // Habilita escritura en posedge de la etapa anterior
                     state_next              <= WAIT_LOAD;
                 end else begin
                     state_next              <= PREPARE_LOAD;
@@ -328,5 +312,19 @@ module Debug_Unit #(
             default:    mips_clk_ctrl <= 1'b0;
         endcase
     end
+
+    assign o_uart_send_data = uart_tx_ready;
+    assign o_uart_data      = uart_tx_data;
+
+    assign o_uart_rst = uart_rx_reset;
+
+    assign o_mips_clk_ctrl = mips_clk_ctrl;
+    assign o_mips_reset    = mips_reset_ctrl;
+    assign o_mips_reg      = uart_tx_regs_count;
+    assign o_mips_mem      = uart_tx_mem_count;
+
+    assign o_mips_instr_sel     = uart_rx_inst_count;
+    assign o_mips_instr_dato    = uart_rx_data_line;
+    assign o_mips_instr_write   = uart_rx_inst_write;
 
 endmodule
