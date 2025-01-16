@@ -21,7 +21,8 @@ module Top_Instruction_Fetch #(
 
     // Outputs
     output  wire [NBITS-1:0] o_pc,    
-    output  wire [NBITS-1:0] o_instr            // Fetched instruction
+    output  wire [NBITS-1:0] o_instr,            // Fetched instruction
+    output  wire [NBITS-1:0] o_cycle_count
 );
 
 
@@ -60,7 +61,16 @@ Instruction_Memory u_Instruction_Memory (
     .o_data()
 );
 
+// Cycle counter stadistics
+Cycle_Counter u_Cycle_Counter (
+    .i_clk(i_clk),                              // Clock signal
+    .i_rst(i_rst),                              // Reset signal
+    .i_step(i_step),                            // Step signal
+    .o_count()                                  // Cycle counter output
+);
+
 assign o_pc = u_PC.o_pc;
 assign o_instr = u_Instruction_Memory.o_data;
+assign o_cycle_count = u_Cycle_Counter.o_count;
 
 endmodule

@@ -21,7 +21,8 @@ Top_Instruction_Fetch IF (
     .i_inst_mem_data(i_inst_mem_data),       // Viene de afuera DEBUG
     .i_hazard_detected(HU.o_hazard_detected),
     .o_pc(),
-    .o_instr()                              // Fetched instruction
+    .o_instr(),                              // Fetched instruction
+    .o_cycle_count( )                        //TODO: Falta definir
 );
 
 Reg_IF_ID IF_ID (
