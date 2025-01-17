@@ -9,9 +9,9 @@ module Instruction_Memory #(
     input   wire    i_rst,
     input   wire    i_step,
     input   wire    [INST_BITS-1:0]     i_addr,
-    input   wire    [INST_BITS-1:0]     i_addr_wr,
-    input   wire    [INST_BITS-1:0]     i_data,
-    input   wire                        i_wr_en,
+    input   wire    [INST_BITS-1:0]     i_dbg_addr,
+    input   wire    [INST_BITS-1:0]     i_dbg_inst,
+    input   wire                        i_dbg_wr_en,
     output  reg     [INST_BITS-1:0]     o_data
 );
 
@@ -23,12 +23,15 @@ always @ (negedge i_clk) begin
     if (i_rst) begin
         o_data <= 0;
     end else if (i_step) begin
-        if (i_wr_en) begin
-            {memory[i_addr_wr], memory[i_addr_wr + 1], memory[i_addr_wr + 2], memory[i_addr_wr + 3]} <= i_data[31:0];
-        end else begin
-            o_data <= {memory[i_addr], memory[i_addr + 1], memory[i_addr + 2], memory[i_addr + 3]};
-        end
+        o_data <= {memory[i_addr], memory[i_addr + 1], memory[i_addr + 2], memory[i_addr + 3]};
     end
 end
+
+//TODO Vericar la escritura desde debug
+always @ (posedge i_dbg_wr_en) begin
+    {memory[i_dbg_addr], memory[i_dbg_addr + 1], memory[i_dbg_addr + 2], memory[i_dbg_addr + 3]} <= i_dbg_inst[31:0];
+end
+
+always 
 
 endmodule 

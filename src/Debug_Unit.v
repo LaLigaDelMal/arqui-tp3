@@ -88,14 +88,14 @@ module Debug_Unit #(
                 uart_rx_inst_write      <= 0;
                 uart_tx_data            <= 0;
                 uart_tx_ready           <= 0;
-                tx_byte_count      <= 0;
-                tx_data_count      <= 0;
-                tx_regs_count      <= 0;
-                tx_mem_count       <= 0;
+                tx_byte_count           <= 0;
+                tx_data_count           <= 0;
+                tx_regs_count           <= 0;
+                tx_mem_count            <= 0;
                 uart_tx_data_word       <= 0;
                 mips_mode               <= MIPS_STOP;
                 mips_step               <= 0;
-                mips_rst         <= 1;
+                mips_rst                <= 1;
             end else begin
                 state                   <= state_next;
                 uart_rx_reset           <= uart_rx_reset_next;
@@ -105,14 +105,14 @@ module Debug_Unit #(
                 uart_rx_inst_write      <= uart_rx_inst_write_next;
                 uart_tx_data            <= uart_tx_data_next;
                 uart_tx_ready           <= uart_tx_ready_next;
-                tx_byte_count      <= tx_byte_count_next;
-                tx_data_count      <= tx_data_count_next;
-                tx_regs_count      <= tx_regs_count_next;
-                tx_mem_count       <= uart_tx_mem_count_next;
+                tx_byte_count           <= tx_byte_count_next;
+                tx_data_count           <= tx_data_count_next;
+                tx_regs_count           <= tx_regs_count_next;
+                tx_mem_count            <= uart_tx_mem_count_next;
                 uart_tx_data_word       <= uart_tx_data_word_next;
                 mips_mode               <= mips_mode_next;
                 mips_step               <= mips_step_next;
-                mips_rst              <= mips_rst_next;
+                mips_rst                <= mips_rst_next;
             end
         end
 

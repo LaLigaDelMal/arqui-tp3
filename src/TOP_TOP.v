@@ -8,38 +8,43 @@ module TOP_TOP #(
     input wire i_inst_mem_wr_en,
     input wire [NBITS-1:0] i_inst_mem_addr,
     input wire [NBITS-1:0] i_inst_mem_data
+    input wire  i_rx,
+    output wire o_tx,
 );
 
 
 Top_Instruction_Fetch IF (
     .i_clk(i_clk),
-    .i_rst(i_rst),
-    .i_pc_mux_ctrl(EX.o_pc_mux_ctrl),    // Viene de WB
-    .i_eff_addr(EX.o_eff_addr),          // Viene de MA
-    .i_inst_mem_wr_en(i_inst_mem_wr_en),     // Viene de afuera DEBUG
-    .i_inst_mem_addr(i_inst_mem_addr),       // Viene de afuera DEBUG
-    .i_inst_mem_data(i_inst_mem_data),       // Viene de afuera DEBUG
+    .i_rst(DU.o_mips_rst),
+    .i_pc_mux_ctrl(EX.o_pc_mux_ctrl),           // Viene de WB
+    .i_eff_addr(EX.o_eff_addr),                 // Viene de MA
+    .i_inst_mem_wr_en(DU.o_mips_instr_write),   // Viene de DEBUG
+    .i_inst_mem_addr(DU.o_mips_instr_addr),     // Viene de DEBUG
+    .i_inst_mem_data(DU.o_mips_instr_data),     // Viene de DEBUG
     .i_hazard_detected(HU.o_hazard_detected),
+    .i_step(DU.o_mips_step),                    // Viene de DEBUG
     .o_pc(),
-    .o_instr(),                              // Fetched instruction
-    .o_cycle_count( )                        //TODO: Falta definir
+    .o_instr(),                                 // Fetched instruction
+    .o_cycle_count()
 );
 
 Reg_IF_ID IF_ID (
     .i_clk(i_clk),
-    .i_rst(i_rst),
+    .i_rst(DU.o_mips_rst),
     .i_pc(IF.o_pc),
     .i_instruction(IF.o_instr),
     .i_hazard_detected(HU.o_hazard_detected),
-    .i_step( ),                 //TODO: Falta definir
+    .i_step(DU.o_mips_step),
     .o_pc(),    
     .o_instruction()          // Fetched instruction
 );
 
 Top_Instruction_Decode ID (
     .i_clk(i_clk),
-    .i_rst(i_rst),
+    .i_rst(DU.o_mips_rst),
     .i_hazard_detected(HU.o_hazard_detected),
+    .i_dbg_reg_sel(DU.o_mips_reg_sel),          //Viene de DEBUG
+    .i_step(DU.o_mips_step),                    //Viene de DEBUG
     .i_rd_sel(WB.o_reg_sel),                    //Viene de WB
     .i_wr_en(MA_WB.o_flg_reg_wr_en),            //Viene de MA_WB
     .i_wr_data(WB.o_wr_data),                   //Viene de WB
@@ -60,6 +65,7 @@ Top_Instruction_Decode ID (
     .o_rt(),
     .o_rd(),
     .o_rs(),
+    .o_dbg_reg_data(),
     .o_flg_reg_wr_en(),
     .o_flg_mem_wr_en(),
     .o_flg_wb_src(),
@@ -71,7 +77,8 @@ Top_Instruction_Decode ID (
 
 Reg_ID_EX ID_EX (
     .i_clk(i_clk),
-    .i_rst(i_rst),
+    .i_rst(DU.o_mips_rst),
+    .i_step(DU.o_mips_step),
     .i_stall(HU.o_stall_EX),
     .i_pc(IF_ID.o_pc),
     .i_rt(ID.o_rt),
@@ -173,7 +180,8 @@ Top_Execute EX (
 
 Reg_EX_MA EX_MA (
     .i_clk(i_clk),
-    .i_rst(i_rst),
+    .i_rst(DU.o_mips_rst),
+    .i_step(DU.o_mips_step),
     .i_pc_mux_ctrl(EX.o_pc_mux_ctrl),
     .i_ALU_rslt(EX.o_ALU_rslt),
     .i_eff_addr(EX.o_eff_addr),
@@ -201,18 +209,22 @@ Reg_EX_MA EX_MA (
 
 Top_Memory_Access MA (
     .i_clk(i_clk),
-    .i_rst(i_rst),
+    .i_rst(DU.o_mips_rst),
+    .i_step(DU.o_mips_step),
     .i_ALU_rslt(EX_MA.o_ALU_rslt),
     .i_flg_unsign(EX_MA.o_flg_unsign),
     .i_flg_mem_size(EX_MA.o_flg_mem_size),
     .i_flg_mem_wr_en(EX_MA.o_flg_mem_wr_en),
     .i_eff_addr(EX_MA.o_eff_addr),
-    .o_data()
+    .i_dbg_addr(DU.o_mips_mem_addr),
+    .o_data(),
+    .o_dbg_data()
 );
 
 Reg_MA_WB MA_WB (
     .i_clk(i_clk),
-    .i_rst(i_rst),
+    .i_rst(DU.o_mips_rst),
+    .i_step(DU.o_mips_step),
     .i_flg_ALU_dst(EX_MA.o_flg_ALU_dst),
     .i_ALU_rslt(EX_MA.o_ALU_rslt),
     .i_data(MA.o_data),
@@ -240,5 +252,43 @@ Top_Writeback WB (
     .o_wr_data(),
     .o_reg_sel()
 );
+
+UART_TOP UART (
+    .i_clk(i_clk),
+    .i_rst(DU.o_uart_rst),
+    .i_rx(i_rx),
+    .i_data(DU.o_uart_data),
+    .i_send_data(DU.o_uart_send_data),
+    .o_data(),
+    .o_tx(o_tx),
+    .o_flg_data_recieved(),
+    .o_flg_data_sent()
+);
+
+Debug_Unit DU (
+    .i_clk(i_clk),
+    .i_rst(i_rst),
+    .i_uart_data_received(UART.o_flg_data_recieved),
+    .i_uart_data(UART.o_data),
+    .i_uart_data_sent(UART.o_flg_data_sent),
+
+    .i_mips_halt(), //TODO Implementar HALT en mips
+    .i_mips_pc(IF.o_pc),
+    .i_mips_clk_count(IF.o_cycle_count),
+    .i_mips_reg_data(ID.o_dbg_reg_data),
+    .i_mips_mem_data(MA.o_dbg_data),
+
+    .o_uart_rst(),
+    .o_uart_data(),
+    .o_uart_send_data(),
+    .o_mips_step(),
+    .o_mips_rst(),
+    .o_mips_reg_sel(),
+    .o_mips_mem_addr(),
+    .o_mips_instr_addr(),
+    .o_mips_instr_data(),
+    .o_mips_instr_write()
+);
+
 
 endmodule

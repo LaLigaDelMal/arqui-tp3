@@ -6,7 +6,8 @@ module Top_Instruction_Decode #(
     input   wire i_clk,
     input   wire i_rst,
     input   wire i_hazard_detected,
-
+    input   wire [4:0] i_dbg_reg_sel,
+    input   wire        i_step,
     // Non buffer inputs (WB signals)
     input wire [4:0]    i_rd_sel,
     input wire          i_wr_en,
@@ -38,6 +39,7 @@ module Top_Instruction_Decode #(
     output wire [4:0]   o_rt,
     output wire [4:0]   o_rd,
     output wire [4:0]   o_rs,
+    output wire [NBITS-1:0] o_dbg_reg_data,
 
     output wire         o_flg_reg_wr_en,
     output wire         o_flg_mem_wr_en,
@@ -118,9 +120,12 @@ Registers Regs(
     .i_rd_sel(i_rd_sel),    //TODO Viene de otra etapa (WB signals)
     .i_wr_en(i_wr_en),      //TODO Viene de otra etapa (WB signals)
     .i_wr_data(i_wr_data),  //TODO Viene de otra etapa (WB signals)
+    .i_dbg_reg_sel(i_dbg_reg_sel),
+    .i_step(i_step),
 
     .o_rs_data(),
-    .o_rt_data()
+    .o_rt_data(),
+    .o_dbg_reg_data()
 );
 
 Sign_Extender Sign_Ext(
@@ -169,6 +174,7 @@ Mux_2 AGU_SRC_ADDR(
 assign o_rt = Inst_Deco.o_rt;
 assign o_rd = Inst_Deco.o_rd;
 assign o_rs = Inst_Deco.o_rs;
+assign o_dbg_reg_data = Regs.o_dbg_reg_data;
 
 assign o_addr_offset = Inst_Deco.o_addr_offset;
 

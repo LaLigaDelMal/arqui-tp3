@@ -7,19 +7,22 @@ module Data_Memory #(
     )(
     input   wire                i_clk,
     input   wire                i_rst,
+    input   wire                i_step,
     input   wire                i_write_en,
     input   wire [1:0]          i_size,    // 00: Byte, 01: Half Word, 10: Word
     input   wire                i_unsigned,
     input   wire [WORD_LEN-1:0] i_addr,
     input   wire [WORD_LEN-1:0] i_data,
-    output  wire [WORD_LEN-1:0] o_data
+    input   wire [WORD_LEN-1:0] i_dbg_addr,
+    output  wire [WORD_LEN-1:0] o_data,
+    output  wire [WORD_LEN-1:0] o_dbg_data
 );
 
     integer i;
     reg [MEM_CELL_SIZE-1:0] memory[DATA_MEM_SIZE-1:0];
-    wire [WORD_LEN-1:0] base_address;
 
     reg [WORD_LEN-1:0] data;
+    reg [WORD_LEN-1:0] dbg_data;
     reg sign;
 
     initial begin
@@ -31,13 +34,13 @@ module Data_Memory #(
     always @ (negedge i_clk) begin
         if (i_rst) begin
             data <= 0;
-        end else if (i_write_en) begin
+        end else if (i_write_en & i_step) begin  // Escritura
             case (i_size)
                 2'b00: memory[i_addr] <= i_data[7:0];
                 2'b01: {memory[i_addr], memory[i_addr + 1] } <= i_data[15:0];
                 2'b11: {memory[i_addr], memory[i_addr + 1], memory[i_addr + 2], memory[i_addr + 3]} <= i_data[31:0];
             endcase
-        end else begin
+        end else begin                  // Lectura
             sign = memory[i_addr][7] & ~i_unsigned;
             case (i_size)
                 2'b00: data = {{24{sign}}, memory[i_addr]}; // Byte
@@ -47,6 +50,12 @@ module Data_Memory #(
         end
     end
 
+    // Logica para unidad de debug
+    always @ (i_dbg_addr) begin
+        dbg_data = {memory[i_dbg_addr], memory[i_dbg_addr + 1], memory[i_dbg_addr + 2], memory[i_dbg_addr + 3]};
+    end
+
 assign o_data = data;
+assign o_dbg_data = dbg_data;
 
 endmodule

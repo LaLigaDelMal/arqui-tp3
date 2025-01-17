@@ -3,17 +3,19 @@
 
 module Registers(
 
-    input wire i_clk,
-    input wire i_rst,
-    input wire [4:0] i_rs_sel,
-    input wire [4:0] i_rt_sel,
-    input wire [4:0] i_rd_sel,
-    input wire i_wr_en,
-    input wire [31:0] i_wr_data,
-    
-    output reg [31:0] o_rs_data,
-    output reg [31:0] o_rt_data
-    
+    input wire          i_clk,
+    input wire          i_rst,
+    input wire [4:0]    i_rs_sel,
+    input wire [4:0]    i_rt_sel,
+    input wire [4:0]    i_rd_sel,
+    input wire          i_wr_en,
+    input wire [31:0]   i_wr_data,
+    input wire [4:0]    i_dbg_reg_sel,
+    input wire          i_step,
+
+    output reg [31:0]   o_rs_data,
+    output reg [31:0]   o_rt_data,
+    output reg [31:0]   o_dbg_reg_data
     );
 
     reg [31:0] zero_reg = 0;
@@ -27,7 +29,7 @@ module Registers(
             for (i = 0; i < 31; i = i + 1) begin
                 reg_file[i] <= 0;
             end
-        end else begin
+        end else if (i_step) begin
             if (i_wr_en & (i_rd_sel != 0)) begin
                 reg_file[i_rd_sel - 1] <= i_wr_data;
             end
@@ -46,6 +48,12 @@ module Registers(
             o_rt_data <= zero_reg;
         end else begin
             o_rt_data <= reg_file[i_rt_sel - 1];
+        end
+
+        if (i_dbg_reg_sel == 0) begin
+            o_dbg_reg_data <= zero_reg;
+        end else begin
+            o_dbg_reg_data <= reg_file[i_dbg_reg_sel - 1];
         end
     end
 

@@ -7,17 +7,17 @@ module Top_Instruction_Fetch #(
     input   wire i_rst,
 
     // PC Mux input
-    input   wire i_pc_mux_ctrl,                // Select signal for PC Mux
-    input   wire [NBITS-1:0] i_eff_addr,       // Jump PC
+    input   wire                i_pc_mux_ctrl,                // Select signal for PC Mux
+    input   wire [NBITS-1:0]    i_eff_addr,       // Jump PC
     
     // Instruction Memory
-    input   wire i_inst_mem_wr_en,
-    input   wire [NBITS-1:0] i_inst_mem_addr,
-    input   wire [NBITS-1:0] i_inst_mem_data,
+    input   wire                i_inst_mem_wr_en,
+    input   wire [NBITS-1:0]    i_inst_mem_addr,
+    input   wire [NBITS-1:0]    i_inst_mem_data,
 
     // From TOP
-    input   wire             i_hazard_detected,
-    input   wire             i_step,
+    input   wire                i_hazard_detected,
+    input   wire                i_step,
 
     // Outputs
     output  wire [NBITS-1:0] o_pc,    
@@ -54,10 +54,10 @@ Adder u_Adder (
 Instruction_Memory u_Instruction_Memory (
     .i_clk(i_clk),                              // Clock signal
     .i_rst(i_rst),                              // Reset signal
-    .i_wr_en(i_inst_mem_wr_en),
+    .i_dbg_wr_en(i_inst_mem_wr_en),
     .i_addr(u_PC.o_pc),
-    .i_addr_wr(i_inst_mem_addr),                   
-    .i_data(i_inst_mem_data),                   
+    .i_dbg_addr(i_inst_mem_addr),                   
+    .i_dbg_inst(i_inst_mem_data),                   
     .o_data()
 );
 
