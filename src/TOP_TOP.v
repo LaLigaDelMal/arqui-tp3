@@ -7,9 +7,9 @@ module TOP_TOP #(
     input wire i_rst,
     input wire i_inst_mem_wr_en,
     input wire [NBITS-1:0] i_inst_mem_addr,
-    input wire [NBITS-1:0] i_inst_mem_data
+    input wire [NBITS-1:0] i_inst_mem_data,
     input wire  i_rx,
-    output wire o_tx,
+    output wire o_tx
 );
 
 

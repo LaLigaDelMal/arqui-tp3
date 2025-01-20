@@ -13,7 +13,7 @@ module Top_Memory_Access#(
     input wire   [NBITS-1:0]  i_eff_addr,
     input wire   [NBITS-1:0]  i_dbg_addr,
 
-    output wire  [NBITS-1:0]  o_data
+    output wire  [NBITS-1:0]  o_data,
     output wire  [NBITS-1:0]  o_dbg_data
 );
 
