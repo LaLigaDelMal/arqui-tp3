@@ -13,10 +13,7 @@ reg [31:0] inst_mem_data;
 // Instantiate the module under test
 TOP_TOP dut(
     clk,
-    reset,
-    inst_mem_wr_en,
-    inst_mem_addr,
-    inst_mem_data
+    reset
 );
 
 initial begin

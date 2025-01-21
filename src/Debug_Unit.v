@@ -116,8 +116,7 @@ module Debug_Unit #(
         end
 
     //state machine
-    always @*
-    begin
+    always @ (*) begin
         state_next          <= state;
 
         uart_rx_reset_next        <= uart_rx_reset;
@@ -138,6 +137,7 @@ module Debug_Unit #(
         mips_step_next      <= mips_step;
         mips_rst_next     <= mips_rst;
 
+        $display("State: %b", state);
         case (state)
             IDLE:
                 begin
@@ -301,8 +301,7 @@ module Debug_Unit #(
     end
 
     //Clock y reset de MIPS
-    always @*
-    begin
+    always @(*) begin
         case(mips_mode)
             MIPS_RUN:   mips_clk_ctrl <= 1'b1;
             MIPS_STEP:  mips_clk_ctrl <= mips_step;

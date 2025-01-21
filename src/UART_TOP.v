@@ -1,8 +1,7 @@
 `timescale 1ns / 1ps
 
 
-module UART
-#(
+module UART_TOP #(
     parameter PAYLOAD_SIZE = 8
 )(
     input wire i_clk,

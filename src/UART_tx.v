@@ -21,7 +21,7 @@ module UART_tx
         TRANSMIT = 1;
 
     localparam   DIV_COUNTER_VALUE   = CLK_FREQ / BAUD_RATE;
-    localparam   DIV_COUNTER_SIZE    = $clog2(DIV_COUNTER + 1);
+    localparam   DIV_COUNTER_SIZE    = $clog2(DIV_COUNTER_VALUE + 1);
     localparam   BIT_COUNTER_SIZE    = $clog2(PAYLOAD_SIZE + 2);
 
     reg         [DIV_COUNTER_SIZE-1:0]       div_counter;
@@ -41,7 +41,7 @@ module UART_tx
             tx_done         <= 1;
         end else begin
             div_counter <= div_counter + 1;
-            if (div_counter >= DIV_COUNTER) begin
+            if (div_counter >= DIV_COUNTER_VALUE) begin
                 div_counter       <=  0;
                 state         <=  next_state;
                 shift_reg     <=  next_shift_reg;
