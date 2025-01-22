@@ -25,8 +25,21 @@ always begin
     #5 clk = ~clk;
 end
 
-reg [9:0] load = 10'b1011100110;
+reg [9:0] load = 10'b1011011000;
+reg [7:0] inst1[3:0];
+
 integer i;
+integer j;
+
+initial begin
+    inst1[0] = 8'b00111100;
+    inst1[1] = 8'b00001000;
+    inst1[2] = 8'b11111111;
+    inst1[3] = 8'b11111111;
+
+    i = 0;
+    j = 0;
+end
 
 initial begin
     $display("Test debug");
@@ -34,7 +47,6 @@ initial begin
     // STEP: 01110011
     // LOAD: 01110011
     
-    i = 0;
     rx = 1;
     $display("Reset in progress");
     // Reset
@@ -52,6 +64,19 @@ initial begin
     for (i = 0; i < 10; i = i + 1) begin
         rx = load[i];
         $display("RX: %b", load[i]);
+        #160;
+    end
+
+    	
+    // Separar en 4 partes de 8 bits
+    for (i = 0; i < 4; i = i + 1) begin
+        rx = 0;
+        #160;
+        for (j = 0; j < 8; j = j + 1) begin
+            rx = inst1[i][j];
+            #160;
+        end
+        rx = 1;
         #160;
     end
 

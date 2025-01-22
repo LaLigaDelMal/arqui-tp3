@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 
 module UART_tick_gen #(
-    parameter CLOCK = 16, //100000000,
-    parameter BAUD_RATE = 1 //9600
+    parameter CLOCK = 100000000,
+    parameter BAUD_RATE = 9600
 )(
     input wire i_clk,
     input wire i_rst,
