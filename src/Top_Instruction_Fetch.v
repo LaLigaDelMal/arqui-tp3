@@ -54,6 +54,7 @@ Adder u_Adder (
 Instruction_Memory u_Instruction_Memory (
     .i_clk(i_clk),                              // Clock signal
     .i_rst(i_rst),                              // Reset signal
+    .i_step(i_step),                            // Step signal
     .i_dbg_wr_en(i_inst_mem_wr_en),
     .i_addr(u_PC.o_pc),
     .i_dbg_addr(i_inst_mem_addr),                   

@@ -22,7 +22,8 @@ module Debug_Unit #(
     input  wire  [NBITS-1:0]     i_mips_mem_data,    // Memoria de datos del MIPS
 
 
-    output wire                  o_uart_rst,        // Reset signal for the UART Top.
+    output wire                  o_uart_rx_rst,        // Reset signal for the UART Top.
+    output wire                  o_uart_tx_rst,        // Reset signal for the UART Top.
     output wire  [DATA_BITS-1:0] o_uart_data,
     output wire                  o_uart_send_data,
     
@@ -58,6 +59,7 @@ module Debug_Unit #(
     reg [4:0]   state, state_next;
 
     reg                         uart_rx_reset, uart_rx_reset_next;
+    reg                         uart_tx_reset, uart_tx_reset_next;
     reg [NBITS-1:0]             uart_rx_data_line, uart_rx_data_line_next;
     reg                         uart_rx_inst_write, uart_rx_inst_write_next;
     reg [INST_COUNT_SIZE-1:0]   uart_rx_inst_count, uart_rx_inst_count_next;
@@ -81,6 +83,7 @@ module Debug_Unit #(
             if (i_rst)begin
                 state                   <= IDLE;
                 uart_rx_reset           <= 1;
+                uart_tx_reset           <= 1;
                 uart_rx_data_line       <= 0;
                 uart_rx_word_count      <= 0;
                 uart_rx_inst_count      <= 0;
@@ -98,6 +101,7 @@ module Debug_Unit #(
             end else begin
                 state                   <= state_next;
                 uart_rx_reset           <= uart_rx_reset_next;
+                uart_tx_reset           <= uart_tx_reset_next;
                 uart_rx_data_line       <= uart_rx_data_line_next;
                 uart_rx_word_count      <= uart_rx_word_count_next;
                 uart_rx_inst_count      <= uart_rx_inst_count_next;
@@ -120,6 +124,7 @@ module Debug_Unit #(
         state_next          <= state;
 
         uart_rx_reset_next        <= uart_rx_reset;
+        uart_tx_reset_next        <= uart_tx_reset;
         uart_rx_data_line_next    <= uart_rx_data_line;
         uart_rx_word_count_next   <= uart_rx_word_count;
         uart_rx_inst_count_next   <= uart_rx_inst_count;
@@ -128,19 +133,20 @@ module Debug_Unit #(
         uart_tx_data_next        <= uart_tx_data;
         uart_tx_ready_next       <= uart_tx_ready;
         tx_byte_count_next       <= tx_byte_count;
-        tx_data_count_next  <= tx_data_count;
-        tx_regs_count_next  <= tx_regs_count;
+        tx_data_count_next       <= tx_data_count;
+        tx_regs_count_next       <= tx_regs_count;
         uart_tx_mem_count_next   <= tx_mem_count;
         uart_tx_data_word_next   <= uart_tx_data_word;
 
-        mips_mode_next      <= mips_mode;
-        mips_step_next      <= mips_step;
-        mips_rst_next     <= mips_rst;
+        mips_mode_next           <= mips_mode;
+        mips_step_next           <= mips_step;
+        mips_rst_next            <= mips_rst;
 
         $display("State: %b", state);
         case (state)
             IDLE:
                 begin
+                    uart_tx_reset_next  <= 0;
                     if (~i_uart_data_received) begin        // Verifica si hay datos listos desde la UART
                         uart_rx_reset_next  <= 0;
                     end else begin                          // Verifica el char recibido
@@ -155,22 +161,22 @@ module Debug_Unit #(
                 end
             RUN:
                 begin
-                    mips_rst_next <= 0;
+                    mips_rst_next   <= 0;
                     mips_mode_next  <= MIPS_RUN;
 
                     if( i_mips_halt ) begin // Viene de MIPS, etapa decodificación (opcode 111111)
-                        mips_rst_next <= 1; // Resetea el MIPS //TODO Checkear porque reiniciar el MIPS
+                        mips_rst_next   <= 1; // Resetea el MIPS //TODO Checkear porque reiniciar el MIPS
                         mips_mode_next  <= MIPS_STOP;
                         state_next      <= PREPARE_TX;
                     end
                 end
             STEP:
                 begin
-                    mips_rst_next     <= 0;
+                    mips_rst_next       <= 0;
                     mips_mode_next      <= MIPS_STEP;
 
                     if( i_mips_halt ) begin
-                        mips_rst_next <= 1;
+                        mips_rst_next   <= 1;
                         mips_mode_next  <= MIPS_STOP;
                         state_next      <= PREPARE_TX;
                     end
@@ -238,7 +244,7 @@ module Debug_Unit #(
                         2: // Envia contenido de los 32 registros
                             begin
                                 uart_tx_data_word_next  <= i_mips_reg_data;
-                                tx_regs_count_next <= tx_regs_count + 1;
+                                tx_regs_count_next      <= tx_regs_count + 1;
                                 
                                 if(tx_regs_count == REG_SIZE-1) begin
                                     tx_data_count_next  <= tx_data_count + 1;
@@ -280,7 +286,7 @@ module Debug_Unit #(
                     uart_tx_ready_next      <= 1;
                     if (~i_uart_data_sent) begin
                         uart_tx_ready_next       <= 0;
-                        tx_byte_count_next  <= tx_byte_count +1;  // registro de dos bits, reinicia por overflow
+                        tx_byte_count_next       <= tx_byte_count +1;  // registro de dos bits, reinicia por overflow
                         state_next               <= WAIT_TX;
                     end
                 end
@@ -310,17 +316,18 @@ module Debug_Unit #(
         endcase
     end
 
-    assign o_uart_send_data = uart_tx_ready;
-    assign o_uart_data      = uart_tx_data;
+    assign o_uart_send_data     = uart_tx_ready;
+    assign o_uart_data          = uart_tx_data;
 
-    assign o_uart_rst = uart_rx_reset;
+    assign o_uart_rx_rst           = uart_rx_reset;
+    assign o_uart_tx_rst           = uart_tx_reset;
 
-    assign o_mips_step = mips_clk_ctrl;
-    assign o_mips_reset    = mips_rst;
-    assign o_mips_reg      = tx_regs_count;
+    assign o_mips_step          = mips_clk_ctrl;
+    assign o_mips_rst           = mips_rst;
+    assign o_mips_reg           = tx_regs_count;
     assign o_mips_mem_addr      = tx_mem_count;
 
-    assign o_mips_instr_addr     = uart_rx_inst_count;
+    assign o_mips_instr_addr    = uart_rx_inst_count;
     assign o_mips_instr_data    = uart_rx_data_line;
     assign o_mips_instr_write   = uart_rx_inst_write;
 

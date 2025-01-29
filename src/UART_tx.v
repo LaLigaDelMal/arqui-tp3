@@ -16,9 +16,8 @@ module UART_tx
 );
 
 
-    localparam
-        IDLE = 0,
-        TRANSMIT = 1;
+    localparam IDLE     = 1'b0;
+    localparam TRANSMIT = 1'b1;
 
     localparam   DIV_COUNTER_VALUE   = CLK_FREQ / BAUD_RATE;
     localparam   DIV_COUNTER_SIZE    = $clog2(DIV_COUNTER_VALUE + 1);
@@ -41,32 +40,35 @@ module UART_tx
             tx_done         <= 1;
         end else begin
             div_counter <= div_counter + 1;
-            if (div_counter >= DIV_COUNTER_VALUE) begin
-                div_counter       <=  0;
-                state         <=  next_state;
-                shift_reg     <=  next_shift_reg;
-                bit_counter    <=  next_bit_counter;
-                tx       <=  next_tx;
-                tx_done  <=  next_tx_done;
-            end
+            //if (div_counter >= DIV_COUNTER_VALUE) begin
+            
+                div_counter         <=  0;
+                state               <=  next_state;
+                shift_reg           <=  next_shift_reg;
+                bit_counter         <=  next_bit_counter;
+                tx                  <=  next_tx;
+                tx_done             <=  next_tx_done;
+            //end
         end
     end 
 
     always @ (*) begin
-        next_shift_reg    <= shift_reg;
-        next_tx         <= tx;
-        next_bit_counter   <= bit_counter;
-        next_tx_done    <= tx_done;
+        next_state          <= state;
+        next_shift_reg      <= shift_reg;
+        next_tx             <= tx;
+        next_bit_counter    <= bit_counter;
+        next_tx_done        <= tx_done;
 
         case (state)
             IDLE: begin 
                 if (i_ready) begin
+                    $display("Sending data: %b", i_data);
                     next_state           <= TRANSMIT;
                     next_shift_reg       <= {1'b1,i_data,1'b0};
                 end else begin
                     next_state           <= IDLE;
-                    next_tx         <= 1; 
-                    next_tx_done    <= 1;
+                    next_tx              <= 1; 
+                    next_tx_done         <= 1;
                 end
             end
             TRANSMIT: begin
@@ -75,10 +77,10 @@ module UART_tx
                     next_bit_counter    <= 0;
                 end else begin
                     next_state          <=  TRANSMIT;
-                    next_tx_done   <=  0;
-                    next_tx        <=  shift_reg[0]; 
+                    next_tx_done        <=  0;
+                    next_tx             <=  shift_reg[0]; 
                     next_shift_reg      <=  shift_reg >> 1;
-                    next_bit_counter     <=  bit_counter + 1;
+                    next_bit_counter    <=  bit_counter + 1;
                 end
             end
             default: 

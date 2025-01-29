@@ -57,6 +57,7 @@ module Control_Unit(
     input wire          i_flg_mem_op,           // 1 if the instruction is a memory operation, 0 if not
     input wire          i_flg_mem_type,         // 0 if load, 1 if store
     input wire          i_hazard_detected,      // 1 if a hazard is detected, 0 if not
+    input wire          i_flg_halt,             // 1 if the instruction is a halt, 0 if not
 
     output reg [1:0]    o_flg_ALU_src_a,        // 01 if the ALU source A is the value of the register RT, 00 if is the PC+4, 11 if the source is the output from the sign extender
     output reg          o_flg_ALU_src_b,        // 1 if the ALU source B is the SA value in the instruction, 0 if the soure is the register RS
@@ -86,7 +87,7 @@ module Control_Unit(
             };
 
     always @ (*) begin
-        if (~i_hazard_detected) begin
+        if (~i_hazard_detected | i_flg_halt) begin
             o_flg_mem_wr_en <= i_flg_mem_type;
 
             casez (flags)

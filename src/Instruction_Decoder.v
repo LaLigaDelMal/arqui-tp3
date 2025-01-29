@@ -21,7 +21,8 @@ module Instruction_Decoder (
     output reg          o_flg_mem_op,           // 1 if the instruction is a memory operation, 0 if not
     output reg          o_flg_mem_type,         // 0 if load, 1 if store
     output reg [1:0]    o_flg_mem_size,         // 00 if byte, 01 if halfword, 11 if word
-    output reg          o_flg_unsign            // 1 if the operation is unsigned, 0 if not
+    output reg          o_flg_unsign,           // 1 if the operation is unsigned, 0 if not
+    output reg          o_flg_halt
     );
 
     reg [5:0] opcode;
@@ -54,6 +55,7 @@ module Instruction_Decoder (
                         o_flg_mem_type  <= 1'b0;
                         o_flg_mem_size  <= 2'b00;
                         o_flg_unsign    <= 1'b0;
+                        o_flg_halt      <= 1'b0;
                     end
                     6'b001001: begin            // JALR
                         o_funct         <= i_instr[5:0];
@@ -75,6 +77,7 @@ module Instruction_Decoder (
                         o_flg_mem_type  <= 1'b0;
                         o_flg_mem_size  <= 2'b00;
                         o_flg_unsign    <= 1'b0;
+                        o_flg_halt      <= 1'b0;
                     end
                     default: begin              // Rest of R type instructions
                         o_funct         <= i_instr[5:0];
@@ -96,6 +99,7 @@ module Instruction_Decoder (
                         o_flg_mem_type  <= 1'b0;
                         o_flg_mem_size  <= 2'b00;
                         o_flg_unsign    <= 1'b0;
+                        o_flg_halt      <= 1'b0;
                     end
                 endcase
             end
@@ -119,6 +123,7 @@ module Instruction_Decoder (
                 o_flg_mem_type  <= 1'b0;
                 o_flg_mem_size  <= 2'b00;
                 o_flg_unsign    <= 1'b0;
+                o_flg_halt      <= 1'b0;
             end
             6'b000011: begin                            // JAL
                 o_funct         <= 6'b0;
@@ -140,6 +145,29 @@ module Instruction_Decoder (
                 o_flg_mem_type  <= 1'b0;
                 o_flg_mem_size  <= 2'b00;
                 o_flg_unsign    <= 1'b0;
+                o_flg_halt      <= 1'b0;
+            end
+            6'b111111: begin // HALT
+                o_funct         <= 6'b0;
+                o_rs            <= 5'b0;
+                o_rt            <= 5'b0;
+                o_rd            <= 5'b0;
+                o_sa            <= 5'b0;
+                o_imm           <= 16'b0;
+                o_addr_offset   <= 26'b0;
+                
+                o_flg_pc_modify <= 1'b0;
+                o_flg_link_ret  <= 1'b0;
+                o_flg_addr_type <= 2'b00;
+                o_link_reg      <= 5'b0;
+                o_addr_reg      <= 5'b0;
+                o_flg_equal     <= 1'b0;
+                o_flg_inmediate <= 1'b0;
+                o_flg_mem_op    <= 1'b0;
+                o_flg_mem_type  <= 1'b0;
+                o_flg_mem_size  <= 2'b00;
+                o_flg_unsign    <= 1'b0;
+                o_flg_halt      <= 1'b1; // HALT
             end
             default: begin                              // I type instructions
                 case (opcode[5:3])
@@ -164,6 +192,7 @@ module Instruction_Decoder (
                             o_flg_mem_type  <= 1'b0;
                             o_flg_mem_size  <= 2'b00;
                             o_flg_unsign    <= 1'b0;
+                            o_flg_halt      <= 1'b0;
                         end else begin                  // BNE
                             o_funct         <= 6'b0;
                             o_rs            <= i_instr[25:21];
@@ -184,6 +213,7 @@ module Instruction_Decoder (
                             o_flg_mem_type  <= 1'b0;
                             o_flg_mem_size  <= 2'b00;
                             o_flg_unsign    <= 1'b0;
+                            o_flg_halt      <= 1'b0;
                         end
                     end
                     3'b001: begin               // Arithmetic instructions (I type)
@@ -206,6 +236,7 @@ module Instruction_Decoder (
                         o_flg_mem_type  <= 1'b0;
                         o_flg_mem_size  <= 2'b00;
                         o_flg_unsign    <= 1'b0;
+                        o_flg_halt      <= 1'b0;
                     end
                     3'b100: begin               // Load instructions
                         o_funct         <= {3'b0, opcode[2:0]};
@@ -227,6 +258,7 @@ module Instruction_Decoder (
                         o_flg_mem_type  <= 1'b0;
                         o_flg_mem_size  <= opcode[1:0];
                         o_flg_unsign    <= opcode[2];
+                        o_flg_halt      <= 1'b0;
                     end
                     3'b101: begin               // Store instructions
                         o_funct         <= {3'b0, opcode[2:0]};
@@ -248,6 +280,7 @@ module Instruction_Decoder (
                         o_flg_mem_type  <= 1'b1;
                         o_flg_mem_size  <= opcode[1:0];
                         o_flg_unsign    <= 1'b0;
+                        o_flg_halt      <= 1'b0;
                     end
                 endcase
             end

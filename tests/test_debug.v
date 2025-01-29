@@ -25,17 +25,33 @@ always begin
     #5 clk = ~clk;
 end
 
-reg [9:0] load = 10'b1011011000;
+reg [9:0] run   = 10'b1011100100;
+reg [9:0] step  = 10'b1011100110;
+reg [9:0] load  = 10'b1011011000;
 reg [7:0] inst1[3:0];
+reg [7:0] inst2[3:0];
+reg [7:0] eof[3:0];
 
 integer i;
 integer j;
 
 initial begin
-    inst1[0] = 8'b00111100;
-    inst1[1] = 8'b00001000;
-    inst1[2] = 8'b11111111;
-    inst1[3] = 8'b11111111;
+    // inst1 3C08FFFF (LUI to set the value 0xFFFF0000 to $t0)
+    inst1[0] = 8'h3C;
+    inst1[1] = 8'h08;
+    inst1[2] = 8'hFF;
+    inst1[3] = 8'hFF;
+    // ins2 
+    //inst2[0] = 8'h00;
+    //inst2[1] = 8'h00;
+    //inst2[2] = 8'h00;
+    //inst2[3] = 8'h00;
+
+    // eof
+    eof[0] = 8'b11111111;
+    eof[1] = 8'b11111111;
+    eof[2] = 8'b11111111;
+    eof[3] = 8'b11111111;
 
     i = 0;
     j = 0;
@@ -58,17 +74,15 @@ initial begin
 
     $display("Load");
     // lOAD
-    
-    // 104166
-        
+
+    // Directiva LOAD (Cargar programa)
     for (i = 0; i < 10; i = i + 1) begin
         rx = load[i];
         $display("RX: %b", load[i]);
         #160;
     end
 
-    	
-    // Separar en 4 partes de 8 bits
+    // Primera instruccion
     for (i = 0; i < 4; i = i + 1) begin
         rx = 0;
         #160;
@@ -80,11 +94,29 @@ initial begin
         #160;
     end
 
+    // End of file
+    for (i = 0; i < 4; i = i + 1) begin
+        rx = 0;
+        #160;
+        for (j = 0; j < 8; j = j + 1) begin
+            rx = eof[i][j];
+            #160;
+        end
+        rx = 1;
+        #160;
+    end
+
     rx = 1;
+
+    // Directiva RUN (Correr programa)
+    for (i = 0; i < 10; i = i + 1) begin
+        rx = run[i];
+        #160;
+    end
     
-    $display("Finish load");
+    $display("Finish run");
     
-    #300;
+    #30000;
     $finish;
     
 end

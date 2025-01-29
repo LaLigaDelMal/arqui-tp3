@@ -30,6 +30,7 @@ module Reg_ID_EX #(
     input wire   [1:0]        i_flg_ALU_src_A,
     input wire                i_flg_ALU_src_B,
     input wire                i_flg_mem_op,
+    input wire                i_flg_halt,
 
     output reg                o_clk,
     output reg                o_rst,
@@ -55,7 +56,8 @@ module Reg_ID_EX #(
     output reg                o_flg_wb_src,
     output reg   [1:0]        o_flg_ALU_src_A,
     output reg                o_flg_ALU_src_B,
-    output reg                o_flg_mem_op
+    output reg                o_flg_mem_op,
+    output reg                o_flg_halt
 );
 
 always @(posedge i_clk) begin
@@ -83,6 +85,7 @@ always @(posedge i_clk) begin
         o_flg_ALU_src_A <= 0;
         o_flg_ALU_src_B <= 0;
         o_flg_mem_op <= 0;
+        o_flg_halt <= 0;
     end
     else if (i_step) begin
         o_pc <= i_pc;
@@ -108,6 +111,7 @@ always @(posedge i_clk) begin
         o_flg_ALU_src_A <= i_flg_ALU_src_A;
         o_flg_ALU_src_B <= i_flg_ALU_src_B;
         o_flg_mem_op <= i_flg_mem_op;
+        o_flg_halt <= i_flg_halt;
     end
 end
 

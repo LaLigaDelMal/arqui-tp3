@@ -18,6 +18,7 @@ module Reg_EX_MA #(
     input wire               i_flg_reg_wr_en,
     input wire               i_flg_mem_wr_en,
     input wire               i_flg_wb_src,
+    input wire               i_flg_halt,
 
     output reg               o_pc_mux_ctrl,
     output reg  [NBITS-1:0]  o_ALU_rslt,
@@ -28,7 +29,8 @@ module Reg_EX_MA #(
     output reg  [1:0]        o_flg_ALU_dst,
     output reg               o_flg_reg_wr_en,
     output reg               o_flg_mem_wr_en,
-    output reg               o_flg_wb_src
+    output reg               o_flg_wb_src,
+    output reg               o_flg_halt
     );
 
     always @(posedge i_clk) begin
@@ -44,6 +46,7 @@ module Reg_EX_MA #(
         o_flg_reg_wr_en <= 0;
         o_flg_mem_wr_en <= 0;
         o_flg_wb_src <= 0;
+        o_flg_halt <= 0;
     end
     else if (i_step) begin
         o_pc_mux_ctrl <= i_pc_mux_ctrl;
@@ -57,6 +60,7 @@ module Reg_EX_MA #(
         o_flg_reg_wr_en <= i_flg_reg_wr_en;
         o_flg_mem_wr_en <= i_flg_mem_wr_en;
         o_flg_wb_src <= i_flg_wb_src;
+        o_flg_halt <= i_flg_halt;
     end
 end
 endmodule

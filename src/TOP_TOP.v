@@ -13,18 +13,13 @@ module TOP_TOP #(
 Top_Instruction_Fetch IF (
     .i_clk(i_clk),
     .i_rst(DU.o_mips_rst),
-    //.i_rst(1'b0),
     .i_pc_mux_ctrl(EX.o_pc_mux_ctrl),           // Viene de WB
     .i_eff_addr(EX.o_eff_addr),                 // Viene de MA
     .i_inst_mem_wr_en(DU.o_mips_instr_write),   // Viene de DEBUG
     .i_inst_mem_addr(DU.o_mips_instr_addr),     // Viene de DEBUG
     .i_inst_mem_data(DU.o_mips_instr_data),     // Viene de DEBUG
-    //.i_inst_mem_wr_en(1'b0),   // Viene de DEBUG
-    //.i_inst_mem_addr(0),     // Viene de DEBUG
-    //.i_inst_mem_data(0),     // Viene de DEBUG
-    //.i_hazard_detected(HU.o_hazard_detected),
+    .i_hazard_detected(HU.o_hazard_detected),
     .i_step(DU.o_mips_step),                    // Viene de DEBUG
-    //.i_step(1'b1),                    // Viene de DEBUG
     .o_pc(),
     .o_instr(),                                 // Fetched instruction
     .o_cycle_count()
@@ -32,26 +27,21 @@ Top_Instruction_Fetch IF (
 
 Reg_IF_ID IF_ID (
     .i_clk(i_clk),
-    //.i_rst(DU.o_mips_rst),
-    .i_rst(1'b0),
+    .i_rst(DU.o_mips_rst),
     .i_pc(IF.o_pc),
     .i_instruction(IF.o_instr),
     .i_hazard_detected(HU.o_hazard_detected),
-    //.i_step(DU.o_mips_step),
-    .i_step(1'b1),
+    .i_step(DU.o_mips_step),
     .o_pc(),    
     .o_instruction()          // Fetched instruction
 );
 
 Top_Instruction_Decode ID (
     .i_clk(i_clk),
-    //.i_rst(DU.o_mips_rst),
-    .i_rst(1'b0),
+    .i_rst(DU.o_mips_rst),
     .i_hazard_detected(HU.o_hazard_detected),
-    //.i_dbg_reg_sel(DU.o_mips_reg_sel),          //Viene de DEBUG
-    .i_dbg_reg_sel(5'b0),          //Viene de DEBUG
-    //.i_step(DU.o_mips_step),                    //Viene de DEBUG
-    .i_step(1'b1),                    //Viene de DEBUG
+    .i_dbg_reg_sel(DU.o_mips_reg_sel),        //Viene de DEBUG
+    .i_step(DU.o_mips_step),                  //Viene de DEBUG
     .i_rd_sel(WB.o_reg_sel),                    //Viene de WB
     .i_wr_en(MA_WB.o_flg_reg_wr_en),            //Viene de MA_WB
     .i_wr_data(WB.o_wr_data),                   //Viene de WB
@@ -79,15 +69,14 @@ Top_Instruction_Decode ID (
     .o_flg_ALU_src_A(),
     .o_flg_ALU_src_B(),
     .o_flg_mem_op(),
-    .o_flg_jmp_trg_reg()
+    .o_flg_jmp_trg_reg(),
+    .o_flg_halt()
 );
 
 Reg_ID_EX ID_EX (
     .i_clk(i_clk),
-    //.i_rst(DU.o_mips_rst),
-    .i_rst(1'b0),
-    //.i_step(DU.o_mips_step),
-    .i_step(1'b1),
+    .i_rst(DU.o_mips_rst),
+    .i_step(DU.o_mips_step),
     .i_stall(HU.o_stall_EX),
     .i_pc(IF_ID.o_pc),
     .i_rt(ID.o_rt),
@@ -111,6 +100,7 @@ Reg_ID_EX ID_EX (
     .i_flg_ALU_src_A(ID.o_flg_ALU_src_A),
     .i_flg_ALU_src_B(ID.o_flg_ALU_src_B),
     .i_flg_mem_op(ID.o_flg_mem_op),
+    .i_flg_halt(ID.o_flg_halt),
     .o_clk(),
     .o_rst(),
     .o_pc(),
@@ -135,7 +125,8 @@ Reg_ID_EX ID_EX (
     .o_flg_wb_src(),
     .o_flg_ALU_src_A(),
     .o_flg_ALU_src_B(),
-    .o_flg_mem_op()
+    .o_flg_mem_op(),
+    .o_flg_halt()
 );
 
 Forwarding_Unit FU (
@@ -189,10 +180,8 @@ Top_Execute EX (
 
 Reg_EX_MA EX_MA (
     .i_clk(i_clk),
-    //.i_rst(DU.o_mips_rst),
-    .i_rst(1'b0),
-    //.i_step(DU.o_mips_step),
-    .i_step(1'b1),
+    .i_rst(DU.o_mips_rst),
+    .i_step(DU.o_mips_step),
     .i_pc_mux_ctrl(EX.o_pc_mux_ctrl),
     .i_ALU_rslt(EX.o_ALU_rslt),
     .i_eff_addr(EX.o_eff_addr),
@@ -204,6 +193,7 @@ Reg_EX_MA EX_MA (
     .i_flg_reg_wr_en(ID_EX.o_flg_reg_wr_en),
     .i_flg_mem_wr_en(ID_EX.o_flg_mem_wr_en),
     .i_flg_wb_src(ID_EX.o_flg_wb_src),
+    .i_flg_halt(ID_EX.o_flg_halt),
     
     .o_pc_mux_ctrl(),
     .o_ALU_rslt(),
@@ -215,31 +205,28 @@ Reg_EX_MA EX_MA (
     .o_flg_ALU_dst(),
     .o_flg_reg_wr_en(),
     .o_flg_mem_wr_en(),
-    .o_flg_wb_src()
+    .o_flg_wb_src(),
+    .o_flg_halt()   
 );
 
 Top_Memory_Access MA (
     .i_clk(i_clk),
-    //.i_rst(DU.o_mips_rst),
-    .i_rst(1'b0),
-    .i_step(1'b1),
+    .i_rst(DU.o_mips_rst),
+    .i_step(DU.o_mips_step),
     .i_ALU_rslt(EX_MA.o_ALU_rslt),
     .i_flg_unsign(EX_MA.o_flg_unsign),
     .i_flg_mem_size(EX_MA.o_flg_mem_size),
     .i_flg_mem_wr_en(EX_MA.o_flg_mem_wr_en),
     .i_eff_addr(EX_MA.o_eff_addr),
-    //.i_dbg_addr(DU.o_mips_mem_addr),
-    .i_dbg_addr(0),
+    .i_dbg_addr(DU.o_mips_mem_addr),
     .o_data(),
     .o_dbg_data()
 );
 
 Reg_MA_WB MA_WB (
     .i_clk(i_clk),
-    //.i_rst(DU.o_mips_rst),
-    .i_rst(1'b0),
-    //.i_step(DU.o_mips_step),
-    .i_step(1'b1),
+    .i_rst(DU.o_mips_rst),
+    .i_step(DU.o_mips_step),
     .i_flg_ALU_dst(EX_MA.o_flg_ALU_dst),
     .i_ALU_rslt(EX_MA.o_ALU_rslt),
     .i_data(MA.o_data),
@@ -247,13 +234,15 @@ Reg_MA_WB MA_WB (
     .i_rt(EX_MA.o_rt),
     .i_flg_reg_wr_en(EX_MA.o_flg_reg_wr_en),
     .i_flg_wb_src(EX_MA.o_flg_wb_src),
+    .i_flg_halt(EX_MA.o_flg_halt),
     .o_flg_ALU_dst(),
     .o_ALU_rslt(),
     .o_data(),
     .o_rd(),
     .o_rt(),
     .o_flg_reg_wr_en(),
-    .o_flg_wb_src()
+    .o_flg_wb_src(),
+    .o_flg_halt()
 );
 
 Top_Writeback WB (
@@ -272,7 +261,8 @@ Top_Writeback WB (
 
 UART_TOP UART (
     .i_clk(i_clk),
-    .i_rst(DU.o_uart_rst),
+    .i_rst_rx(DU.o_uart_rx_rst),
+    .i_rst_tx(DU.o_uart_tx_rst),
     .i_rx(i_rx),
     .i_data(DU.o_uart_data),
     .i_send_data(DU.o_uart_send_data),
@@ -289,13 +279,14 @@ Debug_Unit DU (
     .i_uart_data(UART.o_data),
     .i_uart_data_sent(UART.o_flg_data_sent),
 
-    .i_mips_halt(1'b0), //TODO Implementar HALT en mips
+    .i_mips_halt(MA_WB.o_flg_halt),
     .i_mips_pc(IF.o_pc),
     .i_mips_clk_count(IF.o_cycle_count),
     .i_mips_reg_data(ID.o_dbg_reg_data),
     .i_mips_mem_data(MA.o_dbg_data),
 
-    .o_uart_rst(),
+    .o_uart_rx_rst(),
+    .o_uart_tx_rst(),
     .o_uart_data(),
     .o_uart_send_data(),
     .o_mips_step(),

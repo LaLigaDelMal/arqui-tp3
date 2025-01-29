@@ -5,7 +5,8 @@ module UART_TOP #(
     parameter PAYLOAD_SIZE = 8
 )(
     input wire i_clk,
-    input wire i_rst,
+    input wire i_rst_rx,
+    input wire i_rst_tx,
     input wire i_rx,
     input wire [PAYLOAD_SIZE-1:0] i_data,
     input wire i_send_data,
@@ -18,13 +19,13 @@ module UART_TOP #(
 
     UART_tick_gen u_UART_tick_gen (
         .i_clk(i_clk),
-        .i_rst(i_rst),
+        .i_rst(i_rst_rx),
         .o_tick()
     );
 
     UART_tx u_UART_tx (
         .i_clk(i_clk),
-        .i_rst(i_rst),
+        .i_rst(i_rst_tx),
         .i_ready(i_send_data),
         .i_data(i_data),
         .o_tx(o_tx),
@@ -33,7 +34,7 @@ module UART_TOP #(
 
     UART_rx u_UART_rx (
         .i_clk(i_clk),
-        .i_rst(i_rst),
+        .i_rst(i_rst_rx),
         .i_rx(i_rx),
         //.i_tick(u_UART_tick_gen.o_tick),
         .i_tick(i_clk),
