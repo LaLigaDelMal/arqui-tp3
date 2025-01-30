@@ -72,7 +72,7 @@ module Debug_Unit #(
     reg [2:0]                   tx_data_count, tx_data_count_next;
 
     reg [REG_COUNT_SIZE-1:0]    tx_regs_count, tx_regs_count_next;
-    reg [MEM_COUNT_SIZE-1:0]    tx_mem_count, uart_tx_mem_count_next;
+    reg [NBITS-1:0]             tx_mem_count, uart_tx_mem_count_next;
 
     reg [1:0]                   mips_mode, mips_mode_next;
     reg                         mips_step, mips_step_next;
@@ -146,6 +146,7 @@ module Debug_Unit #(
         case (state)
             IDLE:
                 begin
+                    mips_rst_next   <= 1;
                     uart_tx_reset_next  <= 0;
                     if (~i_uart_data_received) begin        // Verifica si hay datos listos desde la UART
                         uart_rx_reset_next  <= 0;
@@ -165,7 +166,6 @@ module Debug_Unit #(
                     mips_mode_next  <= MIPS_RUN;
 
                     if( i_mips_halt ) begin // Viene de MIPS, etapa decodificación (opcode 111111)
-                        mips_rst_next   <= 1; // Resetea el MIPS //TODO Checkear porque reiniciar el MIPS
                         mips_mode_next  <= MIPS_STOP;
                         state_next      <= PREPARE_TX;
                     end
@@ -176,7 +176,6 @@ module Debug_Unit #(
                     mips_mode_next      <= MIPS_STEP;
 
                     if( i_mips_halt ) begin
-                        mips_rst_next   <= 1;
                         mips_mode_next  <= MIPS_STOP;
                         state_next      <= PREPARE_TX;
                     end
@@ -189,7 +188,7 @@ module Debug_Unit #(
                             uart_rx_reset_next  <= 0;
                         end else begin // Verifica si el char recibido es n (next)
                             uart_rx_reset_next  <= 1;
-                            if( i_uart_data == 8'b01101110) begin  // es n?
+                            if( i_uart_data == 8'b01101110) begin  // es n
                                 mips_step_next <= 1;
                             end
                         end
@@ -241,18 +240,18 @@ module Debug_Unit #(
                                 tx_data_count_next      <= tx_data_count + 1;
                                 state_next              <= DATA_TX;
                             end
-                        2: // Envia contenido de los 32 registros
-                            begin
-                                uart_tx_data_word_next  <= i_mips_reg_data;
-                                tx_regs_count_next      <= tx_regs_count + 1;
-                                
-                                if(tx_regs_count == REG_SIZE-1) begin
-                                    tx_data_count_next  <= tx_data_count + 1;
-                                end
+                        //2: // Envia contenido de los 32 registros
+                        //    begin
+                        //        uart_tx_data_word_next  <= i_mips_reg_data;
+                        //        tx_regs_count_next      <= tx_regs_count + 1;
+                        //        
+                        //        if(tx_regs_count == REG_SIZE-1) begin
+                        //            tx_data_count_next  <= tx_data_count + 1;
+                        //        end
 
-                                state_next              <= DATA_TX;
-                            end
-                        3:  // Envia contenido de la memoria de datos
+                        //        state_next              <= DATA_TX;
+                        //    end
+                        2:  // Envia contenido de la memoria de datos
                             begin
                                 uart_tx_data_word_next <= i_mips_mem_data;
                                 uart_tx_mem_count_next <= tx_mem_count + 1;
@@ -260,10 +259,10 @@ module Debug_Unit #(
                                 if(tx_mem_count == DATA_MEM_SIZE-1) begin
                                     tx_data_count_next <= tx_data_count + 1;
                                 end
-                                
+
                                 state_next              <= DATA_TX;
                             end
-                        4: // Termino de enviar todos los datos y vuelve a IDLE o STEP
+                        3: // Termino de enviar todos los datos y vuelve a IDLE o STEP
                             begin
                                 tx_data_count_next  <= 0;
                                 if(mips_mode == MIPS_STEP) begin
@@ -324,7 +323,7 @@ module Debug_Unit #(
 
     assign o_mips_step          = mips_clk_ctrl;
     assign o_mips_rst           = mips_rst;
-    assign o_mips_reg           = tx_regs_count;
+    assign o_mips_reg_sel       = tx_regs_count;
     assign o_mips_mem_addr      = tx_mem_count;
 
     assign o_mips_instr_addr    = uart_rx_inst_count;

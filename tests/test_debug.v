@@ -37,15 +37,16 @@ integer j;
 
 initial begin
     // inst1 3C08FFFF (LUI to set the value 0xFFFF0000 to $t0)
+    // 0x3C01FFFF same but in reg $at
     inst1[0] = 8'h3C;
-    inst1[1] = 8'h08;
+    inst1[1] = 8'h01;
     inst1[2] = 8'hFF;
     inst1[3] = 8'hFF;
-    // ins2 
-    //inst2[0] = 8'h00;
-    //inst2[1] = 8'h00;
-    //inst2[2] = 8'h00;
-    //inst2[3] = 8'h00;
+    // ins2 AC010000 (sw $at 0x0000 $zero)
+    inst2[0] = 8'hAC;
+    inst2[1] = 8'h01;
+    inst2[2] = 8'h00;
+    inst2[3] = 8'h00;
 
     // eof
     eof[0] = 8'b11111111;
@@ -94,6 +95,18 @@ initial begin
         #160;
     end
 
+    // Segunda instruccion
+    for (i = 0; i < 4; i = i + 1) begin
+        rx = 0;
+        #160;
+        for (j = 0; j < 8; j = j + 1) begin
+            rx = inst2[i][j];
+            #160;
+        end
+        rx = 1;
+        #160;
+    end
+
     // End of file
     for (i = 0; i < 4; i = i + 1) begin
         rx = 0;
@@ -113,12 +126,12 @@ initial begin
         rx = run[i];
         #160;
     end
-    
+
     $display("Finish run");
-    
+
     #30000;
     $finish;
-    
+
 end
 
 

@@ -1,7 +1,8 @@
 `timescale 1ns / 1ps
 
 module Top_Memory_Access#(
-    parameter   NBITS = 32
+    parameter   NBITS = 32,
+    parameter   MEM_CELL_SIZE = 8
 )(
     input wire                i_clk,
     input wire                i_rst,
@@ -14,7 +15,7 @@ module Top_Memory_Access#(
     input wire   [NBITS-1:0]  i_dbg_addr,
 
     output wire  [NBITS-1:0]  o_data,
-    output wire  [NBITS-1:0]  o_dbg_data
+    output wire  [MEM_CELL_SIZE-1:0]  o_dbg_data
 );
 
     Data_Memory u_Data_Memory (
