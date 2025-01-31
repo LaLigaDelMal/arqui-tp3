@@ -80,7 +80,7 @@ module Debug_Unit #(
     reg                         mips_rst, mips_rst_next;
 
     always @ (posedge i_clk) begin
-            if (i_rst)begin
+            if (i_rst) begin
                 state                   <= IDLE;
                 uart_rx_reset           <= 1;
                 uart_tx_reset           <= 1;
@@ -146,8 +146,10 @@ module Debug_Unit #(
         case (state)
             IDLE:
                 begin
-                    mips_rst_next   <= 1;
-                    uart_tx_reset_next  <= 0;
+                    mips_rst_next <= 1;
+                    uart_tx_reset_next <= 0;
+                    tx_regs_count_next <= 0;
+                    uart_tx_mem_count_next <= 0;
                     if (~i_uart_data_received) begin        // Verifica si hay datos listos desde la UART
                         uart_rx_reset_next  <= 0;
                     end else begin                          // Verifica el char recibido
@@ -175,13 +177,15 @@ module Debug_Unit #(
                     mips_rst_next       <= 0;
                     mips_mode_next      <= MIPS_STEP;
 
-                    if( i_mips_halt ) begin
+                    if (i_mips_halt) begin
                         mips_mode_next  <= MIPS_STOP;
                         state_next      <= PREPARE_TX;
                     end
 
-                    if(mips_step) begin
+                    if (mips_step) begin
                         mips_step_next <= 0;
+                        tx_regs_count_next <= 0;
+                        uart_tx_mem_count_next <= 0;
                         state_next     <= PREPARE_TX;
                     end else begin
                         if (~i_uart_data_received) begin  // Verifica si hay datos listos desde la UART
@@ -240,29 +244,29 @@ module Debug_Unit #(
                                 tx_data_count_next      <= tx_data_count + 1;
                                 state_next              <= DATA_TX;
                             end
-                        //2: // Envia contenido de los 32 registros
-                        //    begin
-                        //        uart_tx_data_word_next  <= i_mips_reg_data;
-                        //        tx_regs_count_next      <= tx_regs_count + 1;
-                        //        
-                        //        if(tx_regs_count == REG_SIZE-1) begin
-                        //            tx_data_count_next  <= tx_data_count + 1;
-                        //        end
+                        2: // Envia contenido de los 32 registros
+                            begin
+                                uart_tx_data_word_next  <= i_mips_reg_data;
+                                tx_regs_count_next      <= tx_regs_count + 1;
+                                
+                                if(tx_regs_count == REG_SIZE-1) begin
+                                    tx_data_count_next  <= tx_data_count + 1;
+                                end
 
-                        //        state_next              <= DATA_TX;
-                        //    end
-                        2:  // Envia contenido de la memoria de datos
+                                state_next              <= DATA_TX;
+                            end
+                        3:  // Envia contenido de la memoria de datos
                             begin
                                 uart_tx_data_word_next <= i_mips_mem_data;
-                                uart_tx_mem_count_next <= tx_mem_count + 1;
+                                uart_tx_mem_count_next <= tx_mem_count + 4;
 
-                                if(tx_mem_count == DATA_MEM_SIZE-1) begin
+                                if(tx_mem_count == DATA_MEM_SIZE-4) begin
                                     tx_data_count_next <= tx_data_count + 1;
                                 end
 
                                 state_next              <= DATA_TX;
                             end
-                        3: // Termino de enviar todos los datos y vuelve a IDLE o STEP
+                        4: // Termino de enviar todos los datos y vuelve a IDLE o STEP
                             begin
                                 tx_data_count_next  <= 0;
                                 if(mips_mode == MIPS_STEP) begin

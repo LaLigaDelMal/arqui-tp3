@@ -15,7 +15,7 @@ module Top_Memory_Access#(
     input wire   [NBITS-1:0]  i_dbg_addr,
 
     output wire  [NBITS-1:0]  o_data,
-    output wire  [MEM_CELL_SIZE-1:0]  o_dbg_data
+    output wire  [NBITS-1:0]  o_dbg_data
 );
 
     Data_Memory u_Data_Memory (

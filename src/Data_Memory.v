@@ -15,14 +15,14 @@ module Data_Memory #(
     input   wire [WORD_LEN-1:0] i_data,
     input   wire [WORD_LEN-1:0] i_dbg_addr,
     output  wire [WORD_LEN-1:0] o_data,
-    output  wire [MEM_CELL_SIZE-1:0] o_dbg_data
+    output  wire [WORD_LEN-1:0] o_dbg_data
 );
 
     integer i;
     reg [MEM_CELL_SIZE-1:0] memory[DATA_MEM_SIZE-1:0];
 
     reg [WORD_LEN-1:0] data;
-    reg [MEM_CELL_SIZE-1:0] dbg_data;
+    reg [WORD_LEN-1:0] dbg_data;
     reg sign;
 
     //initial begin
@@ -50,9 +50,8 @@ module Data_Memory #(
         end
     end
 
-    // Logica para unidad de debug
-    always @ (i_dbg_addr) begin
-        dbg_data = memory[i_dbg_addr];
+    always @ (*) begin
+        dbg_data = {memory[i_dbg_addr], memory[i_dbg_addr + 1], memory[i_dbg_addr + 2], memory[i_dbg_addr + 3]};
     end
 
 assign o_data = data;

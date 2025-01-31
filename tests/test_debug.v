@@ -28,6 +28,7 @@ end
 reg [9:0] run   = 10'b1011100100;
 reg [9:0] step  = 10'b1011100110;
 reg [9:0] load  = 10'b1011011000;
+reg [9:0] next  = 10'b1011011100;
 reg [7:0] inst1[3:0];
 reg [7:0] inst2[3:0];
 reg [7:0] eof[3:0];
@@ -122,14 +123,34 @@ initial begin
     rx = 1;
 
     // Directiva RUN (Correr programa)
+    //for (i = 0; i < 10; i = i + 1) begin
+    //    rx = run[i];
+    //    #160;
+    //end
+
+    // Directiva STEP (Paso a paso)
     for (i = 0; i < 10; i = i + 1) begin
-        rx = run[i];
+        rx = step[i];
         #160;
     end
 
+    rx = 1;
+    #300;
+
+    // Directiva next para ejecutar una instruccion y generar el debug
+    for (j = 0; j < 5; j = j + 1) begin
+        for (i = 0; i < 10; i = i + 1) begin
+            rx = next[i];
+            #160;
+        end
+        # 25000;
+    end
+
+    rx = 1;
+
     $display("Finish run");
 
-    #30000;
+    #800000;
     $finish;
 
 end

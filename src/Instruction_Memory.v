@@ -27,7 +27,6 @@ always @ (negedge i_clk) begin
     end
 end
 
-//TODO Vericar la escritura desde debug
 always @ (posedge i_dbg_wr_en) begin
     {memory[i_dbg_addr], memory[i_dbg_addr + 1], memory[i_dbg_addr + 2], memory[i_dbg_addr + 3]} <= i_dbg_inst[31:0];
 end
