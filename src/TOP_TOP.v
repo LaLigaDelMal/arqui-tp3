@@ -151,9 +151,8 @@ Hazard_Unit HU (
     .i_rs_ID(ID.o_rs),
     .i_rt_ID(ID.o_rt),
     .i_flg_jmp_trg_reg(ID.o_flg_jmp_trg_reg),
-    .i_reg_wr_en_EX(ID_EX.o_flg_reg_wr_en),
     .i_reg_wr_en_MA(EX_MA.o_flg_reg_wr_en),
-    .i_reg_wr_en_WB(MA_WB.o_flg_reg_wr_en),
+    .i_flg_halt(ID.o_flg_halt),
     .o_hazard_detected(),
     .o_stall_EX()
 );
@@ -206,7 +205,7 @@ Reg_EX_MA EX_MA (
     .o_flg_reg_wr_en(),
     .o_flg_mem_wr_en(),
     .o_flg_wb_src(),
-    .o_flg_halt()   
+    .o_flg_halt()
 );
 
 Top_Memory_Access MA (

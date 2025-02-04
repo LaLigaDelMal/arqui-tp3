@@ -15,11 +15,10 @@ module Hazard_Unit(
     input wire [4:0] i_rt_EX,
     input wire       i_flg_WB_src_EX,
     input wire       i_flg_mem_op_EX,
-    input wire [4:0] i_rs_ID, i_rt_ID, 
+    input wire [4:0] i_rs_ID, i_rt_ID,
     input wire       i_flg_jmp_trg_reg,
-    input wire       i_reg_wr_en_EX,
     input wire       i_reg_wr_en_MA,
-    input wire       i_reg_wr_en_WB,
+    input wire       i_flg_halt,
     output reg       o_hazard_detected,
     output reg       o_stall_EX
 );
@@ -40,6 +39,8 @@ module Hazard_Unit(
             end else begin
                 o_stall_EX <= 0;
             end
+        end else if (i_flg_halt) begin
+            o_hazard_detected <= 1;
         end else begin
             o_hazard_detected <= 0;
             o_stall_EX <= 0;

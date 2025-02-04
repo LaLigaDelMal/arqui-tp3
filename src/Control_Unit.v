@@ -87,7 +87,7 @@ module Control_Unit(
             };
 
     always @ (*) begin
-        if (~i_hazard_detected | i_flg_halt) begin
+        if (~i_hazard_detected | ~i_flg_halt) begin
             o_flg_mem_wr_en <= i_flg_mem_type;
 
             casez (flags)
