@@ -41,6 +41,7 @@ module Hazard_Unit(
             end
         end else if (i_flg_halt) begin
             o_hazard_detected <= 1;
+            o_stall_EX <= 0;
         end else begin
             o_hazard_detected <= 0;
             o_stall_EX <= 0;

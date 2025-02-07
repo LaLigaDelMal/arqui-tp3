@@ -11,7 +11,7 @@ module Program_Counter #(
     output reg  [NBITS-1:0]  o_pc
 );
 
-always @(posedge i_clk) begin
+always @(negedge i_clk) begin
     if ( i_rst ) begin
         o_pc <= {NBITS{1'b0}};
     end

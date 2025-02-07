@@ -22,7 +22,6 @@ module Registers(
     reg [31:0] reg_file [30:0];
     integer i;
 
-    
     // Escritura
     always @(negedge i_clk) begin
         // if (i_rst) begin

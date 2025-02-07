@@ -54,9 +54,14 @@ initial begin
     dut.MA.u_Data_Memory.memory[3] = 8'hEF;
 end
 
+//// Set registers
+initial begin
+    dut.ID.Regs.reg_file[7] = 32'h00000000;     // $t0 = 0
+end
+
 ///// Write program to the instruction memory
 initial begin
-    // LH $t0 0x0 ($t0)    0x85080000
+    // LH $t0 0x0 ($t0)    0x85080000                     ---> Funciona bien
     dut.IF.u_Instruction_Memory.memory[0] = 8'h85;
     dut.IF.u_Instruction_Memory.memory[1] = 8'h08;
     dut.IF.u_Instruction_Memory.memory[2] = 8'h00;
@@ -68,21 +73,22 @@ initial begin
     dut.IF.u_Instruction_Memory.memory[6] = 8'h00;
     dut.IF.u_Instruction_Memory.memory[7] = 8'h04;
 
-    // JALR $t2 $t1    0x01205009
+    // JALR $t2 $t1    0x01205009                        ---> Funciona bien
     dut.IF.u_Instruction_Memory.memory[8] = 8'h01;
     dut.IF.u_Instruction_Memory.memory[9] = 8'h20;
     dut.IF.u_Instruction_Memory.memory[10] = 8'h50;
     dut.IF.u_Instruction_Memory.memory[11] = 8'h09;
 
-    //dut.IF.u_Instruction_Memory.memory[12] = 8'h8F;
-    //dut.IF.u_Instruction_Memory.memory[13] = 8'h0C;
-    //dut.IF.u_Instruction_Memory.memory[14] = 8'h00;
-    //dut.IF.u_Instruction_Memory.memory[15] = 8'h0C;
+    // NOPs
+    dut.IF.u_Instruction_Memory.memory[12] = 8'h00;
+    dut.IF.u_Instruction_Memory.memory[13] = 8'h00;
+    dut.IF.u_Instruction_Memory.memory[14] = 8'h00;
+    dut.IF.u_Instruction_Memory.memory[15] = 8'h00;
 
-    //dut.IF.u_Instruction_Memory.memory[16] = 8'h8F;
-    //dut.IF.u_Instruction_Memory.memory[17] = 8'h10;
-    //dut.IF.u_Instruction_Memory.memory[18] = 8'h00;
-    //dut.IF.u_Instruction_Memory.memory[19] = 8'h10;
+    dut.IF.u_Instruction_Memory.memory[16] = 8'h00;
+    dut.IF.u_Instruction_Memory.memory[17] = 8'h00;
+    dut.IF.u_Instruction_Memory.memory[18] = 8'h00;
+    dut.IF.u_Instruction_Memory.memory[19] = 8'h00;
 end
 
 initial begin
