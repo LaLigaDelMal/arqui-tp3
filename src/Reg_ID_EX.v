@@ -6,7 +6,6 @@ module Reg_ID_EX #(
     input wire                i_clk,
     input wire                i_rst,
     input wire                i_step,
-    input wire                i_stall,
     input wire   [NBITS-1:0]  i_pc,
     input wire   [4:0]        i_rd,
     input wire   [4:0]        i_rt,
@@ -61,7 +60,7 @@ module Reg_ID_EX #(
 );
 
 always @(posedge i_clk) begin
-    if (i_rst | i_stall) begin
+    if (i_rst) begin
         o_pc <= 0;
         o_rd <= 0;
         o_rt <= 0;

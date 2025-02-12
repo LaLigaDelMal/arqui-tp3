@@ -77,7 +77,6 @@ Reg_ID_EX ID_EX (
     .i_clk(i_clk),
     .i_rst(DU.o_mips_rst),
     .i_step(DU.o_mips_step),
-    .i_stall(HU.o_stall_EX),
     .i_pc(IF_ID.o_pc),
     .i_rt(ID.o_rt),
     .i_rd(ID.o_rd),
@@ -145,16 +144,22 @@ Forwarding_Unit FU (
 );
 
 Hazard_Unit HU (
+    .i_rd_EX(ID_EX.o_rd),
     .i_rt_EX(ID_EX.o_rt),
+    .i_rd_MA(EX_MA.o_rd),
+    .i_rt_MA(EX_MA.o_rt),
+    .i_rd_WB(MA_WB.o_rd),
+    .i_rt_WB(MA_WB.o_rt),
+    .i_reg_wr_EX(ID_EX.o_flg_reg_wr_en),
+    .i_reg_wr_MA(EX_MA.o_flg_reg_wr_en),
+    .i_reg_wr_WB(MA_WB.o_flg_reg_wr_en),
     .i_flg_WB_src_EX(ID_EX.o_flg_wb_src),
     .i_flg_mem_op_EX(ID_EX.o_flg_mem_op),
     .i_rs_ID(ID.o_rs),
     .i_rt_ID(ID.o_rt),
     .i_flg_jmp_trg_reg(ID.o_flg_jmp_trg_reg),
-    .i_reg_wr_en_MA(EX_MA.o_flg_reg_wr_en),
     .i_flg_halt(ID.o_flg_halt),
-    .o_hazard_detected(),
-    .o_stall_EX()
+    .o_hazard_detected()
 );
 
 Top_Execute EX (
