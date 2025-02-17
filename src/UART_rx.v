@@ -80,7 +80,7 @@ module UART_rx
 
             DATA: begin
                 if (i_tick) begin
-                    if (tick_counter == 15) begin     // Probar 15
+                    if (tick_counter == 15) begin
                         next_tick_counter = 0;
                         next_buffer = {i_rx, buffer[(PAYLOAD_SIZE-1):1]};
                         if (bits_counter == (PAYLOAD_SIZE-1)) begin

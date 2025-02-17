@@ -36,8 +36,8 @@ module UART_TOP #(
         .i_clk(i_clk),
         .i_rst(i_rst_rx),
         .i_rx(i_rx),
-        //.i_tick(u_UART_tick_gen.o_tick),
-        .i_tick(i_clk),
+        .i_tick(u_UART_tick_gen.o_tick),
+        //.i_tick(i_clk),
         .o_ready(o_flg_data_recieved),
         .o_data(o_data)
     );

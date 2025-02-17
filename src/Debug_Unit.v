@@ -3,7 +3,7 @@
 module Debug_Unit #(
     parameter       DATA_BITS           = 8,
     parameter       NBITS               = 32,
-    parameter       DATA_MEM_SIZE       = 16,
+    parameter       DATA_MEM_SIZE       = 256,
     parameter       INST_MEM_SIZE       = 256,
     parameter       REG_SEL            = 5,
     parameter       REG_SIZE            = 32
@@ -50,7 +50,6 @@ module Debug_Unit #(
     localparam MIPS_RUN     =   2'b01;
     localparam MIPS_STEP    =   2'b11;
 
-    localparam MEM_COUNT_SIZE  = $clog2(DATA_MEM_SIZE);
     localparam REG_COUNT_SIZE  = $clog2(REG_SIZE);
     localparam INST_COUNT_SIZE = $clog2(INST_MEM_SIZE);
 

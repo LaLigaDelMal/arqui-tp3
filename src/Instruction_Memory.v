@@ -18,7 +18,6 @@ module Instruction_Memory #(
 reg [NBITS-1:0] memory[CELLS-1:0];
 integer i;
 
-//////////////////////////////// SE UTILIZA BIG ENDIAN //////////////////////////////
 always @ (negedge i_clk) begin
     if (i_rst) begin
         o_data <= 0;
@@ -31,4 +30,4 @@ always @ (posedge i_dbg_wr_en) begin
     {memory[i_dbg_addr], memory[i_dbg_addr + 1], memory[i_dbg_addr + 2], memory[i_dbg_addr + 3]} <= i_dbg_inst[31:0];
 end
 
-endmodule 
+endmodule

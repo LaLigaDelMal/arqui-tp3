@@ -3,8 +3,8 @@
 
 module UART_tx
 #(
-    parameter       CLK_FREQ     = 50000000,  
-    parameter       BAUD_RATE    = 9600, 
+    parameter       CLK_FREQ     = 100000000,
+    parameter       BAUD_RATE    = 9600,
     parameter       PAYLOAD_SIZE   = 8
 )(
     input wire                                  i_clk,
@@ -14,7 +14,6 @@ module UART_tx
     output wire                                 o_tx,
     output wire                                 o_done
 );
-
 
     localparam IDLE     = 1'b0;
     localparam TRANSMIT = 1'b1;
@@ -40,15 +39,14 @@ module UART_tx
             tx_done         <= 1;
         end else begin
             div_counter <= div_counter + 1;
-            //if (div_counter >= DIV_COUNTER_VALUE) begin
-            
+            if (div_counter >= DIV_COUNTER_VALUE) begin
                 div_counter         <=  0;
                 state               <=  next_state;
                 shift_reg           <=  next_shift_reg;
                 bit_counter         <=  next_bit_counter;
                 tx                  <=  next_tx;
                 tx_done             <=  next_tx_done;
-            //end
+            end
         end
     end 
 
@@ -84,7 +82,7 @@ module UART_tx
                 end
             end
             default: 
-                next_state <= IDLE;                      
+                next_state <= IDLE;
         endcase
     end
 

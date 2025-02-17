@@ -3,7 +3,7 @@
 module Data_Memory #(
     parameter WORD_LEN = 32,
     parameter MEM_CELL_SIZE = 8,
-    parameter DATA_MEM_SIZE = 16
+    parameter DATA_MEM_SIZE = 256
     )(
     input   wire                i_clk,
     input   wire                i_rst,
@@ -24,12 +24,6 @@ module Data_Memory #(
     reg [WORD_LEN-1:0] data;
     reg [WORD_LEN-1:0] dbg_data;
     reg sign;
-
-    //initial begin
-    //    for (i = 0; i < DATA_MEM_SIZE; i = i + 1) begin
-    //        memory[i] = 0;
-    //    end
-    //end
 
     always @ (negedge i_clk) begin
         if (i_rst) begin
