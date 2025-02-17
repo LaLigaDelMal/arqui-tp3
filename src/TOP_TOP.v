@@ -6,7 +6,8 @@ module TOP_TOP #(
     input wire i_clk,
     input wire i_rst,
     input wire  i_rx,
-    output wire o_tx
+    output wire o_tx,
+    output wire [3:0] o_state
 );
 
 
@@ -299,7 +300,8 @@ Debug_Unit DU (
     .o_mips_mem_addr(),
     .o_mips_instr_addr(),
     .o_mips_instr_data(),
-    .o_mips_instr_write()
+    .o_mips_instr_write(),
+    .o_state(o_state)
 );
 
 

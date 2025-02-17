@@ -33,7 +33,9 @@ module Debug_Unit #(
     output wire  [NBITS-1:0]     o_mips_mem_addr,    // Memoria de datos del MIPS
     output wire  [NBITS-1:0]     o_mips_instr_addr,  // Direccion de la instruccion a escribir
     output wire  [NBITS-1:0]     o_mips_instr_data,  // Dato de la instruccion a escribir
-    output wire                  o_mips_instr_write  // Habilita escritura de instruccion
+    output wire                  o_mips_instr_write,  // Habilita escritura de instruccion
+    
+    output wire  [3:0]          o_state         
 );
 
     localparam IDLE         =   4'b0000;
@@ -55,7 +57,7 @@ module Debug_Unit #(
 
     reg         mips_clk_ctrl;
 
-    reg [4:0]   state, state_next;
+    reg [3:0]   state, state_next;
 
     reg                         uart_rx_reset, uart_rx_reset_next;
     reg                         uart_tx_reset, uart_tx_reset_next;
