@@ -3,7 +3,7 @@
 
 module UART_tx
 #(
-    parameter       CLK_FREQ     = 100000000,
+    parameter       CLK_FREQ     = 50000000,
     parameter       BAUD_RATE    = 9600,
     parameter       PAYLOAD_SIZE   = 8
 )(

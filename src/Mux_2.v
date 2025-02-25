@@ -13,6 +13,7 @@ always @(*) begin
     case (i_sel)
         1'b0: o_result <= i_a;
         1'b1: o_result <= i_b;
+        default: o_result <= 32'b0;
     endcase
 end
 

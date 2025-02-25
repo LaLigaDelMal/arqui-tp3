@@ -30,6 +30,11 @@ module AGU(
             end
             3'b011: begin                                                         // 26 bits offset shifted 2 bits and completing the lower part of the address
                 effective_address = {i_addr[31:28], i_offset, 2'b0};
+                exception = 2'b00;
+            end
+            default: begin
+                effective_address = 32'hFFFFFFFF;
+                exception = 2'b00;
             end
         endcase
     end

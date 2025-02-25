@@ -16,7 +16,6 @@ module Reg_ID_EX #(
     input wire                i_flg_unsign,
     input wire   [1:0]        i_ALU_dst,
     input wire   [3:0]        i_ALU_opcode,
-    input wire                i_AGU_dst,
     input wire   [2:0]        i_AGU_opcode,
     input wire                i_flg_branch,
     input wire                i_flg_jump,
@@ -31,8 +30,6 @@ module Reg_ID_EX #(
     input wire                i_flg_mem_op,
     input wire                i_flg_halt,
 
-    output reg                o_clk,
-    output reg                o_rst,
     output reg   [NBITS-1:0]  o_pc,
     output reg   [4:0]        o_rd,
     output reg   [4:0]        o_rt,
@@ -43,7 +40,6 @@ module Reg_ID_EX #(
     output reg                o_flg_unsign,
     output reg   [1:0]        o_ALU_dst,
     output reg   [3:0]        o_ALU_opcode,
-    output reg                o_AGU_dst,
     output reg   [2:0]        o_AGU_opcode,
     output reg                o_flg_branch,
     output reg                o_flg_jump,
@@ -71,7 +67,6 @@ always @(posedge i_clk) begin
         o_flg_unsign <= 0;
         o_ALU_dst <= 0;
         o_ALU_opcode <= 0;
-        o_AGU_dst <= 0;
         o_AGU_opcode <= 0;
         o_flg_branch <= 0;
         o_flg_jump <= 0;
@@ -97,7 +92,6 @@ always @(posedge i_clk) begin
         o_flg_unsign <= i_flg_unsign;
         o_ALU_dst <= i_ALU_dst;
         o_ALU_opcode <= i_ALU_opcode;
-        o_AGU_dst <= i_AGU_dst;
         o_AGU_opcode <= i_AGU_opcode;
         o_flg_branch <= i_flg_branch;
         o_flg_jump <= i_flg_jump;

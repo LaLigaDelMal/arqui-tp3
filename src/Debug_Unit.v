@@ -334,5 +334,6 @@ module Debug_Unit #(
     assign o_mips_instr_addr    = uart_rx_inst_count;
     assign o_mips_instr_data    = uart_rx_data_line;
     assign o_mips_instr_write   = uart_rx_inst_write;
-
+    
+    assign o_state              = state;
 endmodule

@@ -25,53 +25,57 @@ module Top_Instruction_Fetch #(
     output  wire [NBITS-1:0] o_cycle_count
 );
 
-
+wire [NBITS-1:0] pc_mux;
+wire [NBITS-1:0] pc_mux_next;
 PC_Mux u_PC_Mux (
     .i_sel_jump(i_pc_mux_ctrl),                 // Select signal for PC Mux
-    .i_next_pc(u_Adder.o_result),               // PC input 
+    .i_next_pc(pc_mux_next),               // PC input 
     .i_jump_pc(i_eff_addr),                     // Jump PC input
-    .o_pc()                                     // Mux output
+    .o_pc(pc_mux)                                     // Mux output
 );  
 
+wire [NBITS-1:0] pc;
 Program_Counter u_PC (
     .i_clk(i_clk),                              // Clock signal
     .i_rst(i_rst),                              // Reset signal
-    .i_next_pc(u_PC_Mux.o_pc),                  // Next PC
+    .i_next_pc(pc_mux),                  // Next PC
     .i_hazard_detected(i_hazard_detected),      // Hazard detected signal
     .i_step(i_step),                        // Used for the step by step execution
-    .o_pc()                                     // PC output
+    .o_pc(pc)                                     // PC output
 );
 
 // Instantiate adder module
 Adder u_Adder (
     .i_rst(i_rst),                              // Reset signal
     .i_operand_1(32'd4),                        // Input A
-    .i_operand_2(u_PC.o_pc),                    // Input B
-    .o_result()                                 // Output sum
+    .i_operand_2(pc),                    // Input B
+    .o_result(pc_mux_next)                                 // Output sum
 );
 
+wire [NBITS-1:0] data;
 // Instantiate Instruction Memory module
 Instruction_Memory u_Instruction_Memory (
     .i_clk(i_clk),                              // Clock signal
     .i_rst(i_rst),                              // Reset signal
     .i_step(i_step),                            // Step signal
     .i_dbg_wr_en(i_inst_mem_wr_en),
-    .i_addr(u_PC.o_pc),
+    .i_addr(pc),
     .i_dbg_addr(i_inst_mem_addr),
     .i_dbg_inst(i_inst_mem_data),
-    .o_data()
+    .o_data(data)
 );
 
+wire [NBITS-1:0] count;
 // Cycle counter stadistics
 Cycle_Counter u_Cycle_Counter (
     .i_clk(i_clk),                              // Clock signal
     .i_rst(i_rst),                              // Reset signal
     .i_step(i_step),                            // Step signal
-    .o_count()                                  // Cycle counter output
+    .o_count(count)                                  // Cycle counter output
 );
 
-assign o_pc = u_PC.o_pc;
-assign o_instr = u_Instruction_Memory.o_data;
-assign o_cycle_count = u_Cycle_Counter.o_count;
+assign o_pc = pc;
+assign o_instr = data;
+assign o_cycle_count = count;
 
 endmodule

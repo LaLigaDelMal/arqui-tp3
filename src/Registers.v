@@ -22,21 +22,15 @@ module Registers(
     reg [31:0] reg_file [30:0];
     integer i;
 
-    initial begin
-        for (i = 0; i < 31; i = i + 1) begin
-            reg_file[i] = 0;
-        end
-    end
-
     // Escritura
     always @(negedge i_clk) begin
-        // if (i_rst) begin
-            // for (i = 0; i < 31; i = i + 1) begin
-            //     reg_file[i] <= 0;
-            // end
-        // end else 
+        if (i_rst) begin
+            for (i = 0; i < 30; i = i + 1) begin
+                reg_file[i] <= 0;
+            end
+        end else 
         if (i_step) begin
-            if (i_wr_en & (i_rd_sel != 0)) begin
+            if (i_wr_en & (i_rd_sel != 5'b0)) begin
                 reg_file[i_rd_sel - 1] <= i_wr_data;
             end
         end

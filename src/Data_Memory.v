@@ -23,8 +23,9 @@ module Data_Memory #(
 
     reg [WORD_LEN-1:0] data;
     reg [WORD_LEN-1:0] dbg_data;
-    reg sign;
-
+    wire sign;
+    assign sign = memory[i_addr][7] & ~i_unsigned;
+    
     always @ (negedge i_clk) begin
         if (i_rst) begin
             data <= 0;
@@ -35,7 +36,6 @@ module Data_Memory #(
                 2'b11: {memory[i_addr], memory[i_addr + 1], memory[i_addr + 2], memory[i_addr + 3]} <= i_data[31:0];
             endcase
         end else begin                  // Lectura
-            sign = memory[i_addr][7] & ~i_unsigned;
             case (i_size)
                 2'b00: data = {{24{sign}}, memory[i_addr]}; // Byte
                 2'b01: data = {{16{sign}}, memory[i_addr], memory[i_addr + 1]}; // Half Word

@@ -17,30 +17,38 @@ module UART_TOP #(
 
 );
 
-    UART_tick_gen u_UART_tick_gen (
-        .i_clk(i_clk),
-        .i_rst(i_rst_rx),
-        .o_tick()
-    );
+wire tick;
+UART_tick_gen u_UART_tick_gen (
+    .i_clk(i_clk),
+    .i_rst(i_rst_rx),
+    .o_tick(tick)
+);
 
-    UART_tx u_UART_tx (
-        .i_clk(i_clk),
-        .i_rst(i_rst_tx),
-        .i_ready(i_send_data),
-        .i_data(i_data),
-        .o_tx(o_tx),
-        .o_done(o_flg_data_sent)
-    );
+wire tx;
+wire data_sent;
+UART_tx u_UART_tx (
+    .i_clk(i_clk),
+    .i_rst(i_rst_tx),
+    .i_ready(i_send_data),
+    .i_data(i_data),
+    .o_tx(tx),
+    .o_done(data_sent)
+);
 
-    UART_rx u_UART_rx (
-        .i_clk(i_clk),
-        .i_rst(i_rst_rx),
-        .i_rx(i_rx),
-        .i_tick(u_UART_tick_gen.o_tick),
-        //.i_tick(i_clk),
-        .o_ready(o_flg_data_recieved),
-        .o_data(o_data)
-    );
+wire data_received;
+wire [PAYLOAD_SIZE-1:0] data;
+UART_rx u_UART_rx (
+    .i_clk(i_clk),
+    .i_rst(i_rst_rx),
+    .i_rx(i_rx),
+    .i_tick(tick),
+    .o_ready(data_received),
+    .o_data(data)
+);
 
+assign o_tx = tx;
+assign o_flg_data_sent = data_sent;
+assign o_data = data;
+assign o_flg_data_recieved = data_received;
 
 endmodule

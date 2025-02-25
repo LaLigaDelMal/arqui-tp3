@@ -51,8 +51,6 @@ module Control_Unit(
     input wire          i_flg_pc_modify,        // 1 if jump/branch, 0 if not
     input wire          i_flg_link_ret,         // 1 if saves the return address, 0 if not
     input wire [1:0]    i_flg_addr_type,        // 00 if address comes from register, 01 if the address is obtained by replacing the low 28 bits of the PC with the 26-bit offset, 10 if the address is obtained by adding the 16-bit offset to the base address shifted 2 bits
-    input wire [4:0]    i_link_reg,             // Link register for JAL and JALR
-    input wire [4:0]    i_addr_reg,             // Address register for JR and JALR
     input wire          i_flg_inmediate,        // 1 if the instruction is an I type instruction, 0 if not
     input wire          i_flg_mem_op,           // 1 if the instruction is a memory operation, 0 if not
     input wire          i_flg_mem_type,         // 0 if load, 1 if store
@@ -96,6 +94,9 @@ module Control_Unit(
                 o_flg_ALU_src_a  <= 2'b01;
                 o_flg_ALU_dst    <= 2'b01;
                 
+                o_flg_AGU_src_addr  <= 0;        // The AGU will not be used
+                o_flg_AGU_opcode    <= 3'b000;   // The AGU will not be used
+
                 o_flg_jump      <= 0;
                 o_flg_branch    <= 0;
 
@@ -116,11 +117,19 @@ module Control_Unit(
                     `FUNC_XOR:  begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_XOR; end
                     `FUNC_NOR:  begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_NOR; end
                     `FUNC_SLT:  begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_SLT; end
+                    default:    begin o_flg_ALU_src_b <= 0; o_ALU_opcode <= `OP_PASS; end
                 endcase
 
                 o_flg_jmp_trg_reg <= 0;
+                o_extend_sign <= `MODE_SIGN_EXT;
             end
             12'b100000: begin     // JR
+                o_flg_ALU_src_a <= 2'b00;
+                o_flg_ALU_src_b <= 0;
+
+                o_ALU_opcode     <= `OP_PASS;
+                o_flg_ALU_dst    <= 2'b01;
+
                 o_flg_AGU_src_addr  <= 0;
                 o_flg_AGU_opcode    <= 3'b000;
 
@@ -128,11 +137,15 @@ module Control_Unit(
                 o_flg_branch    <= 0;
 
                 flg_reg_wr_en <= 0;
-
+                o_flg_wb_src <= 0;
                 o_flg_jmp_trg_reg <= 1;
+
+                o_extend_sign <= `MODE_SIGN_EXT;
             end
             12'b110000: begin     // JALR
                 o_flg_ALU_src_a  <= 2'b00;          // The PC+4
+                o_flg_ALU_src_b <= 0;
+
                 o_ALU_opcode     <= `OP_PASS;       // The ALU will be used to store the return address in the link register (RD)
                 o_flg_ALU_dst    <= 2'b01;          // The link register (rd)
 
@@ -146,6 +159,7 @@ module Control_Unit(
                 o_flg_wb_src <= 1;
 
                 o_flg_jmp_trg_reg <= 1;
+                o_extend_sign <= `MODE_SIGN_EXT;
             end
             12'b000011: begin     // LOAD & STORE   (Para 32 bits LW y LWU hacen lo mismo)
                 o_flg_AGU_src_addr  <= 0;
@@ -153,6 +167,7 @@ module Control_Unit(
 
                 o_ALU_opcode <= `OP_PASS;       // For the stores
                 o_flg_ALU_src_a <= 2'b01;       // For the stores
+                o_flg_ALU_src_b <= 0;
 
                 o_flg_ALU_dst    <= 2'b00;
 
@@ -163,6 +178,7 @@ module Control_Unit(
                 o_flg_wb_src <= i_flg_mem_type;        // Selects the source of the WB as the data memory for loads
 
                 o_flg_jmp_trg_reg <= 0;
+                o_extend_sign <= `MODE_SIGN_EXT;
             end
             12'b000010: begin     // ARITHMETIC and LOAD OPERATIONS WITH INMEDIATE VALUES
                 o_flg_ALU_src_a  <= 2'b11;
@@ -178,7 +194,7 @@ module Control_Unit(
 
                 flg_reg_wr_en <= ~i_flg_mem_type;                   // Write to register only for loads
                 o_flg_wb_src <= ~(i_flg_mem_type | i_flg_mem_op);     // Selects the source of the WB as the data memory for loads
-
+                
                 case (i_funct)
                     `FUNC_ADDI: begin o_ALU_opcode <= `OP_SIGNED_ADD;   o_extend_sign <= `MODE_SIGN_EXT; end
                     `FUNC_ANDI: begin o_ALU_opcode <= `OP_AND;          o_extend_sign <= `MODE_SIGN_EXT; end
@@ -186,6 +202,7 @@ module Control_Unit(
                     `FUNC_XORI: begin o_ALU_opcode <= `OP_XOR;          o_extend_sign <= `MODE_SIGN_EXT; end
                     `FUNC_LUI:  begin o_ALU_opcode <= `OP_PASS;         o_extend_sign <= `MODE_ZERO_EXT_LOWER; end
                     `FUNC_SLTI: begin o_ALU_opcode <= `OP_SLT;          o_extend_sign <= `MODE_SIGN_EXT; end
+                    default:    begin o_ALU_opcode <= `OP_PASS;         o_extend_sign <= `MODE_SIGN_EXT; end
                 endcase
 
                 o_flg_jmp_trg_reg <= 0;
@@ -203,11 +220,14 @@ module Control_Unit(
                 o_flg_branch <= 1;
 
                 flg_reg_wr_en <= 0;
+                o_flg_wb_src <= 0;
 
                 o_flg_jmp_trg_reg <= 0;
+                o_extend_sign <= `MODE_SIGN_EXT;
             end
             12'b1?0100: begin      // J and JAL
                 o_flg_ALU_src_a     <= 2'b00;
+                o_flg_ALU_src_b     <= 0;
                 o_flg_ALU_dst       <= 2'b11;
                 o_ALU_opcode        <= `OP_PASS;
 
@@ -221,6 +241,25 @@ module Control_Unit(
                 o_flg_wb_src <= 1;
 
                 o_flg_jmp_trg_reg <= 0;
+                o_extend_sign <= `MODE_SIGN_EXT;
+            end
+            default : begin               
+                o_flg_ALU_src_a <= 2'b00;
+                o_flg_ALU_src_b <= 0;
+                o_flg_ALU_dst <= 2'b00;
+                o_ALU_opcode <= `OP_PASS;
+
+                o_flg_AGU_src_addr <= 0;
+                o_flg_AGU_opcode <= 3'b000;
+
+                o_flg_jump <= 0;
+                o_flg_branch <= 0;
+
+                flg_reg_wr_en <= 0;
+                o_flg_wb_src <= 0;
+
+                o_flg_jmp_trg_reg <= 0;
+                o_extend_sign <= `MODE_SIGN_EXT;
             end
         endcase
     end

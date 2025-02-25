@@ -12,7 +12,6 @@ module Forwarding_Unit(
     // Inputs from WB stage
     input wire         i_flg_reg_wr_en_WB,
     input wire  [4:0]  i_reg_sel_WB,
-    input wire         i_flg_WB_src,
 
     output reg  [1:0]  o_ALU_src_a_ctrl, o_ALU_src_b_ctrl
     );
