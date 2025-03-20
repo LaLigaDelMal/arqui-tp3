@@ -1,4 +1,3 @@
-# op + reg destino + reg1 + reg2 / inmediato.
 import re
 
 class Assembler:
@@ -11,14 +10,12 @@ class Assembler:
             r'|(\w+)\s+(-?\w+)\s*$'
         )
 
-        # Parseo las lineas, remuevo trailing y spliteo en tokens
         for raw_line in program_text:
-            line = raw_line.strip()  # More efficient than .replace('\n', '')
+            line = raw_line.strip()
             tokens.append(list(filter(None, re.split(regex_format, line))))
 
         return tokens
 
-    # Convierte registros o numeros enteros, a string binario
     def to_binary(self, str: str, n_bits):
         bin_str = ''
         str = str.replace('R', '')
@@ -42,22 +39,22 @@ class Assembler:
     
     def set_rt(self, inst, rt):
         rt = self.to_binary(rt, 5)
-        return inst[0:10] + rt + inst[16:]
+        return inst[0:11] + rt + inst[16:]
     
     def set_rd(self, inst, rd):
         rd = self.to_binary(rd, 5)
-        return inst[0:15] + rd + inst[21:]
+        return inst[0:16] + rd + inst[21:]
 
     def set_sa(self, inst, sa):
         sa = self.to_binary(sa, 5)
-        return inst[0:20] + sa + inst[26:]
+        return inst[0:21] + sa + inst[26:]
 
     def set_function(self, inst, function):
-        return inst[0:25] + function
+        return inst[0:26] + function
 
     def set_offset(self, inst, offset):
         offset = self.to_binary(offset, 16)
-        return inst[0:15] + offset
+        return inst[0:16] + offset
 
     def set_base(self, inst, base):
         return self.set_rs(inst, base)
@@ -67,7 +64,7 @@ class Assembler:
 
     def set_target(self, inst, target):
         target = self.to_binary(target, 26)
-        return inst[0:5] + target
+        return inst[0:6] + target
 
     def instruction_parser(self, token):
         inst_bin = "00000000000000000000000000000000"
@@ -133,31 +130,28 @@ class Assembler:
         if i_name in ["NOP", "HALT"]:
             inst_bin = opcode_map[i_name]
 
-        print(len(inst_bin))
         return inst_bin
 
 
 def main():
-    # Abro el archivo, lo tokenizo, y a estos tokens los traduzco a binario.
-    # El resultado se muestra por consola, tratar de implementar un .txt
     binary_code: str
     instructions_tokens: list
     asm = Assembler()
 
-    with open("/mnt/Data/MAIN/University/Arquitectura de Computadoras/Practico/Trabajos Practicos/Processor/arqui-tp3/scripts/program.asm", encoding='utf-8') as source_file:
+    with open("./program.asm", encoding='utf-8') as source_file:
         lines = source_file.readlines()
         instructions_tokens = asm.tokenizer(lines)
 
-    # En decimal
-    with open("/mnt/Data/MAIN/University/Arquitectura de Computadoras/Practico/Trabajos Practicos/Processor/arqui-tp3/scripts/decimal_code.txt", "w") as d_file:
+    with open("./assembled.hex", "w") as d_file:
         for inst in instructions_tokens:
             binary_code = asm.instruction_parser(inst)
             print(binary_code)
             print("")
-            for i in range(0, len(binary_code), 8):
-                d_chunk = binary_code[i:i+8]
-                hex_value = format(int(d_chunk, 2), '02x')
-                d_file.write(hex_value + ' \n')
+            for i in range(0, len(binary_code), 32):
+                d_chunk = binary_code[i:i+32]
+                hex_value = format(int(d_chunk, 2), '08x')
+                d_file.write(hex_value + '\n')
+        d_file.write('ffffffff')
 
 if __name__ == "__main__":
     main()
