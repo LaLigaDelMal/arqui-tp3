@@ -168,7 +168,7 @@ module Debug_Unit #(
                     mips_rst_next   <= 0;
                     mips_mode_next  <= MIPS_RUN;
 
-                    if( i_mips_halt ) begin // Viene de MIPS, etapa decodificación (opcode 111111)
+                    if (i_mips_halt) begin // Viene de MIPS, etapa decodificación (opcode 111111)
                         mips_mode_next  <= MIPS_STOP;
                         state_next      <= PREPARE_TX;
                     end
