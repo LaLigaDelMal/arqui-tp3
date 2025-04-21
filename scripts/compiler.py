@@ -11,6 +11,14 @@ class Assembler:
         )
 
         for raw_line in program_text:
+            # Remove empty lines
+            if not raw_line.strip():
+                continue
+            # Remove comments
+            if '#' in raw_line[0]:
+                continue
+            if '#' in raw_line:
+                raw_line = raw_line.split('#')[0]
             line = raw_line.strip()
             tokens.append(list(filter(None, re.split(regex_format, line))))
 
