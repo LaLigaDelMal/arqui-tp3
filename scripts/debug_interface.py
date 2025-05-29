@@ -39,7 +39,7 @@ class SerialInterface:
     def __init__(self):
         port = None
         if os.name == 'nt':
-            port = 'COM3'
+            port = 'COM7'
         else:
             port = '/dev/ttyUSB0'
             
