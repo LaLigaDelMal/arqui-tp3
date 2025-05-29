@@ -1,5 +1,5 @@
-set_property -dict { PACKAGE_PIN W5   IOSTANDARD LVCMOS33 } [get_ports i_clk]
-create_clock -add -name sys_clk_pin -period 20.00 -waveform {0 10} [get_ports i_clk]
+set_property -dict { PACKAGE_PIN W5   IOSTANDARD LVCMOS33 } [get_ports i_clk_board]
+create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports i_clk_board]
 
 set_property -dict {PACKAGE_PIN U18   IOSTANDARD LVCMOS33} [get_ports i_rst]
 set_property -dict {PACKAGE_PIN B18   IOSTANDARD LVCMOS33} [get_ports i_rx]

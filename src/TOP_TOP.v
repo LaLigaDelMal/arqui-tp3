@@ -3,12 +3,20 @@
 module TOP_TOP #(
     parameter   NBITS = 32
 )(
-    input wire i_clk,
+    input wire i_clk_board,
     input wire i_rst,
     input wire  i_rx,
     output wire o_tx,
     output wire [3:0] o_state
 );
+
+wire i_clk;
+clk_wiz_0 clk_wiz_0(        // 100Mhz -> 50MHz
+    .clk_out1(i_clk),       // output clk_out1
+    .reset(i_rst),          // input reset
+    .locked(),              // output locked
+    .clk_in1(i_clk_board)
+);  
 
 wire [NBITS-1:0]  IF_pc;
 wire [NBITS-1:0]  IF_instr;
