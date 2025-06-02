@@ -20,6 +20,7 @@ module Debug_Unit #(
     input  wire  [NBITS-1:0]     i_mips_clk_count,   // Contador de ciclos del MIPS
     input  wire  [NBITS-1:0]     i_mips_reg_data,    // Registros del MIPS
     input  wire  [NBITS-1:0]     i_mips_mem_data,    // Memoria de datos del MIPS
+    input  wire  [NBITS-1:0]     i_mips_mem_instr,   // Memoria de instrucciones del MIPS
 
 
     output wire                  o_uart_rx_rst,        // Reset signal for the UART Top.
@@ -74,6 +75,7 @@ module Debug_Unit #(
 
     reg [REG_COUNT_SIZE-1:0]    tx_regs_count, tx_regs_count_next;
     reg [NBITS-1:0]             tx_mem_count, uart_tx_mem_count_next;
+    reg [NBITS-1:0]             tx_mem_instr_count, uart_tx_mem_instr_count_next;
 
     reg [1:0]                   mips_mode, mips_mode_next;
     reg                         mips_step, mips_step_next;
@@ -95,6 +97,7 @@ module Debug_Unit #(
                 tx_data_count           <= 0;
                 tx_regs_count           <= 0;
                 tx_mem_count            <= 0;
+                tx_mem_instr_count      <= 0;
                 uart_tx_data_word       <= 0;
                 mips_mode               <= MIPS_STOP;
                 mips_step               <= 0;
@@ -113,6 +116,7 @@ module Debug_Unit #(
                 tx_data_count           <= tx_data_count_next;
                 tx_regs_count           <= tx_regs_count_next;
                 tx_mem_count            <= uart_tx_mem_count_next;
+                tx_mem_instr_count      <= uart_tx_mem_instr_count_next;
                 uart_tx_data_word       <= uart_tx_data_word_next;
                 mips_mode               <= mips_mode_next;
                 mips_step               <= mips_step_next;
@@ -137,6 +141,7 @@ module Debug_Unit #(
         tx_data_count_next       <= tx_data_count;
         tx_regs_count_next       <= tx_regs_count;
         uart_tx_mem_count_next   <= tx_mem_count;
+        uart_tx_mem_instr_count_next <= tx_mem_instr_count;
         uart_tx_data_word_next   <= uart_tx_data_word;
 
         mips_mode_next           <= mips_mode;
@@ -151,6 +156,7 @@ module Debug_Unit #(
                     uart_tx_reset_next <= 0;
                     tx_regs_count_next <= 0;
                     uart_tx_mem_count_next <= 0;
+                    uart_tx_mem_instr_count_next <= 0;
                     if (~i_uart_data_received) begin        // Verifica si hay datos listos desde la UART
                         uart_rx_reset_next  <= 0;
                     end else begin                          // Verifica el char recibido
@@ -187,6 +193,7 @@ module Debug_Unit #(
                         mips_step_next <= 0;
                         tx_regs_count_next <= 0;
                         uart_tx_mem_count_next <= 0;
+                        uart_tx_mem_instr_count_next <= 0;
                         state_next     <= PREPARE_TX;
                     end else begin
                         if (~i_uart_data_received) begin  // Verifica si hay datos listos desde la UART
@@ -267,7 +274,18 @@ module Debug_Unit #(
 
                                 state_next              <= DATA_TX;
                             end
-                        4: // Termino de enviar todos los datos y vuelve a IDLE o STEP
+                        4:  // Envia contenido de la memoria de instrucciones
+                            begin
+                                uart_tx_data_word_next <= i_mips_mem_instr;
+                                uart_tx_mem_instr_count_next <= tx_mem_instr_count + 4;
+
+                                if(tx_mem_instr_count == INST_MEM_SIZE-4) begin
+                                    tx_data_count_next <= tx_data_count + 1;
+                                end
+
+                                state_next              <= DATA_TX;
+                            end
+                        5: // Termino de enviar todos los datos y vuelve a IDLE o STEP
                             begin
                                 tx_data_count_next  <= 0;
                                 if(mips_mode == MIPS_STEP) begin
@@ -331,7 +349,7 @@ module Debug_Unit #(
     assign o_mips_reg_sel       = tx_regs_count;
     assign o_mips_mem_addr      = tx_mem_count;
 
-    assign o_mips_instr_addr    = uart_rx_inst_count;
+    assign o_mips_instr_addr    = (tx_data_count == 4) ? tx_mem_instr_count : uart_rx_inst_count;
     assign o_mips_instr_data    = uart_rx_data_line;
     assign o_mips_instr_write   = uart_rx_inst_write;
     

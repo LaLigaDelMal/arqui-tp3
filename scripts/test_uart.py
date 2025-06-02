@@ -8,7 +8,7 @@ class SerialInterface:
     def __init__(self):
         port = None
         if os.name == 'nt':
-            port = 'COM7'
+            port = 'COM6'
         else:
             port = '/dev/ttyUSB0'
             

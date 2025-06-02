@@ -12,7 +12,8 @@ module Instruction_Memory #(
     input   wire    [INST_BITS-1:0]     i_dbg_addr,
     input   wire    [INST_BITS-1:0]     i_dbg_inst,
     input   wire                        i_dbg_wr_en,
-    output  reg     [INST_BITS-1:0]     o_data
+    output  reg     [INST_BITS-1:0]     o_data,
+    output  reg     [INST_BITS-1:0]     o_dbg_data
 );
 
 reg [NBITS-1:0] memory[CELLS-1:0];
@@ -28,6 +29,10 @@ end
 
 always @ (posedge i_dbg_wr_en) begin
     {memory[i_dbg_addr], memory[i_dbg_addr + 1], memory[i_dbg_addr + 2], memory[i_dbg_addr + 3]} <= i_dbg_inst[31:0];
+end
+
+always @ (*) begin
+    o_dbg_data = {memory[i_dbg_addr], memory[i_dbg_addr + 1], memory[i_dbg_addr + 2], memory[i_dbg_addr + 3]};
 end
 
 endmodule

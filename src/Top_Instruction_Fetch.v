@@ -22,7 +22,8 @@ module Top_Instruction_Fetch #(
     // Outputs
     output  wire [NBITS-1:0] o_pc,    
     output  wire [NBITS-1:0] o_instr,            // Fetched instruction
-    output  wire [NBITS-1:0] o_cycle_count
+    output  wire [NBITS-1:0] o_cycle_count,
+    output  wire [NBITS-1:0] o_dbg_data
 );
 
 wire [NBITS-1:0] pc_mux;
@@ -62,7 +63,8 @@ Instruction_Memory u_Instruction_Memory (
     .i_addr(pc),
     .i_dbg_addr(i_inst_mem_addr),
     .i_dbg_inst(i_inst_mem_data),
-    .o_data(data)
+    .o_data(data),
+    .o_dbg_data(dbg_data)
 );
 
 wire [NBITS-1:0] count;
@@ -77,5 +79,6 @@ Cycle_Counter u_Cycle_Counter (
 assign o_pc = pc;
 assign o_instr = data;
 assign o_cycle_count = count;
+assign o_dbg_data = dbg_data;
 
 endmodule

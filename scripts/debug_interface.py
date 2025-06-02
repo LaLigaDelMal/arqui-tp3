@@ -7,7 +7,7 @@ RUN=bytes([0b01110010])
 STEP=bytes([0b01110011])
 NEXT=bytes([0b01101110])
 
-REPORT_SIZE_BYTES = 392
+REPORT_SIZE_BYTES = 648 #392
 PROGRAM_FILE_PATH = "./assembled.hex"
 
 def parse_debug_data(data: bytes):
@@ -17,15 +17,17 @@ def parse_debug_data(data: bytes):
     if len(data) < REPORT_SIZE_BYTES:
         print(f"Advertencia: Se esperaban {REPORT_SIZE_BYTES} bytes, pero se recibieron {len(data)} bytes. \n")
     
-    pc = data[0:8]
-    cycles_count = data[8:16]
-    registers = [data[i:i+8] for i in range(16, 272, 8)]
-    memory = [data[i:i+8] for i in range(272, 784, 8)]
+    pc              = data[0:8]
+    cycles_count    = data[8:16]
+    registers       = [data[i:i+8] for i in range(16, 272, 8)]
+    memory_data     = [data[i:i+8] for i in range(272, 784, 8)]  
+    memory_instr    = [data[i:i+8] for i in range(784, 1304, 8)]
     return {
         "pc": pc,
         "cycles_count": cycles_count,
         "registers": registers,
-        "memory": memory
+        "memory_data": memory_data,
+        "memory_instr": memory_instr
     }
 
 def read_program() -> bytes:
@@ -39,7 +41,7 @@ class SerialInterface:
     def __init__(self):
         port = None
         if os.name == 'nt':
-            port = 'COM7'
+            port = 'COM6'
         else:
             port = '/dev/ttyUSB0'
             
@@ -89,8 +91,11 @@ if __name__ == "__main__":
             print("Registers:")
             for i, reg in enumerate(debug_data["registers"]):
                 print(f"  R{i}: {reg}")
-            print("Memory:")
-            for i, mem in enumerate(debug_data["memory"]):
+            print("Memory Data:")
+            for i, mem in enumerate(debug_data["memory_data"]):
+                print(f"  M{i}: {mem}")
+            print("Memory Instructions:")
+            for i, mem in enumerate(debug_data["memory_instr"]):
                 print(f"  M{i}: {mem}")
         elif command == "s":
             serial_port.send_data(STEP)

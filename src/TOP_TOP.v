@@ -3,11 +3,23 @@
 module TOP_TOP #(
     parameter   NBITS = 32
 )(
-    input wire i_clk,
+    input wire clk_in1,
     input wire i_rst,
     input wire  i_rx,
     output wire o_tx,
     output wire [3:0] o_state
+);
+
+wire i_clk;
+clk_wiz_0 clk_50
+(
+    // Clock out ports
+    .clk_out1(i_clk),     // output clk_out1
+    // Status and control signals
+    .reset(0), // input reset
+    .locked(),       // output locked
+    // Clock in ports
+    .clk_in1(clk_in1)
 );
 
 wire [NBITS-1:0]  IF_pc;
@@ -16,6 +28,7 @@ wire [NBITS-1:0]  IF_cycle_count;
 wire HU_hazard_detected;
 wire  [NBITS-1:0]  EX_eff_addr;
 wire               EX_pc_mux_ctrl;
+wire [NBITS-1:0]  IF_dbg_data;
 
 wire DU_mips_step;
 wire DU_mips_rst;
@@ -37,7 +50,8 @@ Top_Instruction_Fetch IF (
     .i_step(DU_mips_step),                    // Viene de DEBUG
     .o_pc(IF_pc),
     .o_instr(IF_instr),                                 // Fetched instruction
-    .o_cycle_count(IF_cycle_count)
+    .o_cycle_count(IF_cycle_count),
+    .o_dbg_data(IF_dbg_data)
 );
 
 wire [NBITS-1:0]  IF_ID_pc;
@@ -387,6 +401,7 @@ Debug_Unit DU (
     .i_mips_clk_count(IF_cycle_count),
     .i_mips_reg_data(ID_dbg_reg_data),
     .i_mips_mem_data(MA_dbg_data),
+    .i_mips_mem_instr(IF_dbg_data),
 
     .o_uart_rx_rst(DU_uart_rx_rst),
     .o_uart_tx_rst(DU_uart_tx_rst),
