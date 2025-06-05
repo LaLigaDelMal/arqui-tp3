@@ -178,7 +178,7 @@ Adder PC_8(
 
 wire [NBITS-1:0] result_Mux_ALU_A;
 Mux_4 ALU_SRC_A(
-    .i_sel(flg_ALU_src_a),
+    .i_sel(flg_ALU_src_A),
     .i_a(adder_pc_8),            // (00) PC+8
     .i_b(rt_data),               // (01) rt data
     .i_c(32'b0),                 // (10) NC
@@ -189,10 +189,9 @@ Mux_4 ALU_SRC_A(
 
 wire [NBITS-1:0] result_Mux_ALU_B;
 Mux_2 ALU_SRC_B(
-    .i_sel(flg_ALU_src_b),
+    .i_sel(flg_ALU_src_B),
     .i_a(rs_data),               // (0) rs data
     .i_b(sa),               // (1) Sign Extender result
-
     .o_result(result_Mux_ALU_B)
 );
 
@@ -201,7 +200,6 @@ Mux_2 AGU_SRC_ADDR(
     .i_sel(flg_AGU_src_addr),
     .i_a(rs_data),               // (0) rs data
     .i_b(adder_pc_8),                // (1) PC+8
-
     .o_result(result_AGU_ADDR)
 );
 
@@ -233,8 +231,8 @@ assign o_flg_reg_wr_en = flg_reg_wr_en;
 assign o_flg_mem_wr_en = flg_mem_wr_en;
 assign o_flg_wb_src = flg_wb_src;
 
-assign o_flg_ALU_src_A = flg_ALU_src_a;
-assign o_flg_ALU_src_B = flg_ALU_src_b;
+assign o_flg_ALU_src_A = flg_ALU_src_A;
+assign o_flg_ALU_src_B = flg_ALU_src_B;
 
 assign o_flg_mem_op = flg_mem_op;
 

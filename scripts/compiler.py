@@ -1,4 +1,5 @@
 import re
+import argparse 
 
 class Assembler:
 
@@ -142,15 +143,20 @@ class Assembler:
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Compila un archivo ASM a HEX.")
+    parser.add_argument("input", help="Archivo de entrada .asm")
+    parser.add_argument("output", help="Archivo de salida .hex")
+    args = parser.parse_args()
+    
     binary_code: str
     instructions_tokens: list
     asm = Assembler()
 
-    with open("./program.asm", encoding='utf-8') as source_file:
+    with open(args.input, encoding='utf-8') as source_file:
         lines = source_file.readlines()
         instructions_tokens = asm.tokenizer(lines)
 
-    with open("./assembled.hex", "w") as d_file:
+    with open(args.output, "w") as d_file:
         for inst in instructions_tokens:
             binary_code = asm.instruction_parser(inst)
             print(binary_code)

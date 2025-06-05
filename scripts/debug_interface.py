@@ -1,6 +1,8 @@
 import serial
 from time import sleep
 import os
+import argparse
+
 #### Comandos que se pueden enviar
 LOAD=bytes([0b01101100])
 RUN=bytes([0b01110010])
@@ -9,6 +11,7 @@ NEXT=bytes([0b01101110])
 
 REPORT_SIZE_BYTES = 648 #392
 PROGRAM_FILE_PATH = "./assembled.hex"
+COM_PORT = "COM11" 
 
 def parse_debug_data(data: bytes):
     # Convert bytes to HEX
@@ -40,10 +43,9 @@ def read_program() -> bytes:
 class SerialInterface:
     def __init__(self):
         port = None
-        if os.name == 'nt':
-            port = 'COM6'
-        else:
-            port = '/dev/ttyUSB0'
+        
+        port = COM_PORT
+        #'/dev/ttyUSB0'
             
         self.ser = serial.Serial(
             port=port,
@@ -68,6 +70,14 @@ class SerialInterface:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Interactuador con MIPS")
+    parser.add_argument("input", help="Archivo de programa .hex")
+    parser.add_argument("port", default="COM11", help="Puerto serial a usar (default: COM11)")
+    args = parser.parse_args()
+    
+    PROGRAM_FILE_PATH = args.input
+    COM_PORT = args.port
+    
     serial_port = SerialInterface()
 
     # Parse interactive commands from user

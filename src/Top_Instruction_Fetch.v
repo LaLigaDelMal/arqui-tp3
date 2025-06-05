@@ -54,6 +54,7 @@ Adder u_Adder (
 );
 
 wire [NBITS-1:0] data;
+wire [NBITS-1:0] dbg_data;
 // Instantiate Instruction Memory module
 Instruction_Memory u_Instruction_Memory (
     .i_clk(i_clk),                              // Clock signal
