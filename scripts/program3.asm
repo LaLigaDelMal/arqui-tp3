@@ -1,22 +1,12 @@
 # Inicializamos registros
-ORI    R1, R0, 5            # R1 = 5
-ORI    R2, R0, 10           # R2 = 10 [0xa]
-
-# --- Forwarding: resultado de ADDU usado inmediatamente ---
-ADDU   R3, R1, R2           # R3 = R1 + R2 -> 15
-ADDU   R4, R3, R2           # R4 = R3 + R2 -> 25 (R3 debería forwardearse)
-ADDU   R5, R4, R1           # R5 = R4 + R1 -> 30 (R4 también)
-
-# --- Más forwarding con operación lógica ---
-AND    R6, R5, R2           # R6 = R5 & R2 = 40 & 15 = 10
-OR     R7, R6, R1           # R7 = R6 | R1 = 8 | 5 = 15
-
-# --- Shift inmediato seguido por shift variable (dependencia) ---
-SLL    R8, R1, 2            # R8 = R1 << 2 = 5 << 2 = 20  # 4.748.667 ns
-SLLV   R9, R2, R1           # R9 = R2 << R1 = 10 << 5 = 320
-
+ORI    R1, R0, 10            # R1 = 5
+NOP
+NOP
 # --- Branch + delay slot (ejecutar sí o sí) ---
-BEQ    R1, R1, 8            # Branch taken (R1 == R1)
+BEQ    R1, R0, 1            # Branch taken (R1 == R1)
+ORI    R2, R1, 2            # Esto se ejecuta pero da 7 en vez de 2, teoria: puede embromar el forwarding
+ORI    R3, R0, 3            # Esto se ejecuta pero no deberia, ademas tambien da 7
+ORI    R4, R0, 4
 ADDI   R10, R0, 1           # Delay slot: se ejecuta SIEMPRE
 ADDI   R10, R10, 1          # NO se ejecuta si branch salta
 
@@ -30,6 +20,7 @@ J      64                   # Salta
 ADDI   R12, R0, 3           # Delay slot: se ejecuta
 
 # --- Jump & Link para simular llamada a subrutina ---
+ORI    R4, R0, 6            # R1 = 5
 JAL    80                   # PC+8 -> R31, salta a 80
 ADDI   R13, R0, 4           # Delay slot: se ejecuta  (si salto el BEQ, se ejecuta a partir de aquí) por lo que R13 = 4
 

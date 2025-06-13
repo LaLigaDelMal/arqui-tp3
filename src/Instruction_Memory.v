@@ -19,20 +19,29 @@ module Instruction_Memory #(
 reg [NBITS-1:0] memory[CELLS-1:0];
 integer i;
 
+// Calculate required address bits based on CELLS
+localparam ADDR_BITS = $clog2(CELLS);
+wire [ADDR_BITS-1:0] addr_truncated = i_addr[ADDR_BITS-1:0];
+wire [ADDR_BITS-1:0] dbg_addr_truncated = i_dbg_addr[ADDR_BITS-1:0];
+
+
 always @ (negedge i_clk) begin
     if (i_rst) begin
         o_data <= 0;
     end else if (i_step) begin
-        o_data <= {memory[i_addr], memory[i_addr + 1], memory[i_addr + 2], memory[i_addr + 3]};
+        // o_data <= {memory[i_addr], memory[i_addr + 1], memory[i_addr + 2], memory[i_addr + 3]};
+        o_data <= {memory[addr_truncated], memory[addr_truncated + 1], memory[addr_truncated + 2], memory[addr_truncated + 3]};
     end
 end
 
 always @ (posedge i_dbg_wr_en) begin
-    {memory[i_dbg_addr], memory[i_dbg_addr + 1], memory[i_dbg_addr + 2], memory[i_dbg_addr + 3]} <= i_dbg_inst[31:0];
+    // {memory[i_dbg_addr], memory[i_dbg_addr + 1], memory[i_dbg_addr + 2], memory[i_dbg_addr + 3]} <= i_dbg_inst[31:0];
+    {memory[dbg_addr_truncated], memory[dbg_addr_truncated + 1], memory[dbg_addr_truncated + 2], memory[dbg_addr_truncated + 3]} <= i_dbg_inst[INST_BITS-1:0];
 end
 
 always @ (*) begin
-    o_dbg_data = {memory[i_dbg_addr], memory[i_dbg_addr + 1], memory[i_dbg_addr + 2], memory[i_dbg_addr + 3]};
+    // o_dbg_data = {memory[i_dbg_addr], memory[i_dbg_addr + 1], memory[i_dbg_addr + 2], memory[i_dbg_addr + 3]};
+    o_dbg_data = {memory[dbg_addr_truncated], memory[dbg_addr_truncated + 1], memory[dbg_addr_truncated + 2], memory[dbg_addr_truncated + 3]};
 end
 
 endmodule

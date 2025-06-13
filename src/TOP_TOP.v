@@ -215,6 +215,10 @@ wire [4:0] EX_MA_rd;
 wire [4:0] EX_MA_rt;
 wire EX_MA_flg_reg_wr_en;
 
+wire [4:0] MA_WB_rd;
+wire [4:0] MA_WB_rt;
+wire [1:0] MA_WB_flg_ALU_dst;
+wire [1:0] EX_MA_flg_ALU_dst;
 
 Forwarding_Unit FU (
     .i_rt_EX(ID_EX_rt),
@@ -224,14 +228,15 @@ Forwarding_Unit FU (
     .i_rt_MEM(EX_MA_rt),
     .i_rd_MEM(EX_MA_rd),
     .i_flg_reg_wr_en_MEM(EX_MA_flg_reg_wr_en),
+    .i_flg_ALU_dst_MEM(EX_MA_flg_ALU_dst),
     .i_flg_reg_wr_en_WB(MA_WB_flg_reg_wr_en),
-    .i_reg_sel_WB(WB_reg_sel),
+    .i_rt_WB(MA_WB_rt),
+    .i_rd_WB(MA_WB_rd),
+    .i_flg_ALU_dst_WB(MA_WB_flg_ALU_dst),
     .o_ALU_src_a_ctrl(FU_ALU_src_a_ctrl),
     .o_ALU_src_b_ctrl(FU_ALU_src_b_ctrl)
 );
 
-wire [4:0] MA_WB_rd;
-wire [4:0] MA_WB_rt;
 
 Hazard_Unit HU (
     .i_rd_EX(ID_EX_rd),
@@ -258,7 +263,6 @@ wire [NBITS-1:0] EX_MA_ALU_rslt;
 wire [NBITS-1:0] EX_MA_eff_addr;
 wire [1:0] EX_MA_flg_mem_size;
 wire EX_MA_flg_unsign;
-wire [1:0] EX_MA_flg_ALU_dst;
 wire EX_MA_flg_mem_wr_en;
 wire EX_MA_flg_wb_src;
 wire EX_MA_flg_halt;
@@ -329,7 +333,7 @@ Top_Memory_Access MA (
     .o_dbg_data(MA_dbg_data)
 );
 
-wire [1:0] MA_WB_flg_ALU_dst;
+
 wire [NBITS-1:0] MA_WB_ALU_rslt;
 wire [NBITS-1:0] MA_WB_data;
 wire MA_WB_flg_wb_src;
