@@ -17,6 +17,7 @@ always @(*) begin
         2'b01: o_result <= i_b;
         2'b10: o_result <= i_c;
         2'b11: o_result <= i_d;
+        default: o_result <= 32'b0;
     endcase
 end
 

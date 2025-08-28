@@ -1,0 +1,3 @@
+LUI R1, 1
+LUI R2, 1
+ADDU R3, R1, R2

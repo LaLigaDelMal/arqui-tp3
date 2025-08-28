@@ -14,47 +14,63 @@ module ALU(
     reg [32:0] result;
     reg overflow;
 
-    always @ (i_op_code, i_op_A, i_op_B) begin
-        case (i_op_code)
+    always @ (i_opcode, i_op_A, i_op_B) begin
+        case (i_opcode)
                 4'b0000: begin                                                         // LSR
                         result = i_op_A >> i_op_B[4:0];
+                        overflow = 0;
                 end
                 4'b0001: begin                                                         // LSL
                         result = i_op_A << i_op_B[4:0];
+                        overflow = 0;
                 end
                 4'b0010: begin                                                         // ASR
                         result = $signed(i_op_A) >>> i_op_B[4:0];
+                        overflow = 0;
                 end
                 4'b0011: begin                                                         // Passthrough of source A
                         result = i_op_A;
+                        overflow = 0;
                 end
                 4'b0100: begin                                                         // UADD
                         result = i_op_A + i_op_B;
+                        overflow = 0;
                 end
                 4'b0101: begin                                                         // USUB
                         result = i_op_B - i_op_A;                                      // Subtraction is done in reverse order to avoid using more flags to select the ALU input in the Control unit
+                        overflow = 0;
                 end
                 4'b0110: begin                                                         // AND
                         result = i_op_A & i_op_B;
+                        overflow = 0;
                 end
                 4'b0111: begin                                                         // OR
                         result = i_op_A | i_op_B;
+                        overflow = 0;
                 end
                 4'b1000: begin                                                         // XOR
                         result = i_op_A ^ i_op_B;
+                        overflow = 0;
                 end
                 4'b1001: begin                                                         // NOR
                         result = ~(i_op_A | i_op_B);
+                        overflow = 0;
                 end
                 4'b1010: begin                                                         // GT
                         result = ($signed(i_op_A) > $signed(i_op_B)) ? 1 : 0;
+                        overflow = 0;
                 end
                 4'b1011: begin                                                         // CMP
                         result = (i_op_A == i_op_B) ? 1 : 0;
+                        overflow = 0;
                 end
                 4'b1100: begin                                                         // ADD
                         result = $signed(i_op_A) + $signed(i_op_B);
                         overflow = (i_op_A[31] ^ i_op_B[31]) ? 0 : (result[31] != i_op_A[31]);
+                end
+                default: begin
+                        result = 0;
+                        overflow = 0;
                 end
         endcase
     end

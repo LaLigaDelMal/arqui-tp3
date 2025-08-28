@@ -6,27 +6,42 @@ module Instruction_Memory #(
     parameter CELLS = 256
 )(
     input   wire    i_clk,
-    input   wire    i_wr_en,
-    input   wire    [NBITS-1:0] i_addr,
-    input   wire    [NBITS-1:0] i_data,
-    output  reg     [INST_BITS-1:0] o_data
+    input   wire    i_rst,
+    input   wire    i_step,
+    input   wire    [INST_BITS-1:0]     i_addr,
+    input   wire    [INST_BITS-1:0]     i_dbg_addr,
+    input   wire    [INST_BITS-1:0]     i_dbg_inst,
+    input   wire                        i_dbg_wr_en,
+    output  reg     [INST_BITS-1:0]     o_data,
+    output  reg     [INST_BITS-1:0]     o_dbg_data
 );
 
 reg [NBITS-1:0] memory[CELLS-1:0];
 integer i;
 
-initial begin
-    for (i = 0; i < CELLS; i = i + 1) begin
-        memory[i] = i;
+// Calculate required address bits based on CELLS
+localparam ADDR_BITS = $clog2(CELLS);
+wire [ADDR_BITS-1:0] addr_truncated = i_addr[ADDR_BITS-1:0];
+wire [ADDR_BITS-1:0] dbg_addr_truncated = i_dbg_addr[ADDR_BITS-1:0];
+
+
+always @ (negedge i_clk) begin
+    if (i_rst) begin
+        o_data <= 0;
+    end else if (i_step) begin
+        // o_data <= {memory[i_addr], memory[i_addr + 1], memory[i_addr + 2], memory[i_addr + 3]};
+        o_data <= {memory[addr_truncated], memory[addr_truncated + 1], memory[addr_truncated + 2], memory[addr_truncated + 3]};
     end
 end
 
-always @( i_addr ) begin
-    if ( !i_wr_en ) begin
-        o_data  <= {memory[i_addr], memory[i_addr + 1], memory[i_addr + 2], memory[i_addr + 3]};
-        //          0000 0000       0000 0001       0000 0010       0000 0011
-    end
+always @ (posedge i_dbg_wr_en) begin
+    // {memory[i_dbg_addr], memory[i_dbg_addr + 1], memory[i_dbg_addr + 2], memory[i_dbg_addr + 3]} <= i_dbg_inst[31:0];
+    {memory[dbg_addr_truncated], memory[dbg_addr_truncated + 1], memory[dbg_addr_truncated + 2], memory[dbg_addr_truncated + 3]} <= i_dbg_inst[INST_BITS-1:0];
+end
+
+always @ (*) begin
+    // o_dbg_data = {memory[i_dbg_addr], memory[i_dbg_addr + 1], memory[i_dbg_addr + 2], memory[i_dbg_addr + 3]};
+    o_dbg_data = {memory[dbg_addr_truncated], memory[dbg_addr_truncated + 1], memory[dbg_addr_truncated + 2], memory[dbg_addr_truncated + 3]};
 end
 
 endmodule
-

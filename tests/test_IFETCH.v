@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 
-module Registers(
+module Pepito(
 
     input wire i_rst,
     input wire [4:0] i_rs_sel,

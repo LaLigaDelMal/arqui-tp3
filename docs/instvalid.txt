@@ -1,0 +1,8 @@
+lui
+addu        # Dos NOP para que se refleje en memoria
+slt         
+addi        
+
+# Checkear. Ver delay slot. Ver como enviar pc_mux_ctrl y eff_addr
+beq         
+bne

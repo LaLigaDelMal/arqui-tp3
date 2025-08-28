@@ -1,30 +1,36 @@
 `timescale 1ns / 1ps
 
 
-module Reg_EX_MA(
+module Reg_EX_MA #(
+    parameter   NBITS = 32
+)(
 
-    input wire                i_clk,
-    input wire                i_rst,
+    input wire               i_clk,
+    input wire               i_rst,
+    input wire               i_step,
     input wire               i_pc_mux_ctrl,
     input wire  [NBITS-1:0]  i_ALU_rslt,
     input wire  [NBITS-1:0]  i_eff_addr,
-    input wire               i_flg_mem_op,
-    input wire               i_flg_mem_type,
     input wire  [1:0]        i_flg_mem_size,
     input wire               i_flg_unsign,
     input wire  [4:0]        i_rd, i_rt,
-    input wire               i_flg_ALU_dst,
+    input wire  [1:0]        i_flg_ALU_dst,
+    input wire               i_flg_reg_wr_en,
+    input wire               i_flg_mem_wr_en,
+    input wire               i_flg_wb_src,
+    input wire               i_flg_halt,
 
     output reg               o_pc_mux_ctrl,
     output reg  [NBITS-1:0]  o_ALU_rslt,
     output reg  [NBITS-1:0]  o_eff_addr,
-    output reg               o_flg_mem_op,
-    output reg               o_flg_mem_type,
     output reg  [1:0]        o_flg_mem_size,
     output reg               o_flg_unsign,
     output reg  [4:0]        o_rd, o_rt,
-    output reg               o_flg_ALU_dst,
-
+    output reg  [1:0]        o_flg_ALU_dst,
+    output reg               o_flg_reg_wr_en,
+    output reg               o_flg_mem_wr_en,
+    output reg               o_flg_wb_src,
+    output reg               o_flg_halt
     );
 
     always @(posedge i_clk) begin
@@ -32,25 +38,29 @@ module Reg_EX_MA(
         o_pc_mux_ctrl <= 0;
         o_ALU_rslt <= 0;
         o_eff_addr <= 0;
-        o_flg_mem_op <= 0;
-        o_flg_mem_type <= 0;
         o_flg_mem_size <= 0;
         o_flg_unsign <= 0;
         o_rd <= 0;
         o_rt <= 0;
         o_flg_ALU_dst <= 0;
+        o_flg_reg_wr_en <= 0;
+        o_flg_mem_wr_en <= 0;
+        o_flg_wb_src <= 0;
+        o_flg_halt <= 0;
     end
-    else begin
+    else if (i_step) begin
         o_pc_mux_ctrl <= i_pc_mux_ctrl;
         o_ALU_rslt <= i_ALU_rslt;
         o_eff_addr <= i_eff_addr;
-        o_flg_mem_op <= i_flg_mem_op;
-        o_flg_mem_type <= i_flg_mem_type;
         o_flg_mem_size <= i_flg_mem_size;
         o_flg_unsign <= i_flg_unsign;
         o_rd <= i_rd;
         o_rt <= i_rt;
         o_flg_ALU_dst <= i_flg_ALU_dst;
+        o_flg_reg_wr_en <= i_flg_reg_wr_en;
+        o_flg_mem_wr_en <= i_flg_mem_wr_en;
+        o_flg_wb_src <= i_flg_wb_src;
+        o_flg_halt <= i_flg_halt;
     end
 end
 endmodule
