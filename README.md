@@ -1,6 +1,3 @@
-# arqui-tp3
-TP3 de Arqui
+# TP N°3 Arquitectura de Computadoras
 
-
-write = wr
-read  = rd
+[enlace al informe](https://docs.google.com/document/d/1grODL2wNKd2KgoT9o2_f4ysi50wsgbYlXT_m4xkcbSY/edit?usp=sharing)
